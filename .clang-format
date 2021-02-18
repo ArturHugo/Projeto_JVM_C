@@ -1,0 +1,17 @@
+PointerAlignment: Left
+IndentWidth: 2
+ColumnLimit: 70
+SpacesBeforeTrailingComments: 2
+Cpp11BracedListStyle: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true 
+AlignConsecutiveDeclarations: true
+SpaceAfterCStyleCast: true
+PointerAlignment: Left
+AlignOperands: AlignAfterOperator
+BinPackParameters: false
+BinPackArguments: false
+SpaceBeforeParens: Never
+IndentCaseLabels: true
+PenaltyReturnTypeOnItsOwnLine: 100
+PenaltyBreakBeforeFirstCallParameter: 100
