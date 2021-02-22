@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-// Constant tag values
+// ConstantPoolInfo tag values
 #define CONSTANT_CLASS               7
 #define CONSTANT_FIELDREF            9
 #define CONSTANT_METHODREF           10
@@ -106,11 +106,8 @@ typedef struct Constant {
   };
 } ConstantPoolInfo;
 
-// TODO: apagar isso aqui
-// Constant *constant_pool = (Constant *) malloc(...);
-// Constant *cp = constant_pool;
-// cp->utf8_info.length = ...
-// cp->utf8_info.bytes = (u1 *) malloc(cp->utf8_info.length);
-//
+ConstantPoolInfo* readConstantPool(u2 cp_count, FILE* fd);
+
+void printConstantPool(ConstantPoolInfo* constant_pool);
 
 #endif  // __CONSTANT_POOL_H
