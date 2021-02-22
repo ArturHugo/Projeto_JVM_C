@@ -9,8 +9,8 @@ int main() {
   for(int i = 0; i < 10; i++) {
     getc(fd);
   }
-  Constant* constant_pool = readConstantPool(29, fd);
-  Constant* cp;
+  ConstantPoolInfo* constant_pool = readConstantPool(29, fd);
+  ConstantPoolInfo* cp;
   for(cp = constant_pool; cp < constant_pool + 29 - 1; cp++) {
     printf("\n#%zd", cp - constant_pool + 1);
     printf("\tu1 tag\t\t\t= %d ", cp->tag);
@@ -23,8 +23,9 @@ int main() {
         break;
 
       case CONSTANT_FIELDREF:
-        // cp->fieldref_info.class_index         = u2Read(fd);
-        // cp->fieldref_info.name_and_type_index = u2Read(fd);
+        // cp->fieldref_info.class_index         =
+        // u2Read(fd); cp->fieldref_info.name_and_type_index
+        // = u2Read(fd);
         printf("(CONSTANT_Fieldref_info);\n");
         printf("\tu2 class_index\t\t= %d;\n",
                cp->fieldref_info.class_index);
@@ -33,8 +34,10 @@ int main() {
         break;
 
       case CONSTANT_METHODREF:
-        // cp->methodref_info.class_index         = u2Read(fd);
-        // cp->methodref_info.name_and_type_index = u2Read(fd);
+        // cp->methodref_info.class_index         =
+        // u2Read(fd);
+        // cp->methodref_info.name_and_type_index =
+        // u2Read(fd);
         printf("(CONSTANT_Methodref_info);\n");
         printf("\tu2 class_index\t\t= %d;\n",
                cp->methodref_info.class_index);
@@ -43,10 +46,10 @@ int main() {
         break;
 
       case CONSTANT_INTERFACE_METHODREF:
-        // cp->interface_methodref_info.class_index         =
+        // cp->interface_methodref_info.class_index =
         // u2Read(fd);
-        // cp->interface_methodref_info.name_and_type_index =
-        // u2Read(fd);
+        // cp->interface_methodref_info.name_and_type_index
+        // = u2Read(fd);
         printf("(CONSTANT_InterfaceMethodref_info);\n");
         printf("\tu2 class_index\t\t= %d;\n",
                cp->interface_methodref_info.class_index);
@@ -93,8 +96,10 @@ int main() {
         break;
 
       case CONSTANT_NAME_AND_TYPE:
-        // cp->name_and_type_info.name_index       = u2Read(fd);
-        // cp->name_and_type_info.descriptor_index = u2Read(fd);
+        // cp->name_and_type_info.name_index       =
+        // u2Read(fd);
+        // cp->name_and_type_info.descriptor_index =
+        // u2Read(fd);
         printf("(CONSTANT_NameAndType_info);\n");
         printf("\tu2 name_index\t\t= %d;\n",
                cp->name_and_type_info.name_index);
@@ -106,7 +111,8 @@ int main() {
         // cp->utf8_info.length = u2Read(fd);
 
         // cp->utf8_info.bytes =
-        //     (u1*) malloc(cp->utf8_info.length * sizeof(u1));
+        //     (u1*) malloc(cp->utf8_info.length *
+        //     sizeof(u1));
 
         // // TODO: testar esse bagulho aqui
         // u1* bytes_ptr = cp->utf8_info.bytes;
@@ -126,8 +132,9 @@ int main() {
         break;
 
       case CONSTANT_METHOD_HANDLE:
-        // cp->method_handle_info.reference_kind  = getc(fd);
-        // cp->method_handle_info.reference_index = u2Read(fd);
+        // cp->method_handle_info.reference_kind  =
+        // getc(fd); cp->method_handle_info.reference_index
+        // = u2Read(fd);
         printf("(CONSTANT_MethodHandle_info);\n");
         printf("\tu2 reference_kind\t= %d;\n",
                cp->method_handle_info.reference_kind);
@@ -136,16 +143,19 @@ int main() {
         break;
 
       case CONSTANT_METHOD_TYPE:
-        // cp->method_type_info.descriptor_index = u2Read(fd);
+        // cp->method_type_info.descriptor_index =
+        // u2Read(fd);
         printf("(CONSTANT_MethodType_info);\n");
         printf("\tu2 descriptor_index\t= %d;\n",
                cp->method_type_info.descriptor_index);
         break;
 
       case CONSTANT_INVOKE_DYNAMIC:
-        // cp->invoke_dynamic_info.bootstrap_method_attr_index =
+        // cp->invoke_dynamic_info.bootstrap_method_attr_index
+        // =
         //     u2Read(fd);
-        // cp->invoke_dynamic_info.name_and_type_index = u2Read(fd);
+        // cp->invoke_dynamic_info.name_and_type_index =
+        // u2Read(fd);
         printf("(CONSTANT_InvokeDynamic_info);\n");
         printf("\tu2 bootstrap_method_attr_index\t\t= %d;\n",
                cp->invoke_dynamic_info.bootstrap_method_attr_index);

@@ -14,11 +14,11 @@ u4 u4Read(FILE* fd) {
   return toReturn;
 }
 
-Constant* readConstantPool(u2 cp_count, FILE* fd) {
-  Constant* constant_pool =
-      (Constant*) malloc((cp_count - 1) * sizeof(Constant));
+ConstantPoolInfo* readConstantPool(u2 cp_count, FILE* fd) {
+  ConstantPoolInfo* constant_pool = (ConstantPoolInfo*) malloc(
+      (cp_count - 1) * sizeof(ConstantPoolInfo));
 
-  Constant* cp;
+  ConstantPoolInfo* cp;
   for(cp = constant_pool; cp < constant_pool + cp_count - 1; cp++) {
     cp->tag = u1Read(fd);
     switch(cp->tag) {

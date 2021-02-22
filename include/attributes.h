@@ -73,6 +73,6 @@ typedef struct Attribute {
     LineNumberTableInfo    line_number_table_info;
     LocalVariableTableInfo local_variable_table_info;
   };
-} Attribute;
+} AttributeInfo;
 
 #endif  // __ATTRIBUTES_H

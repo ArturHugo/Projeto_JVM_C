@@ -5,11 +5,11 @@
 #include "common.h"
 
 typedef struct Field {
-  u2         access_flag;
-  u2         name_index;
-  u2         descriptor_index;
-  u2         attributes_count;
-  Attribute* attributes;
-} Field;
+  u2             access_flag;
+  u2             name_index;
+  u2             descriptor_index;
+  u2             attributes_count;
+  AttributeInfo* attributes;
+} FieldInfo;
 
 #endif  // __FIELDS_H

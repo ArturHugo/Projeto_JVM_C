@@ -104,7 +104,7 @@ typedef struct Constant {
     MethodTypeInfo         method_type_info;
     InvokeDynamicInfo      invoke_dynamic_info;
   };
-} Constant;
+} ConstantPoolInfo;
 
 // TODO: apagar isso aqui
 // Constant *constant_pool = (Constant *) malloc(...);
