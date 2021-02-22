@@ -103,7 +103,7 @@ typedef struct Constant {
     MethodHandleInfo       method_handle_info;
     MethodTypeInfo         method_type_info;
     InvokeDynamicInfo      invoke_dynamic_info;
-  } info;
+  };
 } ConstantPoolInfo;
 
 // TODO: apagar isso aqui
