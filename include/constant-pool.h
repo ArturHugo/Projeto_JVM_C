@@ -19,82 +19,98 @@
 #define CONSTANT_METHOD_TYPE         16
 #define CONSTANT_INVOKE_DYNAMIC      18
 
+// CONSTAT_item_info
+typedef struct {
+  u2 name_index;
+} ClassInfo;
+
+typedef struct {
+  u2 class_index;
+  u2 name_and_type_index;
+} FieldrefInfo;
+
+typedef struct {
+  u2 class_index;
+  u2 name_and_type_index;
+} MethodrefInfo;
+
+typedef struct {
+  u2 class_index;
+  u2 name_and_type_index;
+} InterfaceMethodrefInfo;
+
+typedef struct {
+  u2 string_index;
+} StringInfo;
+
+typedef struct {
+  u4 bytes;
+} IntegerInfo;
+
+typedef struct {
+  u4 bytes;
+} FloatInfo;
+
+typedef struct {
+  u4 high_bytes;
+  u4 low_bytes;
+} LongInfo;
+
+typedef struct {
+  u4 high_bytes;
+  u4 low_bytes;
+} DoubleInfo;
+
+typedef struct {
+  u2 name_index;
+  u2 descriptor_index;
+} NameAndTypeInfo;
+
+typedef struct {
+  u2  length;
+  u1* bytes;
+} Utf8Info;
+
+typedef struct {
+  u1 reference_kind;
+  u2 reference_index;
+} MethodHandleInfo;
+
+typedef struct {
+  u2 descriptor_index;
+} MethodTypeInfo;
+
+typedef struct {
+  u2 bootstrap_method_attr_index;
+  u2 name_and_type_index;
+} InvokeDynamicInfo;
+
 // Constant structure
 typedef struct Constant {
   u1 tag;
   union {
-    struct {
-      u2 name_index;
-    } Class;
-
-    struct {
-      u2 class_index;
-      u2 name_and_type_index;
-    } Fieldref;
-
-    struct {
-      u2 class_index;
-      u2 name_and_type_index;
-    } Methodref;
-
-    struct {
-      u2 class_index;
-      u2 name_and_type_index;
-    } InterfaceMethodref;
-
-    struct {
-      u2 string_index;
-    } String;
-
-    struct {
-      u4 bytes;
-    } Integer;
-
-    struct {
-      u4 bytes;
-    } Float;
-
-    struct {
-      u4 high_bytes;
-      u4 low_bytes;
-    } Long;
-
-    struct {
-      u4 high_bytes;
-      u4 low_bytes;
-    } Double;
-
-    struct {
-      u2 name_index;
-      u2 descriptor_index;
-    } NameAndType;
-
-    struct {
-      u2  length;
-      u1* bytes;
-    } Utf8;
-
-    struct {
-      u1 reference_kind;
-      u2 reference_index;
-    } MethodHandle;
-
-    struct {
-      u2 descriptor_index;
-    } MethodType;
-
-    struct {
-      u2 bootstrap_method_attr_index;
-      u2 name_and_type_index;
-    } InvokeDynamic;
-  } info;
+    ClassInfo              class_info;
+    FieldrefInfo           fieldref_info;
+    MethodrefInfo          methodref_info;
+    InterfaceMethodrefInfo interface_methodref_info;
+    StringInfo             string_info;
+    IntegerInfo            integer_info;
+    FloatInfo              float_info;
+    LongInfo               long_info;
+    DoubleInfo             double_info;
+    NameAndTypeInfo        name_and_type_info;
+    Utf8Info               utf8_info;
+    MethodHandleInfo       method_handle_info;
+    MethodTypeInfo         method_type_info;
+    InvokeDynamicInfo      invoke_dynamic_info;
+  };
 } Constant;
 
 // TODO: apagar isso aqui
 // Constant *constant_pool = (Constant *) malloc(...);
 // Constant *cp = constant_pool;
-// cp->info.Utf8.length = ...
-// cp->info.Utf8.bytes = (u1 *) malloc(cp->info.Utf8.length);
+// cp->utf8_info.length = ...
+// cp->utf8_info.bytes = (u1 *) malloc(cp->utf8_info.length);
 //
 
 #endif  // __CONSTANT_POOL_H
