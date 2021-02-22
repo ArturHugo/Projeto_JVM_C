@@ -1,6 +1,8 @@
 #ifndef __ATTRIBUTES_H
 #define __ATTRIBUTES_H
 
+#include "common.h"
+
 // Attribute info structs
 typedef struct {
   u2 constant_value_index;
@@ -18,8 +20,8 @@ typedef struct {
     u2 handler_pc;
     u2 catch_type;
   } * exception_table;
-  u2                attributes_count;
-  struct Attribute* atttributes;
+  u2                    attributes_count;
+  struct AttributeInfo* atttributes;
 } CodeInfo;
 
 typedef struct {
@@ -60,19 +62,21 @@ typedef struct {
   } * local_variable_table;  // FIXME? noem ficou meio estranho2
 } LocalVariableTableInfo;
 
-// TODO: Attribute struct
-typedef struct Attribute {
-  u2 attribute_name_index;
-  u4 attribute_length;
-  union {
-    ConstantValueInfo      constant_value_info;
-    CodeInfo               code_info;
-    ExceptionsInfo         exceptions_info;
-    InnerClassesInfo       inner_classes_info;
-    SourceFileInfo         source_file_info;
-    LineNumberTableInfo    line_number_table_info;
-    LocalVariableTableInfo local_variable_table_info;
-  };
-} Attribute;
+typedef union {
+  ConstantValueInfo      constant_value_info;
+  CodeInfo               code_info;
+  ExceptionsInfo         exceptions_info;
+  InnerClassesInfo       inner_classes_info;
+  SourceFileInfo         source_file_info;
+  LineNumberTableInfo    line_number_table_info;
+  LocalVariableTableInfo local_variable_table_info;
+} AttributeInfoUnion;
+
+// AttributeInfo struct
+typedef struct AttributeInfo {
+  u2                  attribute_name_index;
+  u4                  attribute_length;
+  AttributeInfoUnion* info;
+} AttributeInfo;
 
 #endif  // __ATTRIBUTES_H

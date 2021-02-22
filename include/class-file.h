@@ -48,27 +48,28 @@
 #define CONSTANT_INVOKE_DYNAMIC      18
 
 typedef struct ClassFile {
-  u4         magic;
-  u2         minor_version;
-  u2         major_version;
-  u2         constant_pool_count;
-  Constant*  constant_pool;
-  u2         access_flags;
-  u2         this_class;
-  u2         super_class;
-  u2         interfaces_count;
-  u2*        interfaces;
-  u2         fields_count;
-  Field*     fields;
-  u2         methods_count;
-  Method*    methods;
-  u2         attributes_count;
-  Attribute* attributes;
+  u4             magic;
+  u2             minor_version;
+  u2             major_version;
+  u2             constant_pool_count;
+  Constant*      constant_pool;
+  u2             access_flags;
+  u2             this_class;
+  u2             super_class;
+  u2             interfaces_count;
+  u2*            interfaces;
+  u2             fields_count;
+  Field*         fields;
+  u2             methods_count;
+  Method*        methods;
+  u2             attributes_count;
+  AttributeInfo* attributes;
 } ClassFile;
 
 // Functions to read .class file
 u2        u2Read(FILE* fd);
 u4        u4Read(FILE* fd);
 Constant* readConstantPool(u2 cp_count, FILE* fd);
+AttributeInfo* readAttributes(u2 attributes_count, FILE *fd, Constant* constant_pool);
 
 #endif  // __CLASS_FILE_H
