@@ -5,3 +5,5 @@ output/
 *.out
 *.java
 *.class
+build/
+compile_commands.json
