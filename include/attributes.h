@@ -1,6 +1,8 @@
 #ifndef __ATTRIBUTES_H
 #define __ATTRIBUTES_H
 
+#include "common.h"
+
 // Attribute info structs
 typedef struct {
   u2 constant_value_index;
