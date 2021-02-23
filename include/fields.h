@@ -10,6 +10,6 @@ typedef struct Field {
   u2             descriptor_index;
   u2             attributes_count;
   AttributeInfo* attributes;
-} Field;
+} FieldInfo;
 
 #endif  // __FIELDS_H

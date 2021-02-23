@@ -10,6 +10,6 @@ typedef struct Method {
   u2             descriptor_index;
   u2             attributes_count;
   AttributeInfo* attributes;
-} Method;
+} MethodInfo;
 
 #endif  // __METHODS_H
