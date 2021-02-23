@@ -2,6 +2,7 @@
 #define __ATTRIBUTES_H
 
 #include "common.h"
+#include <stdio.h>
 
 // Attribute info structs
 typedef struct {
@@ -9,17 +10,19 @@ typedef struct {
 } ConstantValueInfo;
 
 typedef struct {
-  u2  max_stack;
-  u2  max_locals;
-  u4  code_length;
-  u1* code;
-  u2  exception_table_length;
-  struct {
-    u2 start_pc;
-    u2 end_pc;
-    u2 handler_pc;
-    u2 catch_type;
-  } * exception_table;
+  u2 start_pc;
+  u2 end_pc;
+  u2 handler_pc;
+  u2 catch_type;
+} ExceptionTable;
+
+typedef struct {
+  u2                    max_stack;
+  u2                    max_locals;
+  u4                    code_length;
+  u1*                   code;
+  u2                    exception_table_length;
+  ExceptionTable*       exception_table;
   u2                    attributes_count;
   struct AttributeInfo* atttributes;
 } CodeInfo;
@@ -62,21 +65,22 @@ typedef struct {
   } * local_variable_table;  // FIXME? noem ficou meio estranho2
 } LocalVariableTableInfo;
 
-typedef union {
-  ConstantValueInfo      constant_value_info;
-  CodeInfo               code_info;
-  ExceptionsInfo         exceptions_info;
-  InnerClassesInfo       inner_classes_info;
-  SourceFileInfo         source_file_info;
-  LineNumberTableInfo    line_number_table_info;
-  LocalVariableTableInfo local_variable_table_info;
-} AttributeInfoUnion;
-
 // AttributeInfo struct
 typedef struct AttributeInfo {
-  u2                  attribute_name_index;
-  u4                  attribute_length;
-  AttributeInfoUnion* info;
+  u2 attribute_name_index;
+  u4 attribute_length;
+  union {
+    ConstantValueInfo      constant_value_info;
+    CodeInfo               code_info;
+    ExceptionsInfo         exceptions_info;
+    InnerClassesInfo       inner_classes_info;
+    SourceFileInfo         source_file_info;
+    LineNumberTableInfo    line_number_table_info;
+    LocalVariableTableInfo local_variable_table_info;
+  };
 } AttributeInfo;
+
+AttributeInfo  readAttribute(FILE* fd);
+AttributeInfo* readAttributes(u2 attributes_count, FILE* fd);
 
 #endif  // __ATTRIBUTES_H

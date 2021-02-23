@@ -70,6 +70,7 @@ typedef struct ClassFile {
 u2        u2Read(FILE* fd);
 u4        u4Read(FILE* fd);
 Constant* readConstantPool(u2 cp_count, FILE* fd);
-AttributeInfo* readAttributes(u2 attributes_count, FILE *fd, Constant* constant_pool);
+
+extern ClassFile class_file;
 
 #endif  // __CLASS_FILE_H
