@@ -59,10 +59,10 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
 
       // Read code attributes (recusive)
       attribute->code_info.attributes_count = u2Read(fd);
-      attribute->code_info.atttributes =
-          readAttributes(attribute->code_info.attributes_count, fd, cp);
+      /* attribute->code_info.atttributes = */
+      /*     readAttributes(attribute->code_info.attributes_count, fd, cp); */
 
-    } else if(strcmp((char *) attribute_name, EXCEPTIONS)) {
+    } else if(!strcmp((char *) attribute_name, EXCEPTIONS)) {
       attribute->exceptions_info.number_of_exceptions = u2Read(fd);
       u2* exception = malloc(attribute->exceptions_info.number_of_exceptions * sizeof(*exception));
       attribute->exceptions_info.exception_index_table = exception;
