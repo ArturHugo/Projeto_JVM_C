@@ -2,6 +2,7 @@
 #define __ATTRIBUTES_H
 
 #include "common.h"
+#include "constant-pool.h"
 #include <stdio.h>
 
 // Attribute info structs
@@ -80,7 +81,6 @@ typedef struct AttributeInfo {
   };
 } AttributeInfo;
 
-AttributeInfo  readAttribute(FILE* fd);
-AttributeInfo* readAttributes(u2 attributes_count, FILE* fd);
+AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* cp);
 
 #endif  // __ATTRIBUTES_H

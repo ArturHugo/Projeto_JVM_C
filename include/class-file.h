@@ -66,12 +66,11 @@ typedef struct ClassFile {
   AttributeInfo*    attributes;
 } ClassFile;
 
-// Functions to read .class file
-u1                u1Read(FILE* fd);
-u2                u2Read(FILE* fd);
-u4                u4Read(FILE* fd);
-ConstantPoolInfo* readConstantPool(u2 cp_count, FILE* fd);
 
-extern ClassFile class_file;
+// Functions to read .class file
+u1                u1Read(File* fd);
+u2                u2Read(File* fd);
+u4                u4Read(File* fd);
+ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd);
 
 #endif  // __CLASS_FILE_H

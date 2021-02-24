@@ -6,4 +6,5 @@ output/
 *.java
 *.class
 build/
+.cache/
 compile_commands.json
