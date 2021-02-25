@@ -73,8 +73,21 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
         *exception = u2Read(fd);
       }
 
-    } else if(!memcmp(attribute_name, INNER_CLASSES, attribute_name_size)) {
-      // TODO: handle InnerClassesInfo
+    } else if(!strcmp((char *) attribute_name, INNER_CLASSES)) {
+      u2 number_of_classes = u2Read(fd);
+      attribute->inner_classes_info.number_of_classes = number_of_classes;
+
+      InnerClass* classes = malloc(number_of_classes * sizeof(*classes));
+
+      InnerClass* current_class = classes;
+      while (number_of_classes--) {
+        current_class->inner_class_info_index = u2Read(fd);
+        current_class->outer_class_info_index = u2Read(fd);
+        current_class->inner_name_index = u2Read(fd);
+        current_class->inner_class_access_flags = u2Read(fd);
+      }
+
+      attribute->inner_classes_info.classes = classes;
     } else if(!memcmp(attribute_name, SOURCE_FILE, attribute_name_size)) {
       // TODO: handle SourceFileInfo
     } else if(!memcmp(attribute_name, LINE_NUMBER_TABLE, attribute_name_size)) {

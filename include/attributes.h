@@ -34,13 +34,15 @@ typedef struct {
 } ExceptionsInfo;
 
 typedef struct {
+  u2 inner_class_info_index;
+  u2 outer_class_info_index;
+  u2 inner_name_index;
+  u2 inner_class_access_flags;
+} InnerClass;
+
+typedef struct {
   u2 number_of_classes;
-  struct {
-    u2 inner_class_info_index;
-    u2 outer_class_info_index;
-    u2 inner_name_index;
-    u2 inner_class_access_flags;
-  } * classes;
+  InnerClass* classes;
 } InnerClassesInfo;
 
 typedef struct {
