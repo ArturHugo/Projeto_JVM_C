@@ -15,8 +15,8 @@ typedef struct node {
   struct node* next;
 } node;
 
-void pushList(struct node** nd, void* data, size_t sz);
+void pushNode(struct node** nd, void* data, size_t sz);
 
-void* popList();
+void popNode(struct node** nd, void* data, int sz);
 
 #endif  // __COMMON_H

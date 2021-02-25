@@ -46,6 +46,22 @@
    "src/instructions.o"
   ],
   "file": "src/instructions.c"
+ },
+ {
+  "directory": "C:\\Users\\User\\Desktop\\UNB\\SB\\Projeto_JVM_C",
+  "arguments": [
+   "gcc",
+   "-Wall",
+   "-Wextra",
+   "-g",
+   "-std=c99",
+   "-Iinclude",
+   "-c",
+   "src/common.c",
+   "-o",
+   "src/common.o"
+  ],
+  "file": "src/common.c"
  }
 ]
 
