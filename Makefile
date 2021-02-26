@@ -26,9 +26,13 @@ INCLUDE	:= include
 # define lib directory
 LIB		:= lib
 
+TEST := test
+
 ifeq ($(OS),Windows_NT)
 MAIN	:= main.exe
+TESTRUNNER := run_tests.exe
 SOURCEDIRS	:= $(SRC)
+TESTDIRS	:= $(TEST)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
 FIXPATH = $(subst /,\,$1)
@@ -36,7 +40,9 @@ RM			:= del /q /f
 MD	:= mkdir
 else
 MAIN	:= main
+TESTRUNNER := run_tests
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
+TESTDIRS	:= $(shell find $(TEST) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
 FIXPATH = $1
@@ -52,6 +58,10 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 # define the C source files
 SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
+WITHOUTMAIN		:= $(filter-out  %/main.c, $(SOURCES))
+
+TESTSOURCES := test/munit.c \
+	test/test_$(suite).c
 
 # define the C object files 
 OBJECTS		:= $(SOURCES:.c=.o)
@@ -63,15 +73,21 @@ OBJECTS		:= $(SOURCES:.c=.o)
 #
 
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+OUTPUTTEST	:= $(call FIXPATH,$(OUTPUT)/$(TESTRUNNER))
 
 all: $(OUTPUT) $(MAIN)
 	@echo Executing 'all' complete!
+
+build_tests: $(OUTPUT) $(TESTRUNNER)
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
 
 $(MAIN): $(OBJECTS) 
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+
+$(TESTRUNNER): $(TESTOBJECTS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTEST) $(WITHOUTMAIN) $(TESTSOURCES) $(LFLAGS) $(LIBS)
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -89,3 +105,6 @@ clean:
 run: all
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+
+test: build_tests
+	./$(OUTPUTTEST)
