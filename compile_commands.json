@@ -30,5 +30,37 @@
    "src/main.o"
   ],
   "file": "src/main.c"
+ },
+ {
+  "directory": "C:\\Users\\User\\Desktop\\UNB\\SB\\Projeto_JVM_C",
+  "arguments": [
+   "gcc",
+   "-Wall",
+   "-Wextra",
+   "-g",
+   "-std=c99",
+   "-Iinclude",
+   "-c",
+   "src/common.c",
+   "-o",
+   "src/common.o"
+  ],
+  "file": "src/common.c"
+ },
+ {
+  "directory": "C:\\Users\\User\\Desktop\\UNB\\SB\\Projeto_JVM_C",
+  "arguments": [
+   "gcc",
+   "-Wall",
+   "-Wextra",
+   "-g",
+   "-std=c99",
+   "-Iinclude",
+   "-c",
+   "src/constant-pool.c",
+   "-o",
+   "src/constant-pool.o"
+  ],
+  "file": "src/constant-pool.c"
  }
 ]

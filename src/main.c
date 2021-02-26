@@ -9,9 +9,9 @@ int main() {
   for(int i = 0; i < 10; i++) {
     getc(fd);
   }
-  ConstantPoolInfo* constant_pool = readConstantPool(29, fd);
+  ConstantPoolInfo* constant_pool = readConstantPool(37, fd);
 
-  printConstantPool(constant_pool);
+  printConstantPool(constant_pool, 37);
 
   fclose(fd);
 

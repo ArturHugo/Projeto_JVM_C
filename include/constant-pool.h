@@ -108,6 +108,8 @@ typedef struct Constant {
 
 ConstantPoolInfo* readConstantPool(u2 cp_count, FILE* fd);
 
-void printConstantPool(ConstantPoolInfo* constant_pool);
+void printConstantPool(ConstantPoolInfo* constant_pool, u2 cp_count);
+
+u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index);
 
 #endif  // __CONSTANT_POOL_H
