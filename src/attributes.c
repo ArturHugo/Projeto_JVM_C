@@ -62,8 +62,8 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
 
       // Read code attributes (recusive)
       attribute->code_info.attributes_count = u2Read(fd);
-      /* attribute->code_info.atttributes = */
-      /*     readAttributes(attribute->code_info.attributes_count, fd, cp); */
+      attribute->code_info.atttributes =
+          readAttributes(attribute->code_info.attributes_count, fd, cp);
 
     } else if(!strcmp((char*) attribute_name, EXCEPTIONS)) {
       attribute->exceptions_info.number_of_exceptions = u2Read(fd);
@@ -109,8 +109,10 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
       attribute->line_number_table_info.line_number_table = line_number_table;
     } else if(!memcmp(attribute_name, LOCAL_VARIABLE_TABLE, attribute_name_size)) {
       // TODO: handle LocalVariableTableInfo
+      fd->seek += attribute->attribute_length;
     } else if(!strcmp((char*) attribute_name, STACK_MAP_TABLE)) {
       // TODO: handle StackMapTableInfo
+      fd->seek += attribute->attribute_length;
     } else {
       // Ignore silently unkown attributes
       fd->seek += attribute->attribute_length;

@@ -39,8 +39,12 @@ MunitResult test_read_code_attribute() {
   assert_short(02, ==, code.code_info.exception_table_length);
   assert_short(02, ==, code.code_info.attributes_count);
   assert_memory_equal(code.code_info.code_length, byte_code, code.code_info.code);
-  // TODO: Read LINE_NUMBER_TABLE and STACK_MAP_TABLE
-  // TODO: Test exception table
+
+  AttributeInfo* inner_attributes  = code.code_info.atttributes;
+  LineNumber*    line_number_table = inner_attributes[0].line_number_table_info.line_number_table;
+  assert_short(line_number_table[0].line_number, ==, 8);
+
+  // TODO: Read STACK_MAP_TABLE
 
   free(attributes->code_info.code);
   free(attributes->code_info.exception_table);
