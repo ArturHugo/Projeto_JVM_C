@@ -60,7 +60,7 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
 WITHOUTMAIN		:= $(filter-out  %/main.c, $(SOURCES))
 
-TESTSOURCES := test/munit.c \
+TESTSOURCES := test/munit/munit.c \
 	test/test_$(suite).c
 
 # define the C object files 

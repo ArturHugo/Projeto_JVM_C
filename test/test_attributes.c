@@ -1,5 +1,5 @@
 #define MUNIT_ENABLE_ASSERT_ALIASES
-#include "munit.h"
+#include "munit/munit.h"
 
 #include <stdio.h>
 
