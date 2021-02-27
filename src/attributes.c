@@ -88,8 +88,8 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
       }
 
       attribute->inner_classes_info.classes = classes;
-    } else if(!memcmp(attribute_name, SOURCE_FILE, attribute_name_size)) {
-      // TODO: handle SourceFileInfo
+    } else if(!strcmp((char *) attribute_name, SOURCE_FILE)) {
+      attribute->source_file_info.sourcefile_index = u2Read(fd);
     } else if(!memcmp(attribute_name, LINE_NUMBER_TABLE, attribute_name_size)) {
       // TODO: handle LineNumberTableInfo
     } else if(!memcmp(attribute_name, LOCAL_VARIABLE_TABLE, attribute_name_size)) {

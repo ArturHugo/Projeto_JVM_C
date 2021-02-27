@@ -33,11 +33,11 @@ MunitResult test_read_code_attribute() {
   AttributeInfo* attributes = readAttributes(1, fd, class_file->constant_pool);
   AttributeInfo  code       = attributes[0];
 
-  assert_short(2, ==, code.code_info.max_stack);
-  assert_short(3, ==, code.code_info.max_locals);
+  assert_short(02, ==, code.code_info.max_stack);
+  assert_short(03, ==, code.code_info.max_locals);
   assert_short(33, ==, code.code_info.code_length);
-  assert_short(2, ==, code.code_info.exception_table_length);
-  assert_short(2, ==, code.code_info.attributes_count);
+  assert_short(02, ==, code.code_info.exception_table_length);
+  assert_short(02, ==, code.code_info.attributes_count);
   assert_memory_equal(code.code_info.code_length, byte_code, code.code_info.code);
   // TODO: Read LINE_NUMBER_TABLE and STACK_MAP_TABLE
   // TODO: Test exception table
@@ -93,11 +93,12 @@ MunitResult test_read_inner_classes_attributes() {
 }
 
 MunitResult test_read_source_file_attribute() {
-  fd->seek                         = 418;
+  fd->seek                         = 0x29c;
   AttributeInfo* attributes        = readAttributes(1, fd, class_file->constant_pool);
   short          source_file_index = attributes[0].source_file_info.sourcefile_index;
   char* source_file_name = (char*) class_file->constant_pool[source_file_index].utf8_info.bytes;
-  assert_string_equal(source_file_name, "HelloWorld.java");
+  assert_string_equal(source_file_name, "Attributes.java");
+  free(attributes);
   return MUNIT_OK;
 }
 
@@ -116,12 +117,7 @@ MunitTest tests[] = {
      NULL,
      MUNIT_TEST_OPTION_NONE,
      NULL},
-    {"/source_file",
-     test_read_source_file_attribute,
-     NULL,
-     NULL,
-     MUNIT_TEST_OPTION_NONE,
-     NULL},
+    {"/source_file", test_read_source_file_attribute, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite suite = {
