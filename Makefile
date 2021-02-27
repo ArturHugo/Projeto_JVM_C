@@ -65,6 +65,7 @@ TESTSOURCES := test/munit.c \
 
 # define the C object files 
 OBJECTS		:= $(SOURCES:.c=.o)
+TESTOBJECTS		:= $(TESTSOURCES:.c=.o)
 
 #
 # The following part of the makefile is generic; it can be used to 
@@ -86,7 +87,7 @@ $(OUTPUT):
 $(MAIN): $(OBJECTS) 
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
 
-$(TESTRUNNER): $(TESTOBJECTS)
+$(TESTRUNNER): $(TESTOBJECTS) 
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTEST) $(WITHOUTMAIN) $(TESTSOURCES) $(LFLAGS) $(LIBS)
 
 # this is a suffix replacement rule for building .o's from .c's
@@ -99,7 +100,9 @@ $(TESTRUNNER): $(TESTOBJECTS)
 .PHONY: clean
 clean:
 	$(RM) $(OUTPUTMAIN)
+	$(RM) $(OUTPUTTEST)
 	$(RM) $(call FIXPATH,$(OBJECTS))
+	$(RM) $(call FIXPATH,$(TESTOBJECTS))
 	@echo Cleanup complete!
 
 run: all
