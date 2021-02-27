@@ -41,7 +41,7 @@ typedef struct {
 } InnerClass;
 
 typedef struct {
-  u2 number_of_classes;
+  u2          number_of_classes;
   InnerClass* classes;
 } InnerClassesInfo;
 
@@ -50,11 +50,13 @@ typedef struct {
 } SourceFileInfo;
 
 typedef struct {
-  u2 line_number_table_length;
-  struct {
-    u2 start_pc;
-    u2 line_number;
-  } * line_number_table;  // FIXME? nome ficou meio estranho
+  u2 start_pc;
+  u2 line_number;
+} LineNumber;
+
+typedef struct {
+  u2          line_number_table_length;
+  LineNumber* line_number_table;
 } LineNumberTableInfo;
 
 typedef struct {

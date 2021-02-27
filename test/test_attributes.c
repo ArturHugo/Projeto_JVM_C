@@ -102,6 +102,23 @@ MunitResult test_read_source_file_attribute() {
   return MUNIT_OK;
 }
 
+MunitResult test_read_line_number_table_attribute() {
+  fd->seek                  = 0x268;
+  AttributeInfo* attributes = readAttributes(1, fd, class_file->constant_pool);
+  AttributeInfo  attribute  = *attributes;
+
+  u2         line_number_table_length = attribute.line_number_table_info.line_number_table_length;
+  LineNumber line_number              = attribute.line_number_table_info.line_number_table[1];
+
+  assert_short(line_number_table_length, ==, 4);
+  assert_short(line_number.start_pc, ==, 7);
+  assert_short(line_number.line_number, ==, 12);
+
+  free(attribute.line_number_table_info.line_number_table);
+  free(attributes);
+  return MUNIT_OK;
+}
+
 MunitTest tests[] = {
     {"/constant_value",
      test_read_constant_value_attribute,
@@ -118,6 +135,12 @@ MunitTest tests[] = {
      MUNIT_TEST_OPTION_NONE,
      NULL},
     {"/source_file", test_read_source_file_attribute, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {"/line_number_table",
+     test_read_line_number_table_attribute,
+     NULL,
+     NULL,
+     MUNIT_TEST_OPTION_NONE,
+     NULL},
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite suite = {
