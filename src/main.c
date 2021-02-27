@@ -172,38 +172,6 @@ int main() {
 
     fclose(fd);
   */
-
-  instruction i, i2;
-  instruction teste;
-  char*       mn = "teste";
-  i.bytecode     = 42;
-  i.mnemonic     = mn;
-  i.pc           = 42;
-  i.size         = 4;
-
-  char* mn2   = "teste2";
-  i2.bytecode = 43;
-  i2.mnemonic = mn2;
-  i2.pc       = 43;
-  i2.size     = 5;
-
-  node* list = NULL;
-
-  pushNode(&list, &i, sizeof(i));
-  pushNode(&list, &i2, sizeof(i2));
-
-  popNode(&list, &teste, sizeof(teste));
-  printf("\n%d\n%s\n%d\n%d",
-         teste.bytecode,
-         teste.mnemonic,
-         teste.pc,
-         teste.size);
-
-  popNode(&list, &teste, sizeof(teste));
-  printf("\n%d\n%s\n%d\n%d",
-         teste.bytecode,
-         teste.mnemonic,
-         teste.pc,
-         teste.size);
+  testInstructions();
   return (0);
 }
