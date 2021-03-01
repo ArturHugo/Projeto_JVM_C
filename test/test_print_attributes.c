@@ -1,8 +1,14 @@
 #include "attributes.h"
+#include "class-file.h"
 #include "constant-pool.h"
+
+#include "support/attributes_class.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+
+ClassFile* class_file;
+File*      fd;
 
 void test_print_constant_value_integer() {
   printf("\n\ntest int\n\n");
@@ -17,6 +23,8 @@ void test_print_constant_value_integer() {
   attribute->constant_value_info.constant_value_index = 0;
 
   printAttributes(1, attribute, cp);
+  free(cp);
+  free(attribute);
 }
 
 void test_print_constant_value_float() {
@@ -32,6 +40,8 @@ void test_print_constant_value_float() {
   attribute->constant_value_info.constant_value_index = 0;
 
   printAttributes(1, attribute, cp);
+  free(cp);
+  free(attribute);
 }
 
 void test_print_constant_value_double() {
@@ -47,12 +57,34 @@ void test_print_constant_value_double() {
   attribute->constant_value_info.constant_value_index = 0;
 
   printAttributes(1, attribute, cp);
+  free(cp);
+  free(attribute);
+}
+
+void test_print_exceptions_attribute() {
+  printf("\n\ntest exceptions\n\n");
+
+  fd->seek                  = 0x290;
+  AttributeInfo* attributes = readAttributes(1, fd, class_file->constant_pool);
+  printAttributes(1, attributes, class_file->constant_pool);
+
+  free(attributes);
 }
 
 int main() {
+  class_file = malloc(sizeof(*class_file));
+  fd         = malloc(sizeof(*fd));
+
+  fd->buffer                = examples_Attributes_class;
+  fd->size                  = examples_Attributes_class_len;
+  fd->seek                  = 8;
+  u2 constant_pool_length   = u2Read(fd);
+  class_file->constant_pool = readConstantPool(constant_pool_length, fd);
+
   test_print_constant_value_integer();
   test_print_constant_value_float();
   test_print_constant_value_double();
+  test_print_exceptions_attribute();
 
   return 0;
 }

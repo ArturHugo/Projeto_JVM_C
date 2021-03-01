@@ -143,23 +143,34 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
 
     printf("[%d] %s\n", i, attribute._attribute_name);
     printf("Generic info -------------------------------------------------------------------\n");
-    print_newline();
+    println();
 
-    printf("Attribute name index: cp_info #%d <%s>\n",
-           attribute.attribute_name_index,
-           attribute._attribute_name);
+    println("Attribute name index: cp_info #%d <%s>",
+            attribute.attribute_name_index,
+            attribute._attribute_name);
     printf("Attribute length: %d\n", attribute.attribute_length);
-    print_newline();
+    println();
 
     printf("Specific info ------------------------------------------------------------------\n");
+    println();
 
     switch(attribute._attribute_type) {
       case CONSTANT_VALUE:
         printf("Constant value index: cp_info #%d ",
                attribute.constant_value_info.constant_value_index);
         printConstantValue(cp, attribute.constant_value_info.constant_value_index);
-        print_newline();
+        println();
         break;
+
+      case EXCEPTIONS:
+        println("Nr.\tException\tVerbose");
+        for(int e = 0; e < attribute.exceptions_info.number_of_exceptions; e++) {
+          u2 current_exception_index    = attribute.exceptions_info.exception_index_table[0];
+          unsigned char* exception_name = getUtf8String(cp, current_exception_index);
+          printf("%d\tcp_info #%d\t%s", e, current_exception_index, exception_name);
+        }
+        break;
+
       default:
         printf("NOT IMPLEMENTED");
         break;
