@@ -1,5 +1,6 @@
 #include "attributes.h"
 #include "class-file.h"
+#include "common.h"
 #include "constant-pool.h"
 
 #include <stdio.h>
@@ -36,11 +37,10 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
 
     // TODO: check if index is on range
     ConstantPoolInfo attribute_name_reference = cp[attribute->attribute_name_index];
+    attribute->_attribute_name                = attribute_name_reference.utf8_info.bytes;
+    attribute->_attribute_type = getAttributeType((char*) attribute->_attribute_name);
 
-    u1* attribute_name = attribute_name_reference.utf8_info.bytes;
-    /* attribute->attribute_name = attribute_name; */
-
-    switch(getAttributeType((char*) attribute_name)) {
+    switch(attribute->_attribute_type) {
       case CONSTANT_VALUE:
         attribute->constant_value_info.constant_value_index = u2Read(fd);
         break;
@@ -135,4 +135,34 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
   }
 
   return attributes;
+}
+
+void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoolInfo* cp) {
+  for(int i = 0; i < attributes_count; i++) {
+    AttributeInfo attribute = attributes[0];
+
+    printf("[%d] %s\n", i, attribute._attribute_name);
+    printf("Generic info -------------------------------------------------------------------\n");
+    print_newline();
+
+    printf("Attribute name index: cp_info #%d <%s>\n",
+           attribute.attribute_name_index,
+           attribute._attribute_name);
+    printf("Attribute length: %d\n", attribute.attribute_length);
+    print_newline();
+
+    printf("Specific info ------------------------------------------------------------------\n");
+
+    switch(attribute._attribute_type) {
+      case CONSTANT_VALUE:
+        printf("Constant value index: cp_info #%d ",
+               attribute.constant_value_info.constant_value_index);
+        printConstantValue(cp, attribute.constant_value_info.constant_value_index);
+        print_newline();
+        break;
+      default:
+        printf("NOT IMPLEMENTED");
+        break;
+    }
+  }
 }

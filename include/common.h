@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define print_newline() printf("\n")
+
 // Size specific data types
 typedef uint8_t  u1;
 typedef uint16_t u2;

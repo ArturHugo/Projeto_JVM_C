@@ -49,16 +49,19 @@ typedef struct {
 
 typedef struct {
   u4 bytes;
+  float _value;
 } FloatInfo;
 
 typedef struct {
-  u4 high_bytes;
-  u4 low_bytes;
+  u4   high_bytes;
+  u4   low_bytes;
+  long _value;
 } LongInfo;
 
 typedef struct {
-  u4 high_bytes;
-  u4 low_bytes;
+  u4     high_bytes;
+  u4     low_bytes;
+  double _value;
 } DoubleInfo;
 
 typedef struct {
@@ -109,7 +112,9 @@ typedef struct Constant {
 ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd);
 
 void printConstantPool(ConstantPoolInfo* constant_pool, u2 cp_count);
+void printConstantValue(ConstantPoolInfo* constant_pool, u2 index);
 
+u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
 u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index);
 
 #endif  // __CONSTANT_POOL_H

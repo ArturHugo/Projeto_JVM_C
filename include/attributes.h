@@ -85,6 +85,10 @@ typedef struct {
 typedef struct AttributeInfo {
   u2  attribute_name_index;
   u4  attribute_length;
+
+  AttributeType _attribute_type;
+  u1* _attribute_name;
+
   union {
     ConstantValueInfo      constant_value_info;
     CodeInfo               code_info;
@@ -97,5 +101,6 @@ typedef struct AttributeInfo {
 } AttributeInfo;
 
 AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* cp);
+void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoolInfo* cp);
 
 #endif  // __ATTRIBUTES_H
