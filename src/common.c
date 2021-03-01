@@ -15,7 +15,7 @@ void pushNode(struct node** nd, void* data, size_t sz) {
   (*nd) = new_node;
 }
 
-void popNode(struct node** nd, void* data, int sz) {
+void popNode(struct node** nd, void* data, size_t sz) {
   int i;
   for(i = 0; i < sz; i++) {
     *(char*) (data + i) = *(char*) ((*nd)->data + i);
@@ -30,14 +30,18 @@ void popNode(struct node** nd, void* data, int sz) {
 }
 
 void testStack() {
+  int testSuccesfull = 1;
+
   typedef struct {
     u1    bytecode;
     char* mnemonic;
     u1    pc;
     u1    n_args;
   } test;
-  test  i, i2;
-  test  teste;
+
+  test i, i2;
+  test teste;
+
   char* mn   = "teste";
   i.bytecode = 42;
   i.mnemonic = mn;
@@ -56,16 +60,25 @@ void testStack() {
   pushNode(&list, &i2, sizeof(i2));
 
   popNode(&list, &teste, sizeof(teste));
-  printf("\n%d\n%s\n%d\n%d",
-         teste.bytecode,
-         teste.mnemonic,
-         teste.pc,
-         teste.n_args);
-
+  if(teste.bytecode != i2.bytecode || teste.n_args != i2.n_args ||
+     teste.pc != i2.pc) {
+    testSuccesfull = 0;
+  }
   popNode(&list, &teste, sizeof(teste));
-  printf("\n%d\n%s\n%d\n%d",
-         teste.bytecode,
-         teste.mnemonic,
-         teste.pc,
-         teste.n_args);
+  if(teste.bytecode != i.bytecode || teste.n_args != i.n_args ||
+     teste.pc != i.pc) {
+    testSuccesfull = 0;
+  }
+
+  if(testSuccesfull) {
+    printf("Stack is working");
+  } else {
+    printf("Stack is broken");
+  }
+}
+
+u4 read32bFrom8b(u1* array) {
+  u4 output =
+      (array[0] << 24 | array[1] << 16 | array[2] << 8 | array[3]);
+  return output;
 }
