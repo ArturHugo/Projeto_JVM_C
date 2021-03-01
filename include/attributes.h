@@ -2,8 +2,8 @@
 #define __ATTRIBUTES_H
 
 #include "common.h"
+
 #include "constant-pool.h"
-#include <stdio.h>
 
 // Attribute info structs
 typedef struct {

@@ -2,6 +2,8 @@
 #define __COMMON_H
 
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // Size specific data types
 typedef uint8_t  u1;

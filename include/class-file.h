@@ -1,14 +1,10 @@
 #ifndef __CLASS_FILE_H
 #define __CLASS_FILE_H
 
-#include "common.h"
-
 #include "attributes.h"
 #include "constant-pool.h"
 #include "fields.h"
 #include "methods.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 // Access flag values
 #define ACC_PUBLIC    0x0001
@@ -31,22 +27,6 @@
 #define ACC_ABSTRACT     0x0400
 #define ACC_STRICT       0x0800
 
-// Constant tag values
-#define CONSTANT_CLASS               7
-#define CONSTANT_FIELDREF            9
-#define CONSTANT_METHODREF           10
-#define CONSTANT_INTERFACE_METHODREF 11
-#define CONSTANT_STRING              8
-#define CONSTANT_INTEGER             3
-#define CONSTANT_FLOAT               4
-#define CONSTANT_LONG                5
-#define CONSTANT_DOUBLE              6
-#define CONSTANT_NAME_AND_TYPE       12
-#define CONSTANT_UTF8                1
-#define CONSTANT_METHOD_HANDLE       15
-#define CONSTANT_METHOD_TYPE         16
-#define CONSTANT_INVOKE_DYNAMIC      18
-
 typedef struct ClassFile {
   u4                magic;
   u2                minor_version;
@@ -66,11 +46,9 @@ typedef struct ClassFile {
   AttributeInfo*    attributes;
 } ClassFile;
 
-
 // Functions to read .class file
-u1                u1Read(File* fd);
-u2                u2Read(File* fd);
-u4                u4Read(File* fd);
-ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd);
+u1 u1Read(File* fd);
+u2 u2Read(File* fd);
+u4 u4Read(File* fd);
 
 #endif  // __CLASS_FILE_H
