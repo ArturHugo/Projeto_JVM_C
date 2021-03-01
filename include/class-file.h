@@ -64,7 +64,7 @@ typedef struct ClassFile {
   MethodInfo*       methods;
   u2                attributes_count;
   AttributeInfo*    attributes;
-} ClassFile;
+} ClassFile ;
 
 // Functions to read .class file
 u2                u2Read(FILE* fd);

@@ -12,4 +12,5 @@ typedef struct Field {
   AttributeInfo* attributes;
 } FieldInfo;
 
+
 #endif  // __FIELDS_H
