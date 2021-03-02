@@ -24,11 +24,12 @@ int main() {
   u2                constant_pool_count = u2Read(fd);
   ConstantPoolInfo* constant_pool       = readConstantPool(constant_pool_count, fd);
 
-  fd->seek                  = 0x1a2;
-  AttributeInfo* attributes = readAttributes(1, fd, constant_pool);
+  fd->seek                        = 0x1a0;
+  u2             attributes_count = u2Read(fd);
+  AttributeInfo* attributes       = readAttributes(attributes_count, fd, constant_pool);
 
   printConstantPool(constant_pool, constant_pool_count);
-  printAttributes(1, attributes, constant_pool);
+  printAttributes(attributes_count, attributes, constant_pool);
 
   free(fd->buffer);
   free(fd);

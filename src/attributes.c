@@ -139,7 +139,7 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
 
 void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoolInfo* cp) {
   for(int i = 0; i < attributes_count; i++) {
-    AttributeInfo attribute = attributes[0];
+    AttributeInfo attribute = attributes[i];
 
     printf("[%d] %s\n", i, attribute._attribute_name);
     println("Generic info -------------------------------------------------------------------");
@@ -223,5 +223,7 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
         printf("NOT IMPLEMENTED");
         break;
     }
+
+    println();
   }
 }
