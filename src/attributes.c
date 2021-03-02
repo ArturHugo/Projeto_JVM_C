@@ -142,7 +142,7 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
     AttributeInfo attribute = attributes[0];
 
     printf("[%d] %s\n", i, attribute._attribute_name);
-    printf("Generic info -------------------------------------------------------------------\n");
+    println("Generic info -------------------------------------------------------------------");
     println();
 
     println("Attribute name index:\tcp_info #%d <%s>",
@@ -151,7 +151,7 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
     printf("Attribute length:\t%d\n", attribute.attribute_length);
     println();
 
-    printf("Specific info ------------------------------------------------------------------\n");
+    println("Specific info ------------------------------------------------------------------");
     println();
 
     switch(attribute._attribute_type) {
@@ -163,7 +163,12 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
         break;
 
       case CODE:
-        println("NOT IMPLEMENTED");
+        println("Misc ---------------------------------------------------------------------------");
+        println();
+        println("Maximum stack size:\t\t%d", attribute.code_info.max_stack);
+        println("Maximum local variables:\t%d", attribute.code_info.max_locals);
+        println("Code length:\t\t\t%d", attribute.code_info.code_length);
+        // TODO: Print instructions
         break;
 
       case EXCEPTIONS:

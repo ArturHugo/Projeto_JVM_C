@@ -88,6 +88,7 @@ int main() {
   test_print_from_read(0x290);
   test_print_from_read(0x2a4);
   test_print_from_read(0x268);
+  test_print_from_read(0x225);
 
   return 0;
 }
