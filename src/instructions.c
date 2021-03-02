@@ -6,17 +6,18 @@
 #include "instructions.h"
 
 // local function declarations:
-// obs.: argument is used as a term for any byte other than the
-// instruction, refactor to use "bytes" and "arguments" as different/
-// possible refactor: table/lookupswitch with more than 254 args?
-u1 nInstructionArgs(u1* code, u1 offset);
+// obs.: opperand byte is used as a term for any byte other than the
+// instruction.
+// possible refactor: table/lookupswitch with more than 254
+// opperandBytes?
+u1 nInstructionOps(u1* code, u1 offset);
 u1 nInstructions(u1* code, u1 len);
-u1 calcTableswitchArgs(u1* code, u1 offset);
-u1 calcLookupswitchArgs(u1* code, u1 offset);
-u1 calcWideArgs(u1* code);
+u1 calcTableswitchOps(u1* code, u1 offset);
+u1 calcLookupswitchOps(u1* code, u1 offset);
+u1 calcWideOps(u1* code);
 
-// obs.: args and mnemonic are being copied by reference. pass pointer
-// to instruction* to be set;
+// obs.: opperandBytes are being copied by reference. pass pointer
+// to instruction* variable in "output";
 void readInstructions(u1* code, u1 len, instruction** output) {
   u1           n      = nInstructions(code, len);
   instruction* instrs = (instruction*) calloc(n, sizeof(instruction));
@@ -24,11 +25,11 @@ void readInstructions(u1* code, u1 len, instruction** output) {
   u1 currentByte      = 0;
   for(u1 i = 0; i < n; i++) {
     instrs[i].bytecode = code[currentByte];
-    instrs[i].n_args =
-        nInstructionArgs(code + currentByte, currentByte);
-    instrs[i].args = code + 1;
-    instrs[i].pc   = i;
-    currentByte += 1 + instrs[i].n_args;
+    instrs[i].n_opperandBytes =
+        nInstructionOps(code + currentByte, currentByte);
+    instrs[i].opperandBytes = code + 1;
+    instrs[i].pc            = i;
+    currentByte += 1 + instrs[i].n_opperandBytes;
   }
 }
 
@@ -37,26 +38,24 @@ void printInstructions(instruction* instructions, u1 len) {
   for(u1 i = 0; i < len; i++) {
     u1    instr = instructions[i].bytecode;
     char* mnem  = instructionMnemonicTable[instructions[i].bytecode];
-    u1    nargs = instructions[i].n_args;
-    u2    pc    = instructions[i].pc;
+    u1    nopperandBytes = instructions[i].n_opperandBytes;
+    u2    pc             = instructions[i].pc;
 
-    char* term = "arguments";
-    if(nargs == 1) {
-      term = "argument";
+    char* term = "operand";
+    if(nopperandBytes == 1) {
+      term = "operands";
     }
 
     printf("0x%x: %s, with %d %s on PC = %d\n",
            instr,
            mnem,
-           nargs,
+           nopperandBytes,
            term,
            pc);
   }
 }
 
-// implementar casos de numero de argumentos variável, quando
-// instructionSizeTable[i][1] == 10
-u1 nInstructionArgs(u1* code, u1 offset) {
+u1 nInstructionOps(u1* code, u1 offset) {
   for(u1 i = 0; i < 55; i++) {
     u1 currentInstrCode = instructionSizeTable[i][0];
     if(currentInstrCode > *code) {
@@ -67,13 +66,13 @@ u1 nInstructionArgs(u1* code, u1 offset) {
       if(currentInstrSize == 10) {
         switch(*code) {
           case 170:
-            return calcTableswitchArgs(code, offset);
+            return calcTableswitchOps(code, offset);
             break;
           case 171:
-            return calcLookupswitchArgs(code, offset);
+            return calcLookupswitchOps(code, offset);
             break;
           case 196:
-            return calcWideArgs(code);
+            return calcWideOps(code);
             break;
         }
       }
@@ -83,56 +82,57 @@ u1 nInstructionArgs(u1* code, u1 offset) {
   return 0;
 }
 
-u1 calcTableswitchArgs(u1* code, u1 offset) {
-  u1 nArgs = 0;
+u1 calcTableswitchOps(u1* code, u1 offset) {
+  u1 nOps = 0;
   while(offset % 4 != 3) {  // adding padding bytes
-    nArgs++;
+    nOps++;
     offset++;
   }
   // reading default, low and high
 
   // default is not yet used
-  // u4 defaultValue = read32bFrom8b(code + nArgs + 1);
-  nArgs += 4;
+  // u4 defaultValue = read32bFrom8b(code + nOps + 1);
+  nOps += 4;
 
-  u4 lowValue = read32bFrom8b(code + nArgs + 1);
-  nArgs += 4;
+  u4 lowValue = read32bFrom8b(code + nOps + 1);
+  nOps += 4;
 
-  u4 highValue = read32bFrom8b(code + nArgs + 1);
-  nArgs += 4;
+  u4 highValue = read32bFrom8b(code + nOps + 1);
+  nOps += 4;
 
   u4 offsets = highValue - lowValue + 1;
-  nArgs += 4 * offsets;  // adding argument bytes
-  // nArgs -1 is returned beacause padding bytes loop adds an extra
+  nOps += 4 * offsets;  // adding 32 bit offset bytes
+  // nOps -1 is returned beacause padding bytes loop adds an extra
   // byte
-  return (u1) nArgs;
+  return (u1) nOps;
 }
 
-u1 calcLookupswitchArgs(u1* code, u1 offset) {
-  u1 nArgs = 0;
+u1 calcLookupswitchOps(u1* code, u1 offset) {
+  u1 nOps = 0;
   while(offset % 4 != 3) {  // adding padding bytes
-    nArgs++;
+    nOps++;
     offset++;
   }
   // reading default, low and high
 
   // default is not yet used
-  // u4 defaultValue = read32bFrom8b(code + nArgs + 1);
-  nArgs += 4;
+  // u4 defaultValue = read32bFrom8b(code + nOps + 1);
+  nOps += 4;
 
-  u4 npairs = read32bFrom8b(code + nArgs + 1);
-  nArgs += 4;
+  u4 npairs = read32bFrom8b(code + nOps + 1);
+  nOps += 4;
 
-  nArgs += 4 * npairs;  // adding argument bytes
-  return (u1) nArgs;
+  nOps += 4 * npairs;  // adding 32 bit pair bytes
+  return (u1) nOps;
 }
 
-u1 calcWideArgs(u1* code) {
+u1 calcWideOps(u1* code) {
   // wide followed by iinc
   if(*(code + 1) == 132) {
     return 5;
   }
-  // instruction is not checked, possible error throw
+  // not checking if instruction is of accepted format, possible error
+  // throw
   return 3;
 }
 
@@ -140,7 +140,7 @@ u1 nInstructions(u1* code, u1 len) {
   u1 output = 0;
   u1 i      = 0;
   while(i < len) {
-    i += 1 + nInstructionArgs(code + i, i);
+    i += 1 + nInstructionOps(code + i, i);
     output++;
   }
   return output;
