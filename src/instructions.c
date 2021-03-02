@@ -147,12 +147,50 @@ u1 nInstructions(u1* code, u1 len) {
 }
 
 void testInstructions() {
-  u1 code[43] = {99, 16, 8,  170, 10,  10, 10, 10, 0, 0,   0,
+  u1 testSuccessfull = 1;
+  u1 code[42]        = {99, 16, 8,  170, 10,  10, 10, 10, 0, 0,   0,
                  0,  0,  0,  0,   0,   1,  2,  3,  4, 171, 1,
                  2,  3,  10, 10,  10,  10, 0,  0,  0, 1,   1,
-                 2,  3,  4,  196, 132, 1,  2,  3,  4, 5};
+                 2,  3,  4,  196, 132, 1,  2,  3,  4};
   instruction* instructions;
   readInstructions(code, 38, &instructions);
+  printf("printInstructions() test:\n");
   printInstructions(instructions, 5);
+  // instruction 0 test:
+  if(instructions[0].bytecode != 99 ||
+     instructions[0].n_opperandBytes != 0 ||
+     instructions[0].pc != 0) {
+    testSuccessfull = 0;
+  }
+  // instruction 1 test:
+  if(instructions[1].bytecode != 16 ||
+     instructions[1].n_opperandBytes != 1 ||
+     instructions[1].pc != 1) {
+    testSuccessfull = 0;
+  }
+  // instruction 2 test:
+  if(instructions[2].bytecode != 170 ||
+     instructions[2].n_opperandBytes != 16 ||
+     instructions[2].pc != 2) {
+    testSuccessfull = 0;
+  }
+  // instruction 3 test:
+  if(instructions[3].bytecode != 171 ||
+     instructions[3].n_opperandBytes != 15 ||
+     instructions[3].pc != 3) {
+    testSuccessfull = 0;
+  }
+  // instruction 4 test:
+  if(instructions[4].bytecode != 196 ||
+     instructions[4].n_opperandBytes != 5 ||
+     instructions[4].pc != 4) {
+    testSuccessfull = 0;
+  }
   free(instructions);
+
+  if(testSuccessfull) {
+    printf("\nTest successfull!\n");
+  } else {
+    printf("\nInstructions are broken\n");
+  }
 }
