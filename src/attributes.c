@@ -145,10 +145,10 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
     printf("Generic info -------------------------------------------------------------------\n");
     println();
 
-    println("Attribute name index: cp_info #%d <%s>",
+    println("Attribute name index:\tcp_info #%d <%s>",
             attribute.attribute_name_index,
             attribute._attribute_name);
-    printf("Attribute length: %d\n", attribute.attribute_length);
+    printf("Attribute length:\t%d\n", attribute.attribute_length);
     println();
 
     printf("Specific info ------------------------------------------------------------------\n");
@@ -162,12 +162,55 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
         println();
         break;
 
+      case CODE:
+        println("NOT IMPLEMENTED");
+        break;
+
       case EXCEPTIONS:
         println("Nr.\tException\tVerbose");
         for(int e = 0; e < attribute.exceptions_info.number_of_exceptions; e++) {
-          u2 current_exception_index    = attribute.exceptions_info.exception_index_table[0];
+          u2 current_exception_index    = attribute.exceptions_info.exception_index_table[e];
           unsigned char* exception_name = getUtf8String(cp, current_exception_index);
-          printf("%d\tcp_info #%d\t%s", e, current_exception_index, exception_name);
+          println("%d\tcp_info #%d\t%s", e, current_exception_index, exception_name);
+        }
+        break;
+
+      case INNER_CLASSES:
+        println("Nr.\tInner Class\t\tOuter Class\tInner Name\tAccess Flags");
+        for(int index = 0; index < attribute.inner_classes_info.number_of_classes; index++) {
+          InnerClass current_inner_class = attribute.inner_classes_info.classes[index];
+
+          u1* inner_class_info = getUtf8String(cp, current_inner_class.inner_class_info_index);
+          u1* outer_class_info = getUtf8String(cp, current_inner_class.outer_class_info_index);
+          u1* inner_class_name = getUtf8String(cp, current_inner_class.inner_name_index);
+          u2  access_flags     = current_inner_class.inner_class_access_flags;
+
+          // TODO: add verbosity to access_flags
+          println("%d\tcp_info #%d\t\tcp_info #%d\tcp_info#%d\t0x%04x []",
+                  index,
+                  current_inner_class.inner_class_info_index,
+                  current_inner_class.outer_class_info_index,
+                  current_inner_class.inner_name_index,
+                  access_flags);
+
+          println("\t%s\t%s\t%s\t", inner_class_info, outer_class_info, inner_class_name);
+        }
+        break;
+
+      case SOURCE_FILE:;
+        u2  index            = attribute.source_file_info.sourcefile_index;
+        u1* source_file_name = getUtf8String(cp, index);
+        println("Source File name index: cp_info #%d <%s>", index, source_file_name);
+        break;
+
+      case LINE_NUMBER_TABLE:
+        println("Nr.\tStart PC\tLine Number");
+        u2 line_number_table_length = attribute.line_number_table_info.line_number_table_length;
+        for(int index = 0; index < line_number_table_length; index++) {
+          LineNumber current_line = attribute.line_number_table_info.line_number_table[index];
+          u2         start_pc     = current_line.start_pc;
+          u2         line_number  = current_line.line_number;
+          println("%d\t%d\t\t%d", index, start_pc, line_number);
         }
         break;
 

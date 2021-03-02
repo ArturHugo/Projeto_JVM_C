@@ -61,10 +61,10 @@ void test_print_constant_value_double() {
   free(attribute);
 }
 
-void test_print_exceptions_attribute() {
-  printf("\n\ntest exceptions\n\n");
+void test_print_from_read(int start_position) {
+  printf("\n\n");
 
-  fd->seek                  = 0x290;
+  fd->seek                  = start_position;
   AttributeInfo* attributes = readAttributes(1, fd, class_file->constant_pool);
   printAttributes(1, attributes, class_file->constant_pool);
 
@@ -84,7 +84,10 @@ int main() {
   test_print_constant_value_integer();
   test_print_constant_value_float();
   test_print_constant_value_double();
-  test_print_exceptions_attribute();
+
+  test_print_from_read(0x290);
+  test_print_from_read(0x2a4);
+  test_print_from_read(0x268);
 
   return 0;
 }
