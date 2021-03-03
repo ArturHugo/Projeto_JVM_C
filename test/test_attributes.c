@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "./support/attributes_class.h"
-#include "./support/hello_world.h"
 #include "attributes.h"
 #include "class-file.h"
 

@@ -2,6 +2,7 @@
 #include "class-file.h"
 
 #include "string.h"
+#include <stdio.h>
 
 ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
   ConstantPoolInfo* constant_pool = (ConstantPoolInfo*) malloc(cp_count * sizeof(ConstantPoolInfo));
@@ -39,11 +40,14 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
 
       case CONSTANT_FLOAT:
         cp->float_info.bytes = u4Read(fd);
+        memcpy(&cp->float_info._value, &cp->float_info.bytes, sizeof(float));
         break;
 
       case CONSTANT_LONG:
         cp->long_info.high_bytes = u4Read(fd);
         cp->long_info.low_bytes  = u4Read(fd);
+        cp->long_info._value =
+            ((int64_t) cp->long_info.high_bytes << 32) | ((int64_t) cp->long_info.low_bytes);
         cp++;  // Skip next constant pool slot, because 8 byte
                // constants occupy 2 slots.
         break;
@@ -51,6 +55,8 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
       case CONSTANT_DOUBLE:
         cp->double_info.high_bytes = u4Read(fd);
         cp->double_info.low_bytes  = u4Read(fd);
+        cp->double_info._value =
+            ((int64_t) cp->double_info.high_bytes << 32) | ((int64_t) cp->double_info.low_bytes);
         cp++;  // Skip next constant pool slot, because 8 byte
                // constants occupy 2 slots.
         break;
@@ -92,6 +98,21 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
     }
   }
   return constant_pool;
+}
+
+u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index) {
+  switch(constant_pool[index].tag) {
+    case CONSTANT_CLASS:;
+      u2 class_name_index = constant_pool[index].class_info.name_index;
+      return constant_pool[class_name_index].utf8_info.bytes;
+    case CONSTANT_STRING:;
+      u2 string_index = constant_pool[index].string_info.string_index;
+      return constant_pool[string_index].utf8_info.bytes;
+    case CONSTANT_UTF8:
+      return constant_pool[index].utf8_info.bytes;
+    default:
+      return NULL;
+  }
 }
 
 u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
@@ -158,6 +179,30 @@ u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
     utf8_strings[2]     = constant_pool[descriptor_index].utf8_info.bytes;
   }
   return utf8_strings;
+}
+
+void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
+  switch(constant_pool[index].tag) {
+    case CONSTANT_STRING:;
+      u1** utf8_strings = getUtf8Strings(constant_pool, index);
+      printf("<%s>", utf8_strings[0]);
+      free(utf8_strings);
+      break;
+    case CONSTANT_INTEGER:
+      printf("<%d>", constant_pool[index].integer_info.bytes);
+      break;
+    case CONSTANT_DOUBLE:
+      printf("<%f>", constant_pool[index].double_info._value);
+      break;
+    case CONSTANT_LONG:
+      printf("<%ld>", constant_pool[index].long_info._value);
+      break;
+    case CONSTANT_FLOAT:
+      printf("<%f>", constant_pool[index].float_info._value);
+      break;
+    default:
+      break;
+  }
 }
 
 void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {

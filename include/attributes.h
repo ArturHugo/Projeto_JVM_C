@@ -2,8 +2,19 @@
 #define __ATTRIBUTES_H
 
 #include "common.h"
-
 #include "constant-pool.h"
+
+typedef enum {
+  CONSTANT_VALUE,
+  CODE,
+  EXCEPTIONS,
+  INNER_CLASSES,
+  SOURCE_FILE,
+  LINE_NUMBER_TABLE,
+  LOCAL_VARIABLE_TABLE,
+  STACK_MAP_TABLE,
+  UNKNOWN_ATTRIBUTE
+} AttributeType;
 
 // Attribute info structs
 typedef struct {
@@ -72,8 +83,12 @@ typedef struct {
 
 // AttributeInfo struct
 typedef struct AttributeInfo {
-  u2 attribute_name_index;
-  u4 attribute_length;
+  u2  attribute_name_index;
+  u4  attribute_length;
+
+  AttributeType _attribute_type;
+  u1* _attribute_name;
+
   union {
     ConstantValueInfo      constant_value_info;
     CodeInfo               code_info;
@@ -86,5 +101,6 @@ typedef struct AttributeInfo {
 } AttributeInfo;
 
 AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* cp);
+void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoolInfo* cp);
 
 #endif  // __ATTRIBUTES_H
