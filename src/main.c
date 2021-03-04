@@ -36,6 +36,5 @@ int main() {
   free(fd->buffer);
   free(fd);
 
-  fclose(fd);
   return (0);
 }
