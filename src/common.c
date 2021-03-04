@@ -1,31 +1,31 @@
 #include "common.h"
 #include <stdio.h>
 
-void pushNode(struct node** nd, void* data, size_t sz) {
-  struct node* new_node = (struct node*) malloc(sizeof(struct node));
+void pushNode(Node** node, void* data, size_t size) {
+  Node* new_node = malloc(sizeof(Node));
 
-  new_node->data = malloc(sz);
-  new_node->next = (*nd);
+  new_node->data = malloc(size);
+  new_node->next = (*node);
 
-  int i;
-  for(i = 0; i < sz; i++) {
-    *(char*) (new_node->data + i) = *(char*) (data + i);
+  size_t i;
+  for(i = 0; i < size; i++) {
+    *((u1*) (new_node->data) + i) = *((u1*) data + i);
   }
 
-  (*nd) = new_node;
+  (*node) = new_node;
 }
 
-void popNode(struct node** nd, void* data, size_t sz) {
-  int i;
-  for(i = 0; i < sz; i++) {
-    *(char*) (data + i) = *(char*) ((*nd)->data + i);
+void popNode(Node** node, void* data, size_t size) {
+  size_t i;
+  for(i = 0; i < size; i++) {
+    *((u1*) data + i) = *((u1*) ((*node)->data) + i);
   }
 
-  free((*nd)->data);
+  free((*node)->data);
 
-  struct node* old_node;
-  old_node = *nd;
-  *nd      = (*nd)->next;
+  Node* old_node;
+  old_node = *node;
+  *node    = (*node)->next;
   free(old_node);
 }
 
@@ -54,7 +54,7 @@ void testStack() {
   i2.pc       = 43;
   i2.n_args   = 5;
 
-  node* list = NULL;
+  Node* list = NULL;
 
   pushNode(&list, &i, sizeof(i));
   pushNode(&list, &i2, sizeof(i2));

@@ -169,6 +169,8 @@ int main() {
     }
   }
 
+  testInstructions();
+
   fclose(fd);
   return (0);
 }
