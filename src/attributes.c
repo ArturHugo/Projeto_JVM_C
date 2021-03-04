@@ -1,5 +1,6 @@
 #include "attributes.h"
 #include "class-file.h"
+#include "common.h"
 #include "constant-pool.h"
 
 #include <stdio.h>
@@ -16,13 +17,27 @@ static const char LINE_NUMBER_TABLE[]    = "LineNumberTable";
 static const char LOCAL_VARIABLE_TABLE[] = "LocalVariableTable";
 static const char STACK_MAP_TABLE[]      = "StackMapTable";
 
-static AttributeInfo* readAttributes(u2 attributes_count, FILE* fd, ConstantPoolInfo* cp) {
+u1 l1Read(File* fd) { return fd->buffer[fd->seek++]; }
+
+u2 l2Read(File* fd) {
+  u2 toReturn = l1Read(fd);
+  toReturn    = (toReturn << 8) | (l1Read(fd));
+  return toReturn;
+}
+
+u4 l4Read(File* fd) {
+  u4 toReturn = l2Read(fd);
+  toReturn    = (toReturn << 16) | (l2Read(fd));
+  return toReturn;
+}
+
+AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* cp) {
   AttributeInfo* attributes = malloc((attributes_count) * sizeof(*attributes));
 
   AttributeInfo* attribute;
   for(attribute = attributes; attribute < attributes + attributes_count; attribute++) {
-    attribute->attribute_name_index = u2Read(fd);
-    attribute->attribute_length     = u4Read(fd);
+    attribute->attribute_name_index = l2Read(fd);
+    attribute->attribute_length     = l4Read(fd);
 
     // TODO: check if index is on range
     ConstantPoolInfo attribute_name_reference = cp[attribute->attribute_name_index];
@@ -33,76 +48,76 @@ static AttributeInfo* readAttributes(u2 attributes_count, FILE* fd, ConstantPool
     // TODO: Substituir memcmp por strcmp e adicionar nullbyte ao
     // final dos bytes do CONSTANT_UTF8_info
     if(!strcmp((char*) attribute_name, CONSTANT_VALUE)) {
-      attribute->constant_value_info.constant_value_index = u2Read(fd);
+      attribute->constant_value_info.constant_value_index = l2Read(fd);
     } else if(!strcmp((char*) attribute_name, CODE)) {
-      attribute->code_info.max_stack  = u2Read(fd);
-      attribute->code_info.max_locals = u2Read(fd);
+      attribute->code_info.max_stack  = l2Read(fd);
+      attribute->code_info.max_locals = l2Read(fd);
 
       // Read code
-      attribute->code_info.code_length = u4Read(fd);
+      attribute->code_info.code_length = l4Read(fd);
       u1* code                         = malloc(attribute->code_info.code_length * sizeof(u1));
       attribute->code_info.code        = code;
 
       for(; code < attribute->code_info.code_length + attribute->code_info.code; code++)
-        *code = u1Read(fd);
+        *code = l1Read(fd);
 
       // Read exception_table
-      attribute->code_info.exception_table_length = u2Read(fd);
+      attribute->code_info.exception_table_length = l2Read(fd);
       ExceptionTable* exception_table =
           malloc(attribute->code_info.exception_table_length * sizeof(ExceptionTable));
       attribute->code_info.exception_table = exception_table;
       for(; exception_table <
             attribute->code_info.exception_table_length + attribute->code_info.exception_table;
           exception_table++) {
-        exception_table->start_pc   = u2Read(fd);
-        exception_table->end_pc     = u2Read(fd);
-        exception_table->handler_pc = u2Read(fd);
-        exception_table->catch_type = u2Read(fd);
+        exception_table->start_pc   = l2Read(fd);
+        exception_table->end_pc     = l2Read(fd);
+        exception_table->handler_pc = l2Read(fd);
+        exception_table->catch_type = l2Read(fd);
       }
 
       // Read code attributes (recusive)
-      attribute->code_info.attributes_count = u2Read(fd);
+      attribute->code_info.attributes_count = l2Read(fd);
       attribute->code_info.atttributes =
           readAttributes(attribute->code_info.attributes_count, fd, cp);
 
     } else if(!strcmp((char*) attribute_name, EXCEPTIONS)) {
-      attribute->exceptions_info.number_of_exceptions = u2Read(fd);
+      attribute->exceptions_info.number_of_exceptions = l2Read(fd);
       u2* exception = malloc(attribute->exceptions_info.number_of_exceptions * sizeof(*exception));
       attribute->exceptions_info.exception_index_table = exception;
 
       for(; exception < attribute->exceptions_info.exception_index_table +
                             attribute->exceptions_info.number_of_exceptions;
           exception++) {
-        *exception = u2Read(fd);
+        *exception = l2Read(fd);
       }
 
     } else if(!strcmp((char*) attribute_name, INNER_CLASSES)) {
-      u2 number_of_classes                            = u2Read(fd);
+      u2 number_of_classes                            = l2Read(fd);
       attribute->inner_classes_info.number_of_classes = number_of_classes;
 
       InnerClass* classes = malloc(number_of_classes * sizeof(*classes));
 
       InnerClass* current_class = classes;
       while(number_of_classes--) {
-        current_class->inner_class_info_index   = u2Read(fd);
-        current_class->outer_class_info_index   = u2Read(fd);
-        current_class->inner_name_index         = u2Read(fd);
-        current_class->inner_class_access_flags = u2Read(fd);
+        current_class->inner_class_info_index   = l2Read(fd);
+        current_class->outer_class_info_index   = l2Read(fd);
+        current_class->inner_name_index         = l2Read(fd);
+        current_class->inner_class_access_flags = l2Read(fd);
         current_class++;
       }
 
       attribute->inner_classes_info.classes = classes;
     } else if(!strcmp((char*) attribute_name, SOURCE_FILE)) {
-      attribute->source_file_info.sourcefile_index = u2Read(fd);
+      attribute->source_file_info.sourcefile_index = l2Read(fd);
     } else if(!strcmp((char*) attribute_name, LINE_NUMBER_TABLE)) {
-      u2 line_number_table_length                                = u2Read(fd);
+      u2 line_number_table_length                                = l2Read(fd);
       attribute->line_number_table_info.line_number_table_length = line_number_table_length;
 
       LineNumber* line_number_table = malloc(line_number_table_length * sizeof(*line_number_table));
       LineNumber* current_line_number = line_number_table;
       while(line_number_table_length--) {
-        current_line_number->start_pc    = u2Read(fd);
-        current_line_number->line_number = u2Read(fd);
+        current_line_number->start_pc    = l2Read(fd);
+        current_line_number->line_number = l2Read(fd);
         current_line_number++;
       }
 

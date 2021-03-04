@@ -167,7 +167,6 @@ int main() {
         break;
     }
   }
-
   fclose(fd);
 
   return (0);

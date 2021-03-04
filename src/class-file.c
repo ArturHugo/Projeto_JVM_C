@@ -1,20 +1,20 @@
 #include "class-file.h"
 
-u1 u1Read(FILE* fd) { return getc(fd); }
+u1 u1Read(File* fd) { return fd->buffer[fd->seek++]; }
 
-u2 u2Read(FILE* fd) {
+u2 u2Read(File* fd) {
   u2 toReturn = u1Read(fd);
   toReturn    = (toReturn << 8) | (u1Read(fd));
   return toReturn;
 }
 
-u4 u4Read(FILE* fd) {
+u4 u4Read(File* fd) {
   u4 toReturn = u2Read(fd);
   toReturn    = (toReturn << 16) | (u2Read(fd));
   return toReturn;
 }
 
-ConstantPoolInfo* readConstantPool(u2 cp_count, FILE* fd) {
+ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
   ConstantPoolInfo* constant_pool = (ConstantPoolInfo*) malloc(
       (cp_count - 1) * sizeof(ConstantPoolInfo));
 

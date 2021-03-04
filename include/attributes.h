@@ -85,6 +85,6 @@ typedef struct AttributeInfo {
   };
 } AttributeInfo;
 
-AttributeInfo* readAttributes(u2 attributes_count, FILE* fd, ConstantPoolInfo* cp);
+AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* cp);
 
 #endif  // __ATTRIBUTES_H
