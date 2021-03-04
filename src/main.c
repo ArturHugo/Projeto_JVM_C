@@ -3,6 +3,8 @@
 
 #include "attributes.h"
 #include "class-file.h"
+#include "common.h"
+#include "instructions.h"
 
 int main() {
 
@@ -34,5 +36,6 @@ int main() {
   free(fd->buffer);
   free(fd);
 
+  fclose(fd);
   return (0);
 }

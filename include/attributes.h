@@ -83,11 +83,11 @@ typedef struct {
 
 // AttributeInfo struct
 typedef struct AttributeInfo {
-  u2  attribute_name_index;
-  u4  attribute_length;
+  u2 attribute_name_index;
+  u4 attribute_length;
 
   AttributeType _attribute_type;
-  u1* _attribute_name;
+  u1*           _attribute_name;
 
   union {
     ConstantValueInfo      constant_value_info;
