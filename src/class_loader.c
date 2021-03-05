@@ -277,12 +277,12 @@ void set_fields(FILE *fp, ClassFile *classFile, ConstantPoolInfo* cp) {
         field.name_index = b2Read(fp);
         field.descriptor_index = b2Read(fp);
         field.attributes_count = b2Read(fp);
-
+/*
         printf("--->acess flag %" PRIu16 "\n",field.access_flag);
         printf("--->name_index %" PRIu16 "\n",field.name_index);
         printf("--->descriptor_index %" PRIu16 "\n", field.descriptor_index);
         printf("--->attributes_count %" PRIu16 "\n", field.attributes_count);
-
+*/
         
         field.attributes = (AttributeInfo*) malloc(sizeof(AttributeInfo) * field.attributes_count);
 		if(field.attributes_count>0){
@@ -298,17 +298,19 @@ void set_methods(FILE *fp, ClassFile *classFile, ConstantPoolInfo* cp) {
     classFile->methods = (MethodInfo*) malloc(sizeof(MethodInfo) * classFile->methods_count);
     for (u2 i = 0; i < classFile->methods_count; i++) {
         classFile->methods[i].access_flags = b2Read(fp);
-        printf("--->acess flag:");
-        printf("%" PRIu16 "\n",classFile->methods[i].access_flags);
         classFile->methods[i].name_index = b2Read(fp);
+        classFile->methods[i].descriptor_index = b2Read(fp);
+        classFile->methods[i].attributes_count = b2Read(fp);
+
+
+		/*printf("--->acess flag:");
+        printf("%" PRIu16 "\n",classFile->methods[i].access_flags); 
         printf("--->name index:");
         printf("%" PRIu16 "\n",classFile->methods[i].name_index);
-        classFile->methods[i].descriptor_index = b2Read(fp);
         printf("--->descriptor_index:");
-        printf("%" PRIu16 "\n",classFile->methods[i].descriptor_index);
-        classFile->methods[i].attributes_count = b2Read(fp);
+        printf("%" PRIu16 "\n",classFile->methods[i].descriptor_index);  
         printf("--->attributes_count:");
-        printf("%" PRIu16 "\n",classFile->methods[i].attributes_count);
+        printf("%" PRIu16 "\n",classFile->methods[i].attributes_count);    */ 
         
         classFile->methods[i].attributes = (AttributeInfo*) malloc(sizeof(AttributeInfo) * classFile->methods[i].attributes_count);
         File* fd = convert(fp);
@@ -351,11 +353,25 @@ ClassFile* readClassFile(FILE * fp){
   return class_file;
 }
 
+static void printFields(FILE* stream, ClassFile* class_file) {
+    fprintf(stream, "**********\n* Fields *\n**********\n");
+    fprintf(stream, "Field count: %u\n", class_file->fields_count);
+    for (u2 i = 0; i < class_file->fields_count; i++) {
+        fprintf(stream,"Field Number %d\n", i);
+        fprintf(stream,"--->acess flag %" PRIu16 "\n",class_file->fields[i].access_flag);
+        fprintf(stream,"--->name_index %" PRIu16 "\n",class_file->fields[i].name_index);
+        fprintf(stream,"--->descriptor_index %" PRIu16 "\n", class_file->fields[i].descriptor_index);
+        fprintf(stream,"--->attributes_count %" PRIu16 "\n", class_file->fields[i].attributes_count);
+    }
+    fprintf(stream,"\n");
+}
 
 int main() {
 
   FILE* file = fopen("HelloWorld.class", "rb");
-  readClassFile(file);
+  ClassFile* JAVA_CLASS = readClassFile(file);
+  FILE* out = fopen("output.txt", "w+");
+  printFields(out, JAVA_CLASS);
   fclose(file);
   return (0);
 }
