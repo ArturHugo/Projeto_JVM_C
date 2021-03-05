@@ -365,13 +365,25 @@ static void printFields(FILE* stream, ClassFile* class_file) {
     }
     fprintf(stream,"\n");
 }
+static void printMethods(FILE* stream, ClassFile* class_file) {
+    fprintf(stream, "**********\n* Methods *\n**********\n");
+    fprintf(stream, "methods_count: %u\n", class_file->methods_count);
+    for (u2 i = 0; i < class_file->methods_count; i++) {
+        fprintf(stream,"Method Number %d\n", i);
+        fprintf(stream,"--->acess flag %" PRIu16 "\n",class_file->methods[i].access_flags);
+        fprintf(stream,"--->name_index %" PRIu16 "\n",class_file->methods[i].name_index);
+        fprintf(stream,"--->descriptor_index %" PRIu16 "\n", class_file->methods[i].descriptor_index);
+        fprintf(stream,"--->attributes_count %" PRIu16 "\n", class_file->methods[i].attributes_count);
+    }
+    fprintf(stream,"\n");
+}
 
 int main() {
 
   FILE* file = fopen("HelloWorld.class", "rb");
   ClassFile* JAVA_CLASS = readClassFile(file);
   FILE* out = fopen("output.txt", "w+");
-  printFields(out, JAVA_CLASS);
+  printMethods(out, JAVA_CLASS);
   fclose(file);
   return (0);
 }
