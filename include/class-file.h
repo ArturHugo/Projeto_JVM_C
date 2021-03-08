@@ -1,6 +1,10 @@
 #ifndef __CLASS_FILE_H
 #define __CLASS_FILE_H
 
+#include "common.h"
+
+#include "file.h"
+
 #include "attributes.h"
 #include "constant-pool.h"
 #include "fields.h"
@@ -45,10 +49,5 @@ typedef struct ClassFile {
   u2                attributes_count;
   AttributeInfo*    attributes;
 } ClassFile;
-
-// Functions to read .class file
-u1 u1Read(File* fd);
-u2 u2Read(File* fd);
-u4 u4Read(File* fd);
 
 #endif  // __CLASS_FILE_H
