@@ -1,6 +1,6 @@
 PointerAlignment: Left
 IndentWidth: 2
-ColumnLimit: 70
+ColumnLimit: 100
 SpacesBeforeTrailingComments: 2
 Cpp11BracedListStyle: true
 AlignConsecutiveAssignments: true
