@@ -1,17 +1,20 @@
 #include "class-file.h"
-#include <stdio.h>
-#include <string.h>
 
-u1 u1Read(File* fd) { return fd->buffer[fd->seek++]; }
-
-u2 u2Read(File* fd) {
-  u2 toReturn = u1Read(fd);
-  toReturn    = (toReturn << 8) | (u1Read(fd));
-  return toReturn;
+int isVersionValid(u2 major_version) {
+  if(major_version >= 46 && major_version <= 55)
+    return 1;
+  else
+    return 0;
 }
 
-u4 u4Read(File* fd) {
-  u4 toReturn = u2Read(fd);
-  toReturn    = (toReturn << 16) | (u2Read(fd));
-  return toReturn;
+int isMagicValid(ClassFile* class_file) { return class_file->magic == 0xCAFEBABE ? 1 : 0; }
+
+u2* readInterfaces(u2 interfaces_count, File* fd) {
+  u2* interfaces = malloc(interfaces_count * sizeof(*interfaces));
+
+  for(u2 i = 0; i < interfaces_count; i++) {
+    interfaces[i] = u2Read(fd);
+  }
+
+  return interfaces;
 }

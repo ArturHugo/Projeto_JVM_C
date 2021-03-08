@@ -50,4 +50,9 @@ typedef struct ClassFile {
   AttributeInfo*    attributes;
 } ClassFile;
 
+int isVersionValid(u2 major_version);
+int isMagicValid(ClassFile* class_file);
+
+u2* readInterfaces(u2 interfaces_count, File* fd);
+
 #endif  // __CLASS_FILE_H
