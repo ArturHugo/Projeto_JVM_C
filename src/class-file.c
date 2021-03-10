@@ -19,7 +19,7 @@ u2* readInterfaces(u2 interfaces_count, File* fd) {
   return interfaces;
 }
 
-ClassFile* readClassFile(FILE* fd) {
+ClassFile* readClassFile(File* fd) {
   ClassFile* class_file = (ClassFile*) malloc(sizeof(ClassFile));
 
   class_file->magic = u4Read(fd);
@@ -40,13 +40,13 @@ ClassFile* readClassFile(FILE* fd) {
   class_file->this_class          = u2Read(fd);
   class_file->super_class         = u2Read(fd);
   class_file->interfaces_count    = u2Read(fd);
-  class_file->interfaces = readInterfaces(class_file->interfaces_count, fd);
-  class_file->fields_count = u2Read(fd);
-  class_file->fields = readFields(class_file->fields_count, fd, cp);
-  class_file->methods_count = u2Read(fd);
-  class_file->methods = readMethods(class_file->methods_count, fd, cp);
-  class_file->attributes_count = u2Read(fd);
-  class_file->attributes = readAttributes(class_file->attributes_count, fd, cp);
+  class_file->interfaces          = readInterfaces(class_file->interfaces_count, fd);
+  class_file->fields_count        = u2Read(fd);
+  class_file->fields              = readFields(class_file->fields_count, fd, cp);
+  class_file->methods_count       = u2Read(fd);
+  class_file->methods             = readMethods(class_file->methods_count, fd, cp);
+  class_file->attributes_count    = u2Read(fd);
+  class_file->attributes          = readAttributes(class_file->attributes_count, fd, cp);
 
   return class_file;
 }

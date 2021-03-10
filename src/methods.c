@@ -1,5 +1,7 @@
 #include "methods.h"
 #include "class-file.h"
+#include "constant-pool.h"
+#include <inttypes.h>
 
 MethodInfo* readMethods(u2 methods_count, File* fd, ConstantPoolInfo* cp) {
   MethodInfo* methods = malloc(methods_count * sizeof(*methods));
@@ -14,7 +16,6 @@ MethodInfo* readMethods(u2 methods_count, File* fd, ConstantPoolInfo* cp) {
     method.attributes = readAttributes(method.attributes_count, fd, cp);
 
     methods[i] = method;
-
   }
   return methods;
 }

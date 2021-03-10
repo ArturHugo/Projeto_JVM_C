@@ -1,5 +1,7 @@
 #include "fields.h"
 #include "class-file.h"
+#include "constant-pool.h"
+#include <inttypes.h>
 
 FieldInfo* readFields(u2 fields_count, File* fd, ConstantPoolInfo* cp) {
   FieldInfo* fields = malloc(fields_count * sizeof(*fields));
@@ -14,7 +16,6 @@ FieldInfo* readFields(u2 fields_count, File* fd, ConstantPoolInfo* cp) {
     field.attributes = readAttributes(field.attributes_count, fd, cp);
 
     fields[i] = field;
-
   }
   return fields;
 }
