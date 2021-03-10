@@ -6,7 +6,7 @@
 typedef struct {
   u1  bytecode;
   u1  n_opperand_bytes;
-  u1* opperandBytes;
+  u1* opperand_bytes;
   u2  pc;
   // talvez adicionar indicadores de retorno
 } Instruction;

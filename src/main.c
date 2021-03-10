@@ -8,7 +8,7 @@
 
 int main() {
 
-  FILE* file = fopen("HelloWorld.class", "rb");
+  /*FILE* file = fopen("HelloWorld.class", "rb");
 
   File* fd = malloc(sizeof(File));
   fseek(file, 0, SEEK_END);
@@ -36,5 +36,8 @@ int main() {
   free(fd->buffer);
   free(fd);
 
+  return (0);*/
+
+  testInstructions();
   return (0);
 }
