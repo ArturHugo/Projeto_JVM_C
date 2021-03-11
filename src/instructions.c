@@ -251,18 +251,22 @@ void readInstructions(u1* code, u1 length, Instruction** output) {
 
 ////////TODO FUNCAO NOVA
 /*
-if constant pool
-  imprime #
-  if > 1 byte
-    junta dois primeiros e imprime
+if tem bytes
+  if constant pool
+    imprime #
+    if 1 byte
+      imprime o byte
+    else
+      junta dois primeiros e imprime
+      imprimir restantes separados
   else
-    imprime o byte
-  imprimir restantes separados
-else
-  if caso particular
-  else
-    ???
-
+    if 1 byte
+      imprime o byte
+    else
+      if caso particular -> 132, 170, 171, 188, 196.
+        depende
+      else
+        junto
 */
 
 void printInstructions(Instruction* instructions, u1 length) {
@@ -279,8 +283,11 @@ void printInstructions(Instruction* instructions, u1 length) {
     }
 
     printf("%d\t%s", pc, mnem);
+
     // for
     printf(" #%d", n_opperand_bytes);
+
+    // se necessario
     printf("\t%s\n", "Stringzona");
   }
 }
