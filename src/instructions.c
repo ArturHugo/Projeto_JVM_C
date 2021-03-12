@@ -8,16 +8,27 @@
 // table with instructions that take opperandBytes. each entry [x][y]
 // contains y=0 -> bytecode and y=1 -> number of opperandBytes. If
 // number of opperandBytes == 10, opperandBytes are of variable
-// ammount.
+// ammount. y=2 -> 1 = constant pool, 2 = caso particular, 0 = não constant pool e normal
 
-static u1 instruction_size_table[55][2] = {
-    {16, 1},  {17, 1},   {18, 1},   {19, 2},  {20, 2},  {21, 1},  {22, 1},  {23, 1},
-    {24, 1},  {25, 1},   {54, 1},   {55, 1},  {56, 1},  {57, 1},  {58, 1},  {132, 2},
-    {153, 2}, {154, 2},  {155, 2},  {156, 2}, {157, 2}, {158, 2}, {159, 2}, {160, 2},
-    {161, 2}, {162, 2},  {163, 2},  {164, 2}, {165, 2}, {166, 2}, {167, 2}, {168, 2},
-    {169, 1}, {170, 10}, {171, 10}, {178, 2}, {179, 2}, {180, 2}, {181, 2}, {182, 2},
-    {183, 2}, {184, 2},  {185, 4},  {186, 4}, {187, 2}, {188, 1}, {189, 2}, {192, 2},
-    {193, 2}, {196, 10}, {197, 3},  {198, 2}, {199, 2}, {200, 4}, {201, 4}};
+#define _BYTECODE 0
+
+#define _N_OPPERAND_BYTES 1
+#define _VARIABLE_N_BYTES 10
+
+#define _OP_FLAG               2
+#define _OP_FLAG_NORMAL        0
+#define _OP_FLAG_CONSTANT_POOL 1
+#define _OP_FLAG_SPECIAL_CASE  2
+
+static u1 instruction_info_table[55][3] = {
+    {16, 1, 0},   {17, 1, 0},  {18, 1, 1},  {19, 2, 1},  {20, 2, 1},  {21, 1, 0},   {22, 1, 0},
+    {23, 1, 0},   {24, 1, 0},  {25, 1, 0},  {54, 1, 0},  {55, 1, 0},  {56, 1, 0},   {57, 1, 0},
+    {58, 1, 0},   {132, 2, 2}, {153, 2, 0}, {154, 2, 0}, {155, 2, 0}, {156, 2, 0},  {157, 2, 0},
+    {158, 2, 0},  {159, 2, 0}, {160, 2, 0}, {161, 2, 0}, {162, 2, 0}, {163, 2, 0},  {164, 2, 0},
+    {165, 2, 0},  {166, 2, 0}, {167, 2, 0}, {168, 2, 0}, {169, 1, 0}, {170, 10, 2}, {171, 10, 2},
+    {178, 2, 1},  {179, 2, 1}, {180, 2, 1}, {181, 2, 1}, {182, 2, 1}, {183, 2, 1},  {184, 2, 1},
+    {185, 4, 1},  {186, 4, 1}, {187, 2, 1}, {188, 1, 2}, {189, 2, 1}, {192, 2, 1},  {193, 2, 1},
+    {196, 10, 2}, {197, 3, 1}, {198, 2, 0}, {199, 2, 0}, {200, 4, 0}, {201, 4, 0}};
 
 static char* instruction_mnemonic_table[206] = {"nop",
                                                 "aconst_null",
@@ -227,11 +238,13 @@ static char* instruction_mnemonic_table[206] = {"nop",
 // instruction.
 // possible refactor: table/lookupswitch with more than 254
 // opperandBytes?
-u1 nInstructionOps(u1* code, u1 offset);
-u1 nInstructions(u1* code, u1 length);
-u1 calcTableswitchOps(u1* code, u1 offset);
-u1 calcLookupswitchOps(u1* code, u1 offset);
-u1 calcWideOps(u1* code);
+u1   nInstructionOps(u1* code, u1 offset);
+u1   instructionOpFlag(u1 bytecode);
+u1   nInstructions(u1* code, u1 length);
+u1   calcTableswitchOps(u1* code, u1 offset);
+u1   calcLookupswitchOps(u1* code, u1 offset);
+u1   calcWideOps(u1* code);
+void printMethodPath(u2 cp_index);
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
@@ -243,7 +256,7 @@ void readInstructions(u1* code, u1 length, Instruction** output) {
   for(u1 i = 0; i < n; i++) {
     instrs[i].bytecode         = code[current_byte];
     instrs[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
-    instrs[i].opperand_bytes   = code + 1;
+    instrs[i].opperand_bytes   = code + current_byte + 1;
     instrs[i].pc               = i;
     current_byte += 1 + instrs[i].n_opperand_bytes;
   }
@@ -255,9 +268,9 @@ if tem bytes
   if constant pool
     imprime #
     if 1 byte
-      imprime o byte
+      imprime o byte e string
     else
-      junta dois primeiros e imprime
+      junta dois primeiros e imprime + string
       imprimir restantes separados
   else
     if 1 byte
@@ -272,35 +285,69 @@ if tem bytes
 void printInstructions(Instruction* instructions, u1 length) {
   printf("\nInstructions read:\n\n");
   for(u1 i = 0; i < length; i++) {
+
     u1    instr            = instructions[i].bytecode;
     char* mnem             = instruction_mnemonic_table[instructions[i].bytecode];
     u1    n_opperand_bytes = instructions[i].n_opperand_bytes;
     u2    pc               = instructions[i].pc;
+    u1*   opperand_bytes   = instructions[i].opperand_bytes;
 
-    char* term = "operands";
-    if(n_opperand_bytes == 1) {
-      term = "operand";
+    printf("%d\t%s ", pc, mnem);
+
+    // printing arguments:
+
+    if(n_opperand_bytes) {
+      u1 op_flag = instructionOpFlag(instr);
+      if(op_flag == _OP_FLAG_CONSTANT_POOL) {
+        printf("#");
+        if(n_opperand_bytes == 1) {
+          u2 cp_index = (u2) *opperand_bytes;
+          printf("%d ", cp_index);
+          printMethodPath(cp_index);
+        } else {
+          u2 cp_index = (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]);
+
+          u1 printed_opperands = 2;
+          while(printed_opperands < n_opperand_bytes) {
+            printf("%d ", opperand_bytes[printed_opperands]);
+            printed_opperands++;
+          }
+
+          printMethodPath(cp_index);
+        }
+      } else {
+        if(n_opperand_bytes == 1) {
+          printf("%d", *opperand_bytes);
+        } else {
+          if(op_flag == _OP_FLAG_SPECIAL_CASE) {
+            printf("Caso especial");
+          } else {
+            if(n_opperand_bytes == 2) {
+              printf("%d", (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]));
+            }
+            if(n_opperand_bytes == 4) {
+              printf("%d", read32bFrom8b(opperand_bytes));
+            }
+          }
+        }
+      }
     }
-
-    printf("%d\t%s", pc, mnem);
-
-    // for
-    printf(" #%d", n_opperand_bytes);
-
-    // se necessario
-    printf("\t%s\n", "Stringzona");
+    printf("\n");
   }
 }
 
+// TODO
+void printMethodPath(u2 cp_index) { printf("*METHOD PATH*"); }
+
 u1 nInstructionOps(u1* code, u1 offset) {
   for(u1 i = 0; i < 55; i++) {
-    u1 current_instruction_code = instruction_size_table[i][0];
+    u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
     if(current_instruction_code > *code) {
       break;
     }
     if(current_instruction_code == *code) {
-      u1 current_instruction_size = instruction_size_table[i][1];
-      if(current_instruction_size == 10) {
+      u1 current_instruction_size = instruction_info_table[i][_N_OPPERAND_BYTES];
+      if(current_instruction_size == _VARIABLE_N_BYTES) {
         switch(*code) {
           case 170:
             return calcTableswitchOps(code, offset);
@@ -314,6 +361,16 @@ u1 nInstructionOps(u1* code, u1 offset) {
         }
       }
       return current_instruction_size;
+    }
+  }
+  return 0;
+}
+
+u1 instructionOpFlag(u1 bytecode) {
+  for(u1 i = 0; i < 55; i++) {
+    u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
+    if(current_instruction_code == bytecode) {
+      return instruction_info_table[i][_OP_FLAG];
     }
   }
   return 0;
