@@ -48,7 +48,7 @@ typedef struct {
 } IntegerInfo;
 
 typedef struct {
-  u4 bytes;
+  u4    bytes;
   float _value;
 } FloatInfo;
 
@@ -114,7 +114,7 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd);
 void printConstantPool(ConstantPoolInfo* constant_pool, u2 cp_count);
 void printConstantValue(ConstantPoolInfo* constant_pool, u2 index);
 
-u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
-u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index);
+u1*  getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
+u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_t index);
 
 #endif  // __CONSTANT_POOL_H

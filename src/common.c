@@ -60,13 +60,11 @@ void testStack() {
   pushNode(&list, &i2, sizeof(i2));
 
   popNode(&list, &teste, sizeof(teste));
-  if(teste.bytecode != i2.bytecode || teste.n_args != i2.n_args ||
-     teste.pc != i2.pc) {
+  if(teste.bytecode != i2.bytecode || teste.n_args != i2.n_args || teste.pc != i2.pc) {
     testSuccesfull = 0;
   }
   popNode(&list, &teste, sizeof(teste));
-  if(teste.bytecode != i.bytecode || teste.n_args != i.n_args ||
-     teste.pc != i.pc) {
+  if(teste.bytecode != i.bytecode || teste.n_args != i.n_args || teste.pc != i.pc) {
     testSuccesfull = 0;
   }
 
@@ -78,7 +76,6 @@ void testStack() {
 }
 
 u4 read32bFrom8b(u1* array) {
-  u4 output =
-      (array[0] << 24 | array[1] << 16 | array[2] << 8 | array[3]);
+  u4 output = (array[0] << 24 | array[1] << 16 | array[2] << 8 | array[3]);
   return output;
 }

@@ -240,25 +240,24 @@ static char* instruction_mnemonic_table[206] = {"nop",
 // opperandBytes?
 u1   nInstructionOps(u1* code, u1 offset);
 u1   instructionOpFlag(u1 bytecode);
-u1   nInstructions(u1* code, u1 length);
 u1   calcTableswitchOps(u1* code, u1 offset);
 u1   calcLookupswitchOps(u1* code, u1 offset);
 u1   calcWideOps(u1* code);
-void printMethodPath(u2 cp_index);
+void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
-void readInstructions(u1* code, u1 length, Instruction** output) {
-  u1           n      = nInstructions(code, length);
-  Instruction* instrs = calloc(n, sizeof(Instruction));
-  *output             = instrs;
-  u1 current_byte     = 0;
+void readInstructions(u1* code, u1 n_bytes, Instruction** output) {
+  u1           n            = nInstructions(code, n_bytes);
+  Instruction* instructions = calloc(n, sizeof(Instruction));
+  *output                   = instructions;
+  u1 current_byte           = 0;
   for(u1 i = 0; i < n; i++) {
-    instrs[i].bytecode         = code[current_byte];
-    instrs[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
-    instrs[i].opperand_bytes   = code + current_byte + 1;
-    instrs[i].pc               = i;
-    current_byte += 1 + instrs[i].n_opperand_bytes;
+    instructions[i].bytecode         = code[current_byte];
+    instructions[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
+    instructions[i].opperand_bytes   = code + current_byte + 1;
+    instructions[i].pc               = current_byte;
+    current_byte += 1 + instructions[i].n_opperand_bytes;
   }
 }
 
@@ -282,11 +281,11 @@ if tem bytes
         junto
 */
 
-void printInstructions(Instruction* instructions, u1 length) {
+void printInstructions(Instruction* instructions, u1 n_instrs, ConstantPoolInfo* cp) {
   printf("\nInstructions read:\n\n");
-  for(u1 i = 0; i < length; i++) {
+  for(u1 i = 0; i < n_instrs; i++) {
 
-    u1    instr            = instructions[i].bytecode;
+    u1    bytecode         = instructions[i].bytecode;
     char* mnem             = instruction_mnemonic_table[instructions[i].bytecode];
     u1    n_opperand_bytes = instructions[i].n_opperand_bytes;
     u2    pc               = instructions[i].pc;
@@ -297,15 +296,17 @@ void printInstructions(Instruction* instructions, u1 length) {
     // printing arguments:
 
     if(n_opperand_bytes) {
-      u1 op_flag = instructionOpFlag(instr);
+      u1 op_flag = instructionOpFlag(bytecode);
       if(op_flag == _OP_FLAG_CONSTANT_POOL) {
         printf("#");
         if(n_opperand_bytes == 1) {
           u2 cp_index = (u2) *opperand_bytes;
           printf("%d ", cp_index);
-          printMethodPath(cp_index);
+          printMethodPath(cp, cp_index);
         } else {
           u2 cp_index = (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]);
+
+          printf("%d ", cp_index);
 
           u1 printed_opperands = 2;
           while(printed_opperands < n_opperand_bytes) {
@@ -313,14 +314,61 @@ void printInstructions(Instruction* instructions, u1 length) {
             printed_opperands++;
           }
 
-          printMethodPath(cp_index);
+          printMethodPath(cp, cp_index);
         }
       } else {
         if(n_opperand_bytes == 1) {
           printf("%d", *opperand_bytes);
         } else {
           if(op_flag == _OP_FLAG_SPECIAL_CASE) {
-            printf("Caso especial");
+            // Wide
+            if(bytecode == 196) {
+              char* widened_opcode = instruction_mnemonic_table[opperand_bytes[0]];
+              printf("%s #", widened_opcode);
+
+              u2 cp_index = (u2)((opperand_bytes[1] << 8) | opperand_bytes[2]);
+              printf("%d ", cp_index);
+
+              // If iinc
+              if(bytecode == 132) {
+                u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
+                printf("%d ", const_byte);
+              }
+              printMethodPath(cp, cp_index);
+            } else {
+              // Lookup Switch or Table Switch
+              u1 padding       = n_opperand_bytes % 4;
+              u4 default_value = read32bFrom8b(opperand_bytes + padding);
+
+              // Lookup Switch
+              if(bytecode == 171) {
+                u4 n_pairs = read32bFrom8b(opperand_bytes + padding + 4);
+
+                printf("%d\n", n_pairs);
+
+                u4 match, offset;
+
+                for(u4 i = 0; i < n_pairs; i++) {
+                  match  = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1));
+                  offset = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1) + 4);
+
+                  printf("\t%d:\t%d\t(+%d)\n", match, pc + offset, offset);
+                }
+              } else {
+                // Table Switch
+                u4 low, high, offset;
+                low  = read32bFrom8b(opperand_bytes + padding + 4);
+                high = read32bFrom8b(opperand_bytes + padding + 8);
+
+                printf("%d to %d\n", low, high);
+
+                for(u4 i = low; i <= high; i++) {
+                  offset = read32bFrom8b(opperand_bytes + padding + 12 + 4 * (i - low));
+                  printf("\t%d:\t\t%d\t(+%d)\n", i, pc + offset, offset);
+                }
+              }
+              printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
+            }
           } else {
             if(n_opperand_bytes == 2) {
               printf("%d", (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]));
@@ -337,7 +385,21 @@ void printInstructions(Instruction* instructions, u1 length) {
 }
 
 // TODO
-void printMethodPath(u2 cp_index) { printf("*METHOD PATH*"); }
+void printMethodPath(ConstantPoolInfo* cp, u2 cp_index) {
+  u1   num_of_strings = 0;
+  u1** utf8_strings   = getUtf8Strings(&num_of_strings, cp, cp_index);
+
+  if(utf8_strings == NULL) {
+    printf("No utf8 strings found!");
+    return;
+  }
+  if(num_of_strings == 1) {
+    printf("<%s>", utf8_strings[0]);
+  } else {
+    printf("<%s.%s>", utf8_strings[0], utf8_strings[1]);
+  }
+  free(utf8_strings);
+}
 
 u1 nInstructionOps(u1* code, u1 offset) {
   for(u1 i = 0; i < 55; i++) {
@@ -416,7 +478,7 @@ u1 calcLookupswitchOps(u1* code, u1 offset) {
   u4 n_pairs = read32bFrom8b(code + n_ops + 1);
   n_ops += 4;
 
-  n_ops += 4 * n_pairs;  // adding 32 bit pair bytes
+  n_ops += 8 * n_pairs;  // adding 32 bit pair bytes
   return (u1) n_ops;
 }
 
@@ -430,54 +492,12 @@ u1 calcWideOps(u1* code) {
   return 3;
 }
 
-u1 nInstructions(u1* code, u1 length) {
+u1 nInstructions(u1* code, u1 n_bytes) {
   u1 output = 0;
   u1 i      = 0;
-  while(i < length) {
+  while(i < n_bytes) {
     i += 1 + nInstructionOps(code + i, i);
     output++;
   }
   return output;
-}
-
-void testInstructions() {
-  u1 testSuccessfull = 1;
-  u1 code[42]        = {99, 16, 8, 170, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0,   1,   2, 3, 4, 171,
-                 1,  2,  3, 10,  10, 10, 10, 0,  0, 0, 1, 1, 2, 3, 4, 196, 132, 1, 2, 3, 4};
-  Instruction* instructions;
-  readInstructions(code, 38, &instructions);
-  printf("printInstructions() test:\n");
-  printInstructions(instructions, 5);
-  // instruction 0 test:
-  if(instructions[0].bytecode != 99 || instructions[0].n_opperand_bytes != 0 ||
-     instructions[0].pc != 0) {
-    testSuccessfull = 0;
-  }
-  // instruction 1 test:
-  if(instructions[1].bytecode != 16 || instructions[1].n_opperand_bytes != 1 ||
-     instructions[1].pc != 1) {
-    testSuccessfull = 0;
-  }
-  // instruction 2 test:
-  if(instructions[2].bytecode != 170 || instructions[2].n_opperand_bytes != 16 ||
-     instructions[2].pc != 2) {
-    testSuccessfull = 0;
-  }
-  // instruction 3 test:
-  if(instructions[3].bytecode != 171 || instructions[3].n_opperand_bytes != 15 ||
-     instructions[3].pc != 3) {
-    testSuccessfull = 0;
-  }
-  // instruction 4 test:
-  if(instructions[4].bytecode != 196 || instructions[4].n_opperand_bytes != 5 ||
-     instructions[4].pc != 4) {
-    testSuccessfull = 0;
-  }
-  free(instructions);
-
-  if(testSuccessfull) {
-    printf("\nTest successfull!\n");
-  } else {
-    printf("\nInstructions are broken\n");
-  }
 }
