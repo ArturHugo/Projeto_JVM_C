@@ -243,7 +243,13 @@ u1   instructionOpFlag(u1 bytecode);
 u1   calcTableswitchOps(u1* code, u1 offset);
 u1   calcLookupswitchOps(u1* code, u1 offset);
 u1   calcWideOps(u1* code);
+u4   read32bFrom8b(u1* array);
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
+
+u4 read32bFrom8b(u1* array) {
+  u4 output = (array[0] << 24 | array[1] << 16 | array[2] << 8 | array[3]);
+  return output;
+}
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
