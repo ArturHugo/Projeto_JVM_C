@@ -26,7 +26,8 @@ int main() {
   u2                constant_pool_count = u2Read(fd);
   ConstantPoolInfo* constant_pool       = readConstantPool(constant_pool_count, fd);
 
-  fd->seek                        = 0x1a0;
+  fd->seek = 0x1f0;
+
   u2             attributes_count = u2Read(fd);
   AttributeInfo* attributes       = readAttributes(attributes_count, fd, constant_pool);
 
