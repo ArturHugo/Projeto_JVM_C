@@ -8,283 +8,408 @@
 // table with instructions that take opperandBytes. each entry [x][y]
 // contains y=0 -> bytecode and y=1 -> number of opperandBytes. If
 // number of opperandBytes == 10, opperandBytes are of variable
-// ammount.
+// ammount. y=2 -> 1 = constant pool, 2 = caso particular, 0 = não constant pool e normal
 
-static u1 instruction_size_table[55][2] = {
-    {16, 1},  {17, 1},   {18, 1},  {19, 2},   {20, 2},   {21, 1},
-    {22, 1},  {23, 1},   {24, 1},  {25, 1},   {54, 1},   {55, 1},
-    {56, 1},  {57, 1},   {58, 1},  {132, 2},  {153, 2},  {154, 2},
-    {155, 2}, {156, 2},  {157, 2}, {158, 2},  {159, 2},  {160, 2},
-    {161, 2}, {162, 2},  {163, 2}, {164, 2},  {165, 2},  {166, 2},
-    {167, 2}, {168, 2},  {169, 1}, {170, 10}, {171, 10}, {178, 2},
-    {179, 2}, {180, 2},  {181, 2}, {182, 2},  {183, 2},  {184, 2},
-    {185, 4}, {186, 4},  {187, 2}, {188, 1},  {189, 2},  {192, 2},
-    {193, 2}, {196, 10}, {197, 3}, {198, 2},  {199, 2},  {200, 4},
-    {201, 4}};
+#define _BYTECODE 0
 
-static char* instruction_mnemonic_table[206] = {
-    "nop",
-    "aconst_null",
-    "iconst_m1",
-    "iconst_0",
-    "iconst_1",
-    "iconst_2",
-    "iconst_3",
-    "iconst_4",
-    "iconst_5",
-    "lconst_0",
-    "lconst_1",
-    "fconst_0",
-    "fconst_1",
-    "fconst_2",
-    "dconst_0",
-    "dconst_1",
-    "bipush",
-    "Sipush",
-    "ldc",
-    "ldc_w",
-    "ldc2_w",
-    "iload",
-    "lload",
-    "fload",
-    "dload",
-    "aload",
-    "iload_0",
-    "iload_1",
-    "iload_2",
-    "iload_3",
-    "lload_0",
-    "lload_1",
-    "lload_2",
-    "lload_3",
-    "fload_0",
-    "fload_1",
-    "fload_2",
-    "fload_3",
-    "dload_0",
-    "dload_1",
-    "dload_2",
-    "dload_3",
-    "aload_0",
-    "aload_1",
-    "aload_2",
-    "aload_3",
-    "iaload",
-    "laload",
-    "faload",
-    "Daload",
-    "aaload",
-    "baload",
-    "caload",
-    "saload",
-    "istore",
-    "lstore",
-    "fstore",
-    "dstore",
-    "astore",
-    "istore_0",
-    "istore_1",
-    "istore_2",
-    "istore_3",
-    "lstore_0",
-    "lstore_1",
-    "lstore_2",
-    "lstore_3",
-    "fstore_0",
-    "fstore_1",
-    "fstore_2",
-    "fstore_3",
-    "dstore_0",
-    "dstore_1",
-    "dstore_2",
-    "dstore_3",
-    "astore_0",
-    "astore_1",
-    "astore_2",
-    "astore_3",
-    "iastore",
-    "lastore",
-    "Fastore",
-    "dastore",
-    "aastore",
-    "bastore",
-    "castore",
-    "sastore",
-    "pop",
-    "pop2",
-    "dup",
-    "dup_x1",
-    "dup_x2",
-    "dup2",
-    "dup2_x1",
-    "dup2_x2",
-    "swap",
-    "iadd",
-    "ladd",
-    "fadd",
-    "dadd",
-    "isub",
-    "lsub",
-    "fsub",
-    "dsub",
-    "imul",
-    "lmul",
-    "fmul",
-    "dmul",
-    "idiv",
-    "ldiv",
-    "fdiv",
-    "ddiv",
-    "irem",
-    "lrem",
-    "frem",
-    "drem",
-    "ineg",
-    "lneg",
-    "fneg",
-    "dneg",
-    "ishl",
-    "lshl",
-    "ishr",
-    "lshr",
-    "iushr",
-    "lushr",
-    "iand",
-    "land",
-    "ior",
-    "lor",
-    "ixor",
-    "lxor",
-    "iinc",
-    "i2l",
-    "i2f",
-    "i2d",
-    "l2i",
-    "l2f",
-    "l2d",
-    "f2i",
-    "f2l",
-    "f2d",
-    "d2i",
-    "d2l",
-    "d2f",
-    "l2b",
-    "i2c",
-    "i2s",
-    "lcmp",
-    "fcmpl",
-    "fcmpg",
-    "dcmpl",
-    "dcmpg",
-    "ifeq",
-    "ifne",
-    "iflt",
-    "ifge",
-    "ifgt",
-    "ifle",
-    "if_icmpeq",
-    "if_icmpne",
-    "if_icmplt",
-    "if_icmpge",
-    "if_icmpgt",
-    "if_icmple",
-    "if_acmpeg",
-    "if_acmpne",
-    "goto",
-    "jsr",
-    "ret",
-    "tableswitch",
-    "lookupswitch",
-    "ireturn",
-    "lreturn",
-    "freturn",
-    "dreturn",
-    "areturn",
-    "Return",
-    "getstatic",
-    "putstatic",
-    "getfield",
-    "putfield",
-    "invokevirtual",
-    "invokespecial",
-    "invokestatic",
-    "invokeinterface",
-    "instruction not defined",
-    "new",
-    "newarray",
-    "anewarray",
-    "arraylengthgth",
-    "athrow",
-    "checkcast",
-    "instanceof",
-    "monitorenter",
-    "monitorexit",
-    "wide",
-    "multianewarray",
-    "ifnull",
-    "ifnonnull",
-    "goto_w",
-    "jsr_w"};
+#define _N_OPPERAND_BYTES 1
+#define _VARIABLE_N_BYTES 10
+
+#define _OP_FLAG               2
+#define _OP_FLAG_NORMAL        0
+#define _OP_FLAG_CONSTANT_POOL 1
+#define _OP_FLAG_SPECIAL_CASE  2
+
+static u1 instruction_info_table[55][3] = {
+    {16, 1, 0},   {17, 1, 0},  {18, 1, 1},  {19, 2, 1},  {20, 2, 1},  {21, 1, 0},   {22, 1, 0},
+    {23, 1, 0},   {24, 1, 0},  {25, 1, 0},  {54, 1, 0},  {55, 1, 0},  {56, 1, 0},   {57, 1, 0},
+    {58, 1, 0},   {132, 2, 2}, {153, 2, 0}, {154, 2, 0}, {155, 2, 0}, {156, 2, 0},  {157, 2, 0},
+    {158, 2, 0},  {159, 2, 0}, {160, 2, 0}, {161, 2, 0}, {162, 2, 0}, {163, 2, 0},  {164, 2, 0},
+    {165, 2, 0},  {166, 2, 0}, {167, 2, 0}, {168, 2, 0}, {169, 1, 0}, {170, 10, 2}, {171, 10, 2},
+    {178, 2, 1},  {179, 2, 1}, {180, 2, 1}, {181, 2, 1}, {182, 2, 1}, {183, 2, 1},  {184, 2, 1},
+    {185, 4, 1},  {186, 4, 1}, {187, 2, 1}, {188, 1, 2}, {189, 2, 1}, {192, 2, 1},  {193, 2, 1},
+    {196, 10, 2}, {197, 3, 1}, {198, 2, 0}, {199, 2, 0}, {200, 4, 0}, {201, 4, 0}};
+
+static char* instruction_mnemonic_table[206] = {"nop",
+                                                "aconst_null",
+                                                "iconst_m1",
+                                                "iconst_0",
+                                                "iconst_1",
+                                                "iconst_2",
+                                                "iconst_3",
+                                                "iconst_4",
+                                                "iconst_5",
+                                                "lconst_0",
+                                                "lconst_1",
+                                                "fconst_0",
+                                                "fconst_1",
+                                                "fconst_2",
+                                                "dconst_0",
+                                                "dconst_1",
+                                                "bipush",
+                                                "Sipush",
+                                                "ldc",
+                                                "ldc_w",
+                                                "ldc2_w",
+                                                "iload",
+                                                "lload",
+                                                "fload",
+                                                "dload",
+                                                "aload",
+                                                "iload_0",
+                                                "iload_1",
+                                                "iload_2",
+                                                "iload_3",
+                                                "lload_0",
+                                                "lload_1",
+                                                "lload_2",
+                                                "lload_3",
+                                                "fload_0",
+                                                "fload_1",
+                                                "fload_2",
+                                                "fload_3",
+                                                "dload_0",
+                                                "dload_1",
+                                                "dload_2",
+                                                "dload_3",
+                                                "aload_0",
+                                                "aload_1",
+                                                "aload_2",
+                                                "aload_3",
+                                                "iaload",
+                                                "laload",
+                                                "faload",
+                                                "Daload",
+                                                "aaload",
+                                                "baload",
+                                                "caload",
+                                                "saload",
+                                                "istore",
+                                                "lstore",
+                                                "fstore",
+                                                "dstore",
+                                                "astore",
+                                                "istore_0",
+                                                "istore_1",
+                                                "istore_2",
+                                                "istore_3",
+                                                "lstore_0",
+                                                "lstore_1",
+                                                "lstore_2",
+                                                "lstore_3",
+                                                "fstore_0",
+                                                "fstore_1",
+                                                "fstore_2",
+                                                "fstore_3",
+                                                "dstore_0",
+                                                "dstore_1",
+                                                "dstore_2",
+                                                "dstore_3",
+                                                "astore_0",
+                                                "astore_1",
+                                                "astore_2",
+                                                "astore_3",
+                                                "iastore",
+                                                "lastore",
+                                                "Fastore",
+                                                "dastore",
+                                                "aastore",
+                                                "bastore",
+                                                "castore",
+                                                "sastore",
+                                                "pop",
+                                                "pop2",
+                                                "dup",
+                                                "dup_x1",
+                                                "dup_x2",
+                                                "dup2",
+                                                "dup2_x1",
+                                                "dup2_x2",
+                                                "swap",
+                                                "iadd",
+                                                "ladd",
+                                                "fadd",
+                                                "dadd",
+                                                "isub",
+                                                "lsub",
+                                                "fsub",
+                                                "dsub",
+                                                "imul",
+                                                "lmul",
+                                                "fmul",
+                                                "dmul",
+                                                "idiv",
+                                                "ldiv",
+                                                "fdiv",
+                                                "ddiv",
+                                                "irem",
+                                                "lrem",
+                                                "frem",
+                                                "drem",
+                                                "ineg",
+                                                "lneg",
+                                                "fneg",
+                                                "dneg",
+                                                "ishl",
+                                                "lshl",
+                                                "ishr",
+                                                "lshr",
+                                                "iushr",
+                                                "lushr",
+                                                "iand",
+                                                "land",
+                                                "ior",
+                                                "lor",
+                                                "ixor",
+                                                "lxor",
+                                                "iinc",
+                                                "i2l",
+                                                "i2f",
+                                                "i2d",
+                                                "l2i",
+                                                "l2f",
+                                                "l2d",
+                                                "f2i",
+                                                "f2l",
+                                                "f2d",
+                                                "d2i",
+                                                "d2l",
+                                                "d2f",
+                                                "l2b",
+                                                "i2c",
+                                                "i2s",
+                                                "lcmp",
+                                                "fcmpl",
+                                                "fcmpg",
+                                                "dcmpl",
+                                                "dcmpg",
+                                                "ifeq",
+                                                "ifne",
+                                                "iflt",
+                                                "ifge",
+                                                "ifgt",
+                                                "ifle",
+                                                "if_icmpeq",
+                                                "if_icmpne",
+                                                "if_icmplt",
+                                                "if_icmpge",
+                                                "if_icmpgt",
+                                                "if_icmple",
+                                                "if_acmpeg",
+                                                "if_acmpne",
+                                                "goto",
+                                                "jsr",
+                                                "ret",
+                                                "tableswitch",
+                                                "lookupswitch",
+                                                "ireturn",
+                                                "lreturn",
+                                                "freturn",
+                                                "dreturn",
+                                                "areturn",
+                                                "Return",
+                                                "getstatic",
+                                                "putstatic",
+                                                "getfield",
+                                                "putfield",
+                                                "invokevirtual",
+                                                "invokespecial",
+                                                "invokestatic",
+                                                "invokeinterface",
+                                                "instruction not defined",
+                                                "new",
+                                                "newarray",
+                                                "anewarray",
+                                                "arraylengthgth",
+                                                "athrow",
+                                                "checkcast",
+                                                "instanceof",
+                                                "monitorenter",
+                                                "monitorexit",
+                                                "wide",
+                                                "multianewarray",
+                                                "ifnull",
+                                                "ifnonnull",
+                                                "goto_w",
+                                                "jsr_w"};
 
 // local function declarations:
 // obs.: opperand byte is used as a term for any byte other than the
 // instruction.
 // possible refactor: table/lookupswitch with more than 254
 // opperandBytes?
-u1 nInstructionOps(u1* code, u1 offset);
-u1 nInstructions(u1* code, u1 length);
-u1 calcTableswitchOps(u1* code, u1 offset);
-u1 calcLookupswitchOps(u1* code, u1 offset);
-u1 calcWideOps(u1* code);
+u1   nInstructionOps(u1* code, u1 offset);
+u1   instructionOpFlag(u1 bytecode);
+u1   calcTableswitchOps(u1* code, u1 offset);
+u1   calcLookupswitchOps(u1* code, u1 offset);
+u1   calcWideOps(u1* code);
+void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
 
-// obs.: opperandBytes are being copied by reference. pass pointer
+// obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
-void readInstructions(u1* code, u1 length, Instruction** output) {
-  u1           n      = nInstructions(code, length);
-  Instruction* instrs = calloc(n, sizeof(Instruction));
-  *output             = instrs;
-  u1 current_byte     = 0;
+void readInstructions(u1* code, u1 n_bytes, Instruction** output) {
+  u1           n            = nInstructions(code, n_bytes);
+  Instruction* instructions = calloc(n, sizeof(Instruction));
+  *output                   = instructions;
+  u1 current_byte           = 0;
   for(u1 i = 0; i < n; i++) {
-    instrs[i].bytecode = code[current_byte];
-    instrs[i].n_opperand_bytes =
-        nInstructionOps(code + current_byte, current_byte);
-    instrs[i].opperandBytes = code + 1;
-    instrs[i].pc            = i;
-    current_byte += 1 + instrs[i].n_opperand_bytes;
+    instructions[i].bytecode         = code[current_byte];
+    instructions[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
+    instructions[i].opperand_bytes   = code + current_byte + 1;
+    instructions[i].pc               = current_byte;
+    current_byte += 1 + instructions[i].n_opperand_bytes;
   }
 }
 
-void printInstructions(Instruction* instructions, u1 length) {
+////////TODO FUNCAO NOVA
+/*
+if tem bytes
+  if constant pool
+    imprime #
+    if 1 byte
+      imprime o byte e string
+    else
+      junta dois primeiros e imprime + string
+      imprimir restantes separados
+  else
+    if 1 byte
+      imprime o byte
+    else
+      if caso particular -> 132, 170, 171, 188, 196.
+        depende
+      else
+        junto
+*/
+
+void printInstructions(Instruction* instructions, u1 n_instrs, ConstantPoolInfo* cp) {
   printf("\nInstructions read:\n\n");
-  for(u1 i = 0; i < length; i++) {
-    u1    instr = instructions[i].bytecode;
-    char* mnem = instruction_mnemonic_table[instructions[i].bytecode];
+  for(u1 i = 0; i < n_instrs; i++) {
+
+    u1    bytecode         = instructions[i].bytecode;
+    char* mnem             = instruction_mnemonic_table[instructions[i].bytecode];
     u1    n_opperand_bytes = instructions[i].n_opperand_bytes;
     u2    pc               = instructions[i].pc;
+    u1*   opperand_bytes   = instructions[i].opperand_bytes;
 
-    char* term = "operands";
-    if(n_opperand_bytes == 1) {
-      term = "operand";
+    printf("%d\t%s ", pc, mnem);
+
+    // printing arguments:
+
+    if(n_opperand_bytes) {
+      u1 op_flag = instructionOpFlag(bytecode);
+      if(op_flag == _OP_FLAG_CONSTANT_POOL) {
+        printf("#");
+        if(n_opperand_bytes == 1) {
+          u2 cp_index = (u2) *opperand_bytes;
+          printf("%d ", cp_index);
+          printMethodPath(cp, cp_index);
+        } else {
+          u2 cp_index = (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]);
+
+          printf("%d ", cp_index);
+
+          u1 printed_opperands = 2;
+          while(printed_opperands < n_opperand_bytes) {
+            printf("%d ", opperand_bytes[printed_opperands]);
+            printed_opperands++;
+          }
+
+          printMethodPath(cp, cp_index);
+        }
+      } else {
+        if(n_opperand_bytes == 1) {
+          printf("%d", *opperand_bytes);
+        } else {
+          if(op_flag == _OP_FLAG_SPECIAL_CASE) {
+            // Wide
+            if(bytecode == 196) {
+              char* widened_opcode = instruction_mnemonic_table[opperand_bytes[0]];
+              printf("%s #", widened_opcode);
+
+              u2 cp_index = (u2)((opperand_bytes[1] << 8) | opperand_bytes[2]);
+              printf("%d ", cp_index);
+
+              // If iinc
+              if(bytecode == 132) {
+                u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
+                printf("%d ", const_byte);
+              }
+              printMethodPath(cp, cp_index);
+            } else {
+              // Lookup Switch or Table Switch
+              u1 padding       = n_opperand_bytes % 4;
+              u4 default_value = read32bFrom8b(opperand_bytes + padding);
+
+              // Lookup Switch
+              if(bytecode == 171) {
+                u4 n_pairs = read32bFrom8b(opperand_bytes + padding + 4);
+
+                printf("%d\n", n_pairs);
+
+                u4 match, offset;
+
+                for(u4 i = 0; i < n_pairs; i++) {
+                  match  = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1));
+                  offset = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1) + 4);
+
+                  printf("\t%d:\t%d\t(+%d)\n", match, pc + offset, offset);
+                }
+              } else {
+                // Table Switch
+                u4 low, high, offset;
+                low  = read32bFrom8b(opperand_bytes + padding + 4);
+                high = read32bFrom8b(opperand_bytes + padding + 8);
+
+                printf("%d to %d\n", low, high);
+
+                for(u4 i = low; i <= high; i++) {
+                  offset = read32bFrom8b(opperand_bytes + padding + 12 + 4 * (i - low));
+                  printf("\t%d:\t\t%d\t(+%d)\n", i, pc + offset, offset);
+                }
+              }
+              printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
+            }
+          } else {
+            if(n_opperand_bytes == 2) {
+              printf("%d", (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]));
+            }
+            if(n_opperand_bytes == 4) {
+              printf("%d", read32bFrom8b(opperand_bytes));
+            }
+          }
+        }
+      }
     }
-
-    printf("0x%x: %s, with %d %s on PC = %d\n",
-           instr,
-           mnem,
-           n_opperand_bytes,
-           term,
-           pc);
+    printf("\n");
   }
+}
+
+// TODO
+void printMethodPath(ConstantPoolInfo* cp, u2 cp_index) {
+  u1   num_of_strings = 0;
+  u1** utf8_strings   = getUtf8Strings(&num_of_strings, cp, cp_index);
+
+  if(utf8_strings == NULL) {
+    printf("No utf8 strings found!");
+    return;
+  }
+  if(num_of_strings == 1) {
+    printf("<%s>", utf8_strings[0]);
+  } else {
+    printf("<%s.%s>", utf8_strings[0], utf8_strings[1]);
+  }
+  free(utf8_strings);
 }
 
 u1 nInstructionOps(u1* code, u1 offset) {
   for(u1 i = 0; i < 55; i++) {
-    u1 current_instruction_code = instruction_size_table[i][0];
+    u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
     if(current_instruction_code > *code) {
       break;
     }
     if(current_instruction_code == *code) {
-      u1 current_instruction_size = instruction_size_table[i][1];
-      if(current_instruction_size == 10) {
+      u1 current_instruction_size = instruction_info_table[i][_N_OPPERAND_BYTES];
+      if(current_instruction_size == _VARIABLE_N_BYTES) {
         switch(*code) {
           case 170:
             return calcTableswitchOps(code, offset);
@@ -298,6 +423,16 @@ u1 nInstructionOps(u1* code, u1 offset) {
         }
       }
       return current_instruction_size;
+    }
+  }
+  return 0;
+}
+
+u1 instructionOpFlag(u1 bytecode) {
+  for(u1 i = 0; i < 55; i++) {
+    u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
+    if(current_instruction_code == bytecode) {
+      return instruction_info_table[i][_OP_FLAG];
     }
   }
   return 0;
@@ -343,7 +478,7 @@ u1 calcLookupswitchOps(u1* code, u1 offset) {
   u4 n_pairs = read32bFrom8b(code + n_ops + 1);
   n_ops += 4;
 
-  n_ops += 4 * n_pairs;  // adding 32 bit pair bytes
+  n_ops += 8 * n_pairs;  // adding 32 bit pair bytes
   return (u1) n_ops;
 }
 
@@ -357,61 +492,12 @@ u1 calcWideOps(u1* code) {
   return 3;
 }
 
-u1 nInstructions(u1* code, u1 length) {
+u1 nInstructions(u1* code, u1 n_bytes) {
   u1 output = 0;
   u1 i      = 0;
-  while(i < length) {
+  while(i < n_bytes) {
     i += 1 + nInstructionOps(code + i, i);
     output++;
   }
   return output;
-}
-
-void testInstructions() {
-  u1 testSuccessfull = 1;
-  u1 code[42]        = {99, 16, 8,  170, 10,  10, 10, 10, 0, 0,   0,
-                 0,  0,  0,  0,   0,   1,  2,  3,  4, 171, 1,
-                 2,  3,  10, 10,  10,  10, 0,  0,  0, 1,   1,
-                 2,  3,  4,  196, 132, 1,  2,  3,  4};
-  Instruction* instructions;
-  readInstructions(code, 38, &instructions);
-  printf("printInstructions() test:\n");
-  printInstructions(instructions, 5);
-  // instruction 0 test:
-  if(instructions[0].bytecode != 99 ||
-     instructions[0].n_opperand_bytes != 0 ||
-     instructions[0].pc != 0) {
-    testSuccessfull = 0;
-  }
-  // instruction 1 test:
-  if(instructions[1].bytecode != 16 ||
-     instructions[1].n_opperand_bytes != 1 ||
-     instructions[1].pc != 1) {
-    testSuccessfull = 0;
-  }
-  // instruction 2 test:
-  if(instructions[2].bytecode != 170 ||
-     instructions[2].n_opperand_bytes != 16 ||
-     instructions[2].pc != 2) {
-    testSuccessfull = 0;
-  }
-  // instruction 3 test:
-  if(instructions[3].bytecode != 171 ||
-     instructions[3].n_opperand_bytes != 15 ||
-     instructions[3].pc != 3) {
-    testSuccessfull = 0;
-  }
-  // instruction 4 test:
-  if(instructions[4].bytecode != 196 ||
-     instructions[4].n_opperand_bytes != 5 ||
-     instructions[4].pc != 4) {
-    testSuccessfull = 0;
-  }
-  free(instructions);
-
-  if(testSuccessfull) {
-    printf("\nTest successfull!\n");
-  } else {
-    printf("\nInstructions are broken\n");
-  }
 }

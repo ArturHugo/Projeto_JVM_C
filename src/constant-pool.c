@@ -115,12 +115,14 @@ u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index) {
   }
 }
 
-u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
+u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_t index) {
   u1** utf8_strings;
-  u2   class_index, name_and_type_index;
+  *num_of_strings = 0;
+  u2 class_index, name_and_type_index;
   switch(constant_pool[index].tag) {
     case CONSTANT_CLASS:
-      utf8_strings = (u1**) malloc(1 * sizeof(u1*));
+      *num_of_strings = 1;
+      utf8_strings    = (u1**) malloc(*num_of_strings * sizeof(u1*));
 
       u2 class_name_index = constant_pool[index].class_info.name_index;
       utf8_strings[0]     = constant_pool[class_name_index].utf8_info.bytes;
@@ -142,14 +144,16 @@ u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
       break;
 
     case CONSTANT_STRING:
-      utf8_strings = (u1**) malloc(1 * sizeof(u1*));
+      *num_of_strings = 1;
+      utf8_strings    = (u1**) malloc(*num_of_strings * sizeof(u1*));
 
       u2 string_index = constant_pool[index].string_info.string_index;
       utf8_strings[0] = constant_pool[string_index].utf8_info.bytes;
       break;
 
     case CONSTANT_NAME_AND_TYPE:
-      utf8_strings = (u1**) malloc(2 * sizeof(u1*));
+      *num_of_strings = 2;
+      utf8_strings    = (u1**) malloc(*num_of_strings * sizeof(u1*));
 
       u2 name_index   = constant_pool[index].name_and_type_info.name_index;
       utf8_strings[0] = constant_pool[name_index].utf8_info.bytes;
@@ -167,7 +171,8 @@ u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
      (constant_pool[index].tag == CONSTANT_METHODREF) ||
      (constant_pool[index].tag == CONSTANT_INTERFACE_METHODREF)) {
 
-    utf8_strings = (u1**) malloc(3 * sizeof(u1*));
+    *num_of_strings = 3;
+    utf8_strings    = (u1**) malloc(*num_of_strings * sizeof(u1*));
 
     u2 class_name_index = constant_pool[class_index].class_info.name_index;
     utf8_strings[0]     = constant_pool[class_name_index].utf8_info.bytes;
@@ -181,11 +186,16 @@ u1** getUtf8Strings(ConstantPoolInfo* constant_pool, uint16_t index) {
   return utf8_strings;
 }
 
+// TODO pq esa função existe?
 void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
   switch(constant_pool[index].tag) {
-    case CONSTANT_STRING:;
-      u1** utf8_strings = getUtf8Strings(constant_pool, index);
-      printf("<%s>", utf8_strings[0]);
+    case CONSTANT_STRING:;  // TODO ta dando um erro mto estranho
+      u1   num_of_strings = 0;
+      u1** utf8_strings   = getUtf8Strings(&num_of_strings, constant_pool, index);
+
+      if(num_of_strings)
+        printf("<%s>", utf8_strings[0]);
+
       free(utf8_strings);
       break;
     case CONSTANT_INTEGER:
@@ -206,71 +216,77 @@ void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
 }
 
 void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
-
-  u1** utf8_strings = getUtf8Strings(constant_pool, index);
+  u1   num_of_strings = 0;
+  u1** utf8_strings   = getUtf8Strings(&num_of_strings, constant_pool, index);
   switch(constant_pool[index].tag) {
     case CONSTANT_CLASS:
       printf("CONSTANT_Class_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
-      printf("\tClass name:           cp_info #%02d <%s>\n",
-             constant_pool[index].class_info.name_index,
-             (char*) utf8_strings[0]);
+
+      if(num_of_strings)
+        printf("\tClass name:           cp_info #%02d <%s>\n",
+               constant_pool[index].class_info.name_index,
+               (char*) utf8_strings[0]);
       break;
 
     case CONSTANT_FIELDREF:
       printf("CONSTANT_Fieldref_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
-      printf("\tClass name:           cp_info #%02d <%s>\n",
-             constant_pool[index].fieldref_info.class_index,
-             (char*) utf8_strings[0]);
-      printf("\tName and type:        cp_info #%02d <%s%s>\n",
-             constant_pool[index].fieldref_info.name_and_type_index,
-             (char*) utf8_strings[1],
-             (char*) utf8_strings[2]);
+
+      if(num_of_strings) {
+        printf("\tClass name:           cp_info #%02d <%s>\n",
+               constant_pool[index].fieldref_info.class_index,
+               (char*) utf8_strings[0]);
+        printf("\tName and type:        cp_info #%02d <%s%s>\n",
+               constant_pool[index].fieldref_info.name_and_type_index,
+               (char*) utf8_strings[1],
+               (char*) utf8_strings[2]);
+      }
       break;
 
     case CONSTANT_METHODREF:
       printf("CONSTANT_Methodref_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
-      printf("\tClass name:           cp_info #%02d <%s>\n",
-             constant_pool[index].methodref_info.class_index,
-             (char*) utf8_strings[0]);
-      printf("\tName and type:        cp_info #%02d <%s%s>\n",
-             constant_pool[index].methodref_info.name_and_type_index,
-             (char*) utf8_strings[1],
-             (char*) utf8_strings[2]);
+
+      if(num_of_strings) {
+        printf("\tClass name:           cp_info #%02d <%s>\n",
+               constant_pool[index].methodref_info.class_index,
+               (char*) utf8_strings[0]);
+        printf("\tName and type:        cp_info #%02d <%s%s>\n",
+               constant_pool[index].methodref_info.name_and_type_index,
+               (char*) utf8_strings[1],
+               (char*) utf8_strings[2]);
+      }
       break;
 
     case CONSTANT_INTERFACE_METHODREF:
       printf("CONSTANT_InterfaceMethodref_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
-      printf("\tClass name:              cp_info #%02d <%s>\n",
-             constant_pool[index].interface_methodref_info.class_index,
-             (char*) utf8_strings[0]);
-      printf("\tName and type:        cp_info #%02d <%s%s>\n",
-             constant_pool[index].interface_methodref_info.name_and_type_index,
-             (char*) utf8_strings[1],
-             (char*) utf8_strings[2]);
+
+      if(num_of_strings) {
+        printf("\tClass name:              cp_info #%02d <%s>\n",
+               constant_pool[index].interface_methodref_info.class_index,
+               (char*) utf8_strings[0]);
+        printf("\tName and type:        cp_info #%02d <%s%s>\n",
+               constant_pool[index].interface_methodref_info.name_and_type_index,
+               (char*) utf8_strings[1],
+               (char*) utf8_strings[2]);
+      }
       break;
 
     case CONSTANT_STRING:
       printf("CONSTANT_String_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
-      printf("\tString                cp_info #%02d <%s>\n",
-             constant_pool[index].string_info.string_index,
-             (char*) utf8_strings[0]);
+
+      if(num_of_strings)
+        printf("\tString                cp_info #%02d <%s>\n",
+               constant_pool[index].string_info.string_index,
+               (char*) utf8_strings[0]);
       break;
 
     case CONSTANT_INTEGER:
       printf("CONSTANT_Integer_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
       printf("\tBytes:                0x%08x\n", constant_pool[index].integer_info.bytes);
       printf("\tInteger:              %d\n", (int32_t) constant_pool[index].integer_info.bytes);
       break;
 
     case CONSTANT_FLOAT:
       printf("CONSTANT_Float_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
       printf("\tBytes:                0x%08x\n", constant_pool[index].float_info.bytes);
 
       float float_num;
@@ -281,7 +297,6 @@ void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
 
     case CONSTANT_LONG:
       printf("CONSTANT_Long_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
       printf("\tHigh bytes:           0x%08x\n", constant_pool[index].long_info.high_bytes);
       printf("\tLow bytes:            0x%08x\n", constant_pool[index].long_info.low_bytes);
 
@@ -296,7 +311,6 @@ void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
 
     case CONSTANT_DOUBLE:
       printf("CONSTANT_Double_info\n");
-      printf("\tTag:                  %d\n", constant_pool[index].tag);
       printf("\tHigh bytes:           0x%08x\n", constant_pool[index].double_info.high_bytes);
       printf("\tLow bytes:            0x%08x\n", constant_pool[index].double_info.low_bytes);
 
@@ -314,12 +328,15 @@ void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
 
     case CONSTANT_NAME_AND_TYPE:
       printf("CONSTANT_NameAndType_info\n");
-      printf("\tName:                 cp_info #%02d <%s>\n",
-             constant_pool[index].name_and_type_info.name_index,
-             (char*) utf8_strings[0]);
-      printf("\tDescriptor:           cp_info #%02d <%s>\n",
-             constant_pool[index].name_and_type_info.descriptor_index,
-             (char*) utf8_strings[1]);
+
+      if(num_of_strings) {
+        printf("\tName:                 cp_info #%02d <%s>\n",
+               constant_pool[index].name_and_type_info.name_index,
+               (char*) utf8_strings[0]);
+        printf("\tDescriptor:           cp_info #%02d <%s>\n",
+               constant_pool[index].name_and_type_info.descriptor_index,
+               (char*) utf8_strings[1]);
+      }
       break;
 
     case CONSTANT_UTF8:

@@ -8,7 +8,7 @@
 
 int main() {
 
-  FILE* file = fopen("HelloWorld.class", "rb");
+  FILE* file = fopen("TableSwitch.class", "rb");
 
   File* fd = malloc(sizeof(File));
   fseek(file, 0, SEEK_END);
@@ -26,13 +26,19 @@ int main() {
   u2                constant_pool_count = u2Read(fd);
   ConstantPoolInfo* constant_pool       = readConstantPool(constant_pool_count, fd);
 
-  fd->seek = 0x1f0;
+  fd->seek     = 0x185;
+  u1* code     = malloc(58 * sizeof(u1));
+  u1* code_ptr = code;
+  for(; code_ptr < code + 58; code_ptr++)
+    *code_ptr = u1Read(fd);
 
-  u2             attributes_count = u2Read(fd);
-  AttributeInfo* attributes       = readAttributes(attributes_count, fd, constant_pool);
+  Instruction** output = malloc(sizeof(Instruction*));
+  readInstructions(code, 58, output);
+  // u2             attributes_count = u2Read(fd);
+  // AttributeInfo* attributes       = readAttributes(attributes_count, fd, constant_pool);
 
   printConstantPool(constant_pool, constant_pool_count);
-  printAttributes(attributes_count, attributes, constant_pool);
+  printInstructions(*output, 15, constant_pool);
 
   free(fd->buffer);
   free(fd);
