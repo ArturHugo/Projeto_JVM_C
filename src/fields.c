@@ -29,6 +29,10 @@ void printFields(u2 fields_count, FieldInfo* fields, ConstantPoolInfo* cp) {
     printf("--->name_index %" PRIu16 "\n", fields[i].name_index);
     printf("--->descriptor_index %" PRIu16 "\n", fields[i].descriptor_index);
     printf("--->attributes_count %" PRIu16 "\n", fields[i].attributes_count);
+    if(fields[i].attributes_count > 0)
+      for(int i = 0; i < fields[i].attributes_count; i++)
+        printAttributes(fields[i].attributes_count, fields[i].attributes, cp);
+
   }
   printf("\n");
 }

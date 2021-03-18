@@ -29,6 +29,10 @@ void printMethods(u2 methods_count, MethodInfo* methods, ConstantPoolInfo* cp) {
     printf("--->name_index %" PRIu16 "\n", methods[i].name_index);
     printf("--->descriptor_index %" PRIu16 "\n", methods[i].descriptor_index);
     printf("--->attributes_count %" PRIu16 "\n", methods[i].attributes_count);
+    if(methods[i].attributes_count > 0)
+      for(int i = 0; i < methods[i].attributes_count; i++)
+        printAttributes(methods[i].attributes_count, methods[i].attributes, cp);
   }
+
   printf("\n");
 }
