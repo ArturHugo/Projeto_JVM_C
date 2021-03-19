@@ -11,10 +11,10 @@ typedef struct {
   // talvez adicionar indicadores de retorno
 } Instruction;
 
-u1 nInstructions(u1* code, u1 n_bytes);
+u4 nInstructions(u1* code, u4 n_bytes);
 
-Instruction* readInstructions(u1* code, u1 n_bytes, u4 n_instruction);
+Instruction* readInstructions(u1* code, u4 n_bytes, u4 n_instruction);
 
-void printInstructions(Instruction* instructions, u1 length, ConstantPoolInfo* cp);
+void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo* cp);
 
 #endif

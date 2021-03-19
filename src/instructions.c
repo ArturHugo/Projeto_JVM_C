@@ -238,10 +238,10 @@ static char* instruction_mnemonic_table[206] = {"nop",
 // instruction.
 // possible refactor: table/lookupswitch with more than 254
 // opperandBytes?
-u1   nInstructionOps(u1* code, u1 offset);
+u4   nInstructionOps(u1* code, u4 offset);
 u1   instructionOpFlag(u1 bytecode);
-u1   calcTableswitchOps(u1* code, u1 offset);
-u1   calcLookupswitchOps(u1* code, u1 offset);
+u4   calcTableswitchOps(u1* code, u4 offset);
+u4   calcLookupswitchOps(u1* code, u4 offset);
 u1   calcWideOps(u1* code);
 u4   read32bFrom8b(u1* array);
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
@@ -253,9 +253,9 @@ u4 read32bFrom8b(u1* array) {
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
-Instruction* readInstructions(u1* code, u1 n_bytes, u4 n_instruction) {
+Instruction* readInstructions(u1* code, u4 n_bytes, u4 n_instruction) {
   Instruction* instructions = calloc(n_instruction, sizeof(Instruction));
-  u1           current_byte = 0;
+  u4           current_byte = 0;
   for(u4 i = 0; i < n_instruction; i++) {
     instructions[i].bytecode         = code[current_byte];
     instructions[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
@@ -286,9 +286,9 @@ if tem bytes
         junto
 */
 
-void printInstructions(Instruction* instructions, u1 n_instrs, ConstantPoolInfo* cp) {
+void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo* cp) {
   printf("\nInstructions read:\n\n");
-  for(u1 i = 0; i < n_instrs; i++) {
+  for(u4 i = 0; i < n_instrs; i++) {
 
     u1    bytecode         = instructions[i].bytecode;
     char* mnem             = instruction_mnemonic_table[instructions[i].bytecode];
@@ -339,7 +339,12 @@ void printInstructions(Instruction* instructions, u1 n_instrs, ConstantPoolInfo*
                 u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
                 printf("%d ", const_byte);
               }
-              printMethodPath(cp, cp_index);
+
+              printMethodPath(cp, cp_index);  // TODO nao tem path pro iinc
+            } else if(bytecode == 132) {
+              // Iinc
+              // TODO
+              printf("iinc***********************\n");
             } else {
               // Lookup Switch or Table Switch
               u1 padding       = n_opperand_bytes % 4;
@@ -389,7 +394,6 @@ void printInstructions(Instruction* instructions, u1 n_instrs, ConstantPoolInfo*
   }
 }
 
-// TODO
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index) {
   u1   num_of_strings = 0;
   u1** utf8_strings   = getUtf8Strings(&num_of_strings, cp, cp_index);
@@ -406,7 +410,7 @@ void printMethodPath(ConstantPoolInfo* cp, u2 cp_index) {
   free(utf8_strings);
 }
 
-u1 nInstructionOps(u1* code, u1 offset) {
+u4 nInstructionOps(u1* code, u4 offset) {
   for(u1 i = 0; i < 55; i++) {
     u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
     if(current_instruction_code > *code) {
@@ -443,8 +447,8 @@ u1 instructionOpFlag(u1 bytecode) {
   return 0;
 }
 
-u1 calcTableswitchOps(u1* code, u1 offset) {
-  u1 n_ops = 0;
+u4 calcTableswitchOps(u1* code, u4 offset) {
+  u4 n_ops = 0;
   while(offset % 4 != 3) {  // adding padding bytes
     n_ops++;
     offset++;
@@ -465,11 +469,11 @@ u1 calcTableswitchOps(u1* code, u1 offset) {
   n_ops += 4 * offsets;  // adding 32 bit offset bytes
   // n_ops -1 is returned beacause padding bytes loop adds an extra
   // byte
-  return (u1) n_ops;
+  return n_ops;
 }
 
-u1 calcLookupswitchOps(u1* code, u1 offset) {
-  u1 n_ops = 0;
+u4 calcLookupswitchOps(u1* code, u4 offset) {
+  u4 n_ops = 0;
   while(offset % 4 != 3) {  // adding padding bytes
     n_ops++;
     offset++;
@@ -484,7 +488,7 @@ u1 calcLookupswitchOps(u1* code, u1 offset) {
   n_ops += 4;
 
   n_ops += 8 * n_pairs;  // adding 32 bit pair bytes
-  return (u1) n_ops;
+  return n_ops;
 }
 
 u1 calcWideOps(u1* code) {
@@ -497,9 +501,9 @@ u1 calcWideOps(u1* code) {
   return 3;
 }
 
-u1 nInstructions(u1* code, u1 n_bytes) {
-  u1 output = 0;
-  u1 i      = 0;
+u4 nInstructions(u1* code, u4 n_bytes) {
+  u4 output = 0;
+  u4 i      = 0;
   while(i < n_bytes) {
     i += 1 + nInstructionOps(code + i, i);
     output++;

@@ -19,6 +19,21 @@ u2* readInterfaces(u2 interfaces_count, File* fd) {
   return interfaces;
 }
 
+void printInterfaces(u2 interfaces_count, u2* interfaces, ConstantPoolInfo* cp) {
+  if(interfaces_count == 0)
+    return;
+
+  u1   num_of_strings = 0;
+  u1** utf8_strings   = NULL;
+
+  printf("-------\nInterfaces:\n-------\n");
+  for(u2 i = 0; i < interfaces_count; i++) {
+    printf("Interface %d: #%d ", i, interfaces[i]);
+    utf8_strings = getUtf8Strings(&num_of_strings, cp, interfaces[i]);
+    printf("<%s>\n", (char*) utf8_strings[0]);
+  }
+}
+
 ClassFile* readClassFile(File* fd) {
   ClassFile* class_file = (ClassFile*) malloc(sizeof(ClassFile));
 
@@ -50,4 +65,12 @@ ClassFile* readClassFile(File* fd) {
       readAttributes(class_file->attributes_count, fd, class_file->constant_pool);
 
   return class_file;
+}
+
+void printClassFile(ClassFile* class_file) {
+  printConstantPool(class_file->constant_pool_count, class_file->constant_pool);
+  printInterfaces(class_file->interfaces_count, class_file->interfaces, class_file->constant_pool);
+  printFields(class_file->fields_count, class_file->fields, class_file->constant_pool);
+  printMethods(class_file->methods_count, class_file->methods, class_file->constant_pool);
+  printAttributes(class_file->attributes_count, class_file->attributes, class_file->constant_pool);
 }

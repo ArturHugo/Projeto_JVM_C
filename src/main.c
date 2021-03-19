@@ -16,10 +16,7 @@ int main(int numargs, char* arg[]) {
 
   ClassFile* class_file = readClassFile(fd);
 
-  printConstantPool(class_file->constant_pool_count, class_file->constant_pool);
-  printAttributes(class_file->attributes_count, class_file->attributes, class_file->constant_pool);
-  printMethods(class_file->methods_count, class_file->methods, class_file->constant_pool);
-  printFields(class_file->fields_count, class_file->fields, class_file->constant_pool);
+  printClassFile(class_file);
 
   // u2                constant_pool_count = u2Read(fd);
   // ConstantPoolInfo* constant_pool       = readConstantPool(constant_pool_count, fd);
