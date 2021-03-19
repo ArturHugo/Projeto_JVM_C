@@ -6,9 +6,10 @@
 #include "common.h"
 #include "instructions.h"
 
-int main() {
+int main(int numargs, char *arg[]) {
 
-  FILE* file = fopen("HelloWorld.class", "rb");
+  FILE* file = fopen(arg[1], "rb");
+  
 
   File* fd = malloc(sizeof(File));
   fseek(file, 0, SEEK_END);
