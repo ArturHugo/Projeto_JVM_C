@@ -189,7 +189,7 @@ u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_
 // TODO pq esa função existe?
 void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
   switch(constant_pool[index].tag) {
-    case CONSTANT_STRING:;  // TODO ta dando um erro mto estranho
+    case CONSTANT_STRING: {
       u1   num_of_strings = 0;
       u1** utf8_strings   = getUtf8Strings(&num_of_strings, constant_pool, index);
 
@@ -197,7 +197,7 @@ void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
         printf("<%s>", utf8_strings[0]);
 
       free(utf8_strings);
-      break;
+    } break;
     case CONSTANT_INTEGER:
       printf("<%d>", constant_pool[index].integer_info.bytes);
       break;
