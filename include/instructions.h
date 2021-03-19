@@ -6,13 +6,14 @@
 typedef struct {
   u1  bytecode;
   u1  n_opperand_bytes;
-  u1* opperandBytes;
+  u1* opperand_bytes;
   u2  pc;
   // talvez adicionar indicadores de retorno
 } Instruction;
 
+u1 nInstructions(u1* code, u1 n_bytes);
+
 void readInstructions(u1* code, u1 len, Instruction** instructions);
-void printInstructions(Instruction*, u1 len);
-void testInstructions();
+void printInstructions(Instruction* instructions, u1 length, ConstantPoolInfo* cp);
 
 #endif
