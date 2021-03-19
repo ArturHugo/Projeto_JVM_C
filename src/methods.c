@@ -21,14 +21,21 @@ MethodInfo* readMethods(u2 methods_count, File* fd, ConstantPoolInfo* cp) {
 }
 
 void printMethods(u2 methods_count, MethodInfo* methods, ConstantPoolInfo* cp) {
-  printf("**********\n* Methods *\n**********\n");
-  printf("methods_count: %u\n", methods_count);
+  printf("----------\n  Methods  \n----------\n");
+  printf("Methods count: %u\n", methods_count);
   for(u2 i = 0; i < methods_count; i++) {
-    printf("Method Number %d\n", i);
-    printf("--->acess flag %" PRIu16 "\n", methods[i].access_flags);
-    printf("--->name_index %" PRIu16 "\n", methods[i].name_index);
-    printf("--->descriptor_index %" PRIu16 "\n", methods[i].descriptor_index);
-    printf("--->attributes_count %" PRIu16 "\n", methods[i].attributes_count);
+    printf("Method number: [%d]\n", i);
+    printf("	Name: cp_info #%" PRIu16 "\n", methods[i].name_index);
+    printf("	Descriptor_index: cp_info #%" PRIu16 "\n", methods[i].descriptor_index);
+    if(methods[i].access_flags < 10)
+      printf("	Acess flag: 0x000%" PRIu16 "\n", methods[i].access_flags);
+    else
+      printf("	Acess flag: 0x00%" PRIu16 "\n", methods[i].access_flags);
+    //printf("	Attributes_count: %" PRIu16 "\n", methods[i].attributes_count);
+    if(methods[i].attributes_count > 0)
+      for(int i = 0; i < methods[i].attributes_count; i++)
+        printAttributes(methods[i].attributes_count, methods[i].attributes, cp);
   }
+
   printf("\n");
 }
