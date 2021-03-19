@@ -24,5 +24,7 @@ File* convertFile(FILE* file) {
   for(int i = 0; i < fd->size; i++)
     fd->buffer[i] = getc(file);
 
+  fd->seek = 0;
+
   return fd;
 }

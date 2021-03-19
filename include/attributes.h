@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "constant-pool.h"
+#include "instructions.h"
 
 typedef enum {
   CONSTANT_VALUE,
@@ -37,6 +38,8 @@ typedef struct {
   ExceptionTable*       exception_table;
   u2                    attributes_count;
   struct AttributeInfo* atttributes;
+  u4                    _instructions_count;
+  Instruction*          _instructions;
 } CodeInfo;
 
 typedef struct {

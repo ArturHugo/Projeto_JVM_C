@@ -31,10 +31,10 @@ void printMethods(u2 methods_count, MethodInfo* methods, ConstantPoolInfo* cp) {
       printf("	Acess flag: 0x000%" PRIu16 "\n", methods[i].access_flags);
     else
       printf("	Acess flag: 0x00%" PRIu16 "\n", methods[i].access_flags);
-    //printf("	Attributes_count: %" PRIu16 "\n", methods[i].attributes_count);
-    if(methods[i].attributes_count > 0)
-      for(int i = 0; i < methods[i].attributes_count; i++)
-        printAttributes(methods[i].attributes_count, methods[i].attributes, cp);
+
+    printf("	Attributes_count: %" PRIu16 "\n", methods[i].attributes_count);
+
+    printAttributes(methods[i].attributes_count, methods[i].attributes, cp);
   }
 
   printf("\n");

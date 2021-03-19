@@ -365,7 +365,7 @@ void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
   free(utf8_strings);
 }
 
-void printConstantPool(ConstantPoolInfo* constant_pool, u2 cp_count) {
+void printConstantPool(u2 cp_count, ConstantPoolInfo* constant_pool) {
 
   printf("Constant pool\n{\n");
 

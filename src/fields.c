@@ -31,11 +31,10 @@ void printFields(u2 fields_count, FieldInfo* fields, ConstantPoolInfo* cp) {
       printf("    Acess flag: 0x000%" PRIu16 "\n", fields[i].access_flags);
     else
       printf("    Acess flag: 0x00%" PRIu16 "\n", fields[i].access_flags);
-    //printf("    Attributes_count: %" PRIu16 "\n", fields[i].attributes_count);
-    if(fields[i].attributes_count > 0)
-      for(int i = 0; i < fields[i].attributes_count; i++)
-        printAttributes(fields[i].attributes_count, fields[i].attributes, cp);
 
+    printf("    Attributes_count: %" PRIu16 "\n", fields[i].attributes_count);
+
+    printAttributes(fields[i].attributes_count, fields[i].attributes, cp);
   }
   printf("\n");
 }

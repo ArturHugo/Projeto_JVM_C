@@ -55,4 +55,6 @@ int isMagicValid(ClassFile* class_file);
 
 u2* readInterfaces(u2 interfaces_count, File* fd);
 
+ClassFile* readClassFile(File* fd);
+
 #endif  // __CLASS_FILE_H

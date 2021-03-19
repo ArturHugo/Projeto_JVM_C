@@ -56,6 +56,14 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
         for(; code < attribute->code_info.code_length + attribute->code_info.code; code++)
           *code = u1Read(fd);
 
+        attribute->code_info._instructions_count =
+            nInstructions(attribute->code_info.code, attribute->code_info.code_length);
+
+        attribute->code_info._instructions =
+            readInstructions(attribute->code_info.code,
+                             attribute->code_info.code_length,
+                             attribute->code_info._instructions_count);
+
         // Read exception_table
         attribute->code_info.exception_table_length = u2Read(fd);
         ExceptionTable* exception_table =
@@ -168,7 +176,9 @@ void printAttributes(u2 attributes_count, AttributeInfo* attributes, ConstantPoo
         println("Maximum stack size:\t\t%d", attribute.code_info.max_stack);
         println("Maximum local variables:\t%d", attribute.code_info.max_locals);
         println("Code length:\t\t\t%d", attribute.code_info.code_length);
-        // TODO: Print instructions
+        printInstructions(attribute.code_info._instructions,
+                          attribute.code_info._instructions_count,
+                          cp);
         break;
 
       case EXCEPTIONS:

@@ -35,18 +35,19 @@ ClassFile* readClassFile(File* fd) {
     exit(3);
   }
   class_file->constant_pool_count = u2Read(fd);
-  ConstantPoolInfo* cp            = readConstantPool(class_file->constant_pool_count, fd);
+  class_file->constant_pool       = readConstantPool(class_file->constant_pool_count, fd);
   class_file->access_flags        = u2Read(fd);
   class_file->this_class          = u2Read(fd);
   class_file->super_class         = u2Read(fd);
   class_file->interfaces_count    = u2Read(fd);
   class_file->interfaces          = readInterfaces(class_file->interfaces_count, fd);
   class_file->fields_count        = u2Read(fd);
-  class_file->fields              = readFields(class_file->fields_count, fd, cp);
-  class_file->methods_count       = u2Read(fd);
-  class_file->methods             = readMethods(class_file->methods_count, fd, cp);
-  class_file->attributes_count    = u2Read(fd);
-  class_file->attributes          = readAttributes(class_file->attributes_count, fd, cp);
+  class_file->fields        = readFields(class_file->fields_count, fd, class_file->constant_pool);
+  class_file->methods_count = u2Read(fd);
+  class_file->methods       = readMethods(class_file->methods_count, fd, class_file->constant_pool);
+  class_file->attributes_count = u2Read(fd);
+  class_file->attributes =
+      readAttributes(class_file->attributes_count, fd, class_file->constant_pool);
 
   return class_file;
 }

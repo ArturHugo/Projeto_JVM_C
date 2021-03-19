@@ -253,18 +253,17 @@ u4 read32bFrom8b(u1* array) {
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
-void readInstructions(u1* code, u1 n_bytes, Instruction** output) {
-  u1           n            = nInstructions(code, n_bytes);
-  Instruction* instructions = calloc(n, sizeof(Instruction));
-  *output                   = instructions;
-  u1 current_byte           = 0;
-  for(u1 i = 0; i < n; i++) {
+Instruction* readInstructions(u1* code, u1 n_bytes, u4 n_instruction) {
+  Instruction* instructions = calloc(n_instruction, sizeof(Instruction));
+  u1           current_byte = 0;
+  for(u4 i = 0; i < n_instruction; i++) {
     instructions[i].bytecode         = code[current_byte];
     instructions[i].n_opperand_bytes = nInstructionOps(code + current_byte, current_byte);
     instructions[i].opperand_bytes   = code + current_byte + 1;
     instructions[i].pc               = current_byte;
     current_byte += 1 + instructions[i].n_opperand_bytes;
   }
+  return instructions;
 }
 
 ////////TODO FUNCAO NOVA
