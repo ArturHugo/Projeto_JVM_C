@@ -1,5 +1,57 @@
 #include "class-file.h"
 
+static char* access_flag_table[16] = {"public",
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      "final",
+                                      "super",
+                                      NULL,
+                                      NULL,
+                                      "interface",
+                                      "abstract",
+                                      "synthetic",
+                                      "annotation",
+                                      "enum",
+                                      NULL,
+                                      NULL};
+
+void printAccessFlags(u2 access_flags) {
+  for(int i = 0; i < 16; i++) {
+    if((access_flags & 1) && (access_flag_table[i] != NULL)) {
+      printf("%s ", access_flag_table[i]);
+    }
+    access_flags >> 1;
+  }
+}
+
+void printGeneralInfo(ClassFile* class_file) {
+  printf("General info:\n");
+  printf("Minor version: \t%d\n", class_file->minor_version);
+  printf("Major version: \t%d\n", class_file->major_version);
+  printf("Constant pool count: \t%d\n", class_file->constant_pool_count);
+
+  printf("Access flags: \t0x%04x [");
+  printAccessFlags(class_file->access_flags);
+  printf("]\n");
+
+  u2 class_name_index = class_file->constant_pool[class_file->this_class].class_info.name_index;
+  printf("This class: \tcp_info #%d <%s>\n",
+         class_file->this_class,
+         class_file->constant_pool[class_name_index].utf8_info.bytes);
+
+  class_name_index = class_file->constant_pool[class_file->super_class].class_info.name_index;
+  printf("Super class: \tcp_info #%d <%s>\n",
+         class_file->this_class,
+         class_file->constant_pool[class_name_index].utf8_info.bytes);
+
+  printf("Interfaces count: \t%d\n", class_file->interfaces_count);
+  printf("Fields count: \t%d\n", class_file->fields_count);
+  printf("Methods count: \t%d\n", class_file->methods_count);
+  printf("Attrinbutes count: \t%d\n", class_file->attributes_count);
+}
+
 int isVersionValid(u2 major_version) {
   if(major_version >= 46 && major_version <= 55)
     return 1;
@@ -68,9 +120,20 @@ ClassFile* readClassFile(File* fd) {
 }
 
 void printClassFile(ClassFile* class_file) {
+  printGeneralInfo(class_file);
   printConstantPool(class_file->constant_pool_count, class_file->constant_pool);
   printInterfaces(class_file->interfaces_count, class_file->interfaces, class_file->constant_pool);
   printFields(class_file->fields_count, class_file->fields, class_file->constant_pool);
   printMethods(class_file->methods_count, class_file->methods, class_file->constant_pool);
   printAttributes(class_file->attributes_count, class_file->attributes, class_file->constant_pool);
+}
+
+char* getSourceFile(ClassFile* class_file) {
+  for(int i = 0; i < class_file->attributes_count; i++) {
+    if(class_file->attributes[i]._attribute_name == "SourceFile") {
+      u2 index = class_file->attributes[i].source_file_info.sourcefile_index;
+      return class_file->constant_pool[index].utf8_info.bytes;
+    }
+  }
+  return NULL;
 }

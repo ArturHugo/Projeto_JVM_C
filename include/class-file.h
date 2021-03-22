@@ -59,4 +59,6 @@ ClassFile* readClassFile(File* fd);
 
 void printClassFile(ClassFile* class_file);
 
+char* getSourceFile(ClassFile* class_file);
+
 #endif  // __CLASS_FILE_H

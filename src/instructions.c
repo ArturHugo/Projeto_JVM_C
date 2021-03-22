@@ -234,11 +234,7 @@ static char* instruction_mnemonic_table[206] = {"nop",
                                                 "goto_w",
                                                 "jsr_w"};
 
-// local function declarations:
-// obs.: opperand byte is used as a term for any byte other than the
-// instruction.
-// possible refactor: table/lookupswitch with more than 254
-// opperandBytes?
+/* --------------------- local function declarations -----------------------------*/
 u4   nInstructionOps(u1* code, u4 offset);
 u1   instructionOpFlag(u1 bytecode);
 u4   calcTableswitchOps(u1* code, u4 offset);
@@ -246,6 +242,20 @@ u4   calcLookupswitchOps(u1* code, u4 offset);
 u1   calcWideOps(u1* code);
 u4   read32bFrom8b(u1* array);
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
+
+/* --------------------- printInstructions() helper functions -----------------------------*/
+void printInstructionsConstantPool(u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp);
+void printInstructionsConstantPoolArg(ConstantPoolInfo* cp, u2 cp_index);
+
+void printInstructionsSpecial(
+    u1 bytecode, u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp, u2 pc);
+void printInstructionsSpecialWide(u1* opperand_bytes, ConstantPoolInfo* cp);
+void printInstructionsSpecialTableswitch(u1 n_opperand_bytes, u1* opperand_bytes, u2 pc);
+void printInstructionsSpecialLookupswitch(u1 n_opperand_bytes, u1* opperand_bytes, u2 pc);
+
+void printInstructionsNormal(u1 n_opperand_bytes, u1* opperand_bytes);
+
+/*-----------------------------------Code-------------------------------------------------*/
 
 u4 read32bFrom8b(u1* array) {
   u4 output = (array[0] << 24 | array[1] << 16 | array[2] << 8 | array[3]);
@@ -267,7 +277,7 @@ Instruction* readInstructions(u1* code, u4 n_bytes, u4 n_instruction) {
   return instructions;
 }
 
-////////TODO FUNCAO NOVA
+// algoritmo para print de operandos de instrução
 /*
 if tem bytes
   if constant pool
@@ -287,6 +297,137 @@ if tem bytes
         junto
 */
 
+void printInstructionsConstantPoolArg(ConstantPoolInfo* cp, u2 cp_index) {
+  if(cp[cp_index].tag == CONSTANT_METHODREF) {
+    printMethodPath(cp, cp_index);
+  } else {
+    printConstantValue(cp, cp_index);
+  }
+}
+
+void printInstructionsConstantPool(u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp) {
+  printf("#");
+  u2 cp_index;
+  if(n_opperand_bytes == 1) {
+    cp_index = (u2) *opperand_bytes;
+    printf("%d ", cp_index);
+  } else {
+    cp_index = (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]);
+
+    printf("%d ", cp_index);
+
+    u1 printed_opperands = 2;
+    while(printed_opperands < n_opperand_bytes) {
+      printf("%d ", opperand_bytes[printed_opperands]);
+      printed_opperands++;
+    }
+  }
+  printInstructionsConstantPoolArg(cp, cp_index);
+}
+
+void printInstructionsSpecialWide(u1* opperand_bytes, ConstantPoolInfo* cp) {
+  char* widened_opcode = instruction_mnemonic_table[opperand_bytes[0]];
+  printf("%s #", widened_opcode);
+
+  u2 cp_index = (u2)((opperand_bytes[1] << 8) | opperand_bytes[2]);
+  printf("%d ", cp_index);
+
+  // If iinc
+  if(opperand_bytes[0] == 132) {
+    u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
+    printf("%d ", const_byte);
+  } else {
+    printMethodPath(cp, cp_index);  // TODO nao tem path pro iinc
+  }
+}
+
+void printInstructionsSpecialTableswitch(u1 n_opperand_bytes, u1* opperand_bytes, u2 pc) {
+  u1 padding       = n_opperand_bytes % 4;
+  u4 default_value = read32bFrom8b(opperand_bytes + padding);
+  u4 low, high, offset;
+  low  = read32bFrom8b(opperand_bytes + padding + 4);
+  high = read32bFrom8b(opperand_bytes + padding + 8);
+
+  printf("%d to %d\n", low, high);
+
+  for(u4 i = low; i <= high; i++) {
+    offset = read32bFrom8b(opperand_bytes + padding + 12 + 4 * (i - low));
+    printf("\t%d:\t\t%d\t(+%d)\n", i, pc + offset, offset);
+  }
+  printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
+}
+
+void printInstructionsSpecialLookupswitch(u1 n_opperand_bytes, u1* opperand_bytes, u2 pc) {
+  u1 padding       = n_opperand_bytes % 4;
+  u4 default_value = read32bFrom8b(opperand_bytes + padding);
+  u4 n_pairs       = read32bFrom8b(opperand_bytes + padding + 4);
+
+  printf("%d\n", n_pairs);
+
+  u4 match, offset;
+
+  for(u4 i = 0; i < n_pairs; i++) {
+    match  = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1));
+    offset = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1) + 4);
+
+    printf("\t%d:\t%d\t(+%d)\n", match, pc + offset, offset);
+  }
+  printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
+}
+
+void printInstructionsSpecial(
+    u1 bytecode, u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp, u2 pc) {
+  switch(bytecode) {
+    // Wide
+    case 196: {
+      printInstructionsSpecialWide(opperand_bytes, cp);
+    } break;
+
+    // Iinc
+    case 132:
+      printf("%d by %d", opperand_bytes[0], (int8_t) opperand_bytes[1]);
+      break;
+
+    // TableSwitch
+    case 170: {
+      printInstructionsSpecialTableswitch(n_opperand_bytes, opperand_bytes, pc);
+    } break;
+
+    // LookupSwitch
+    case 171: {
+      printInstructionsSpecialLookupswitch(n_opperand_bytes, opperand_bytes, pc);
+    } break;
+
+    // Bipush
+    case 16:
+      printf("%d ", (int8_t) opperand_bytes[0]);
+      break;
+
+    // Sipush
+    case 17:
+      printf("%d ", (int8_t)(opperand_bytes[0] << 8 | opperand_bytes[1]));
+      break;
+  }
+}
+
+void printInstructionsNormal(u1 n_opperand_bytes, u1* opperand_bytes) {
+  u4 opperand;
+  switch(n_opperand_bytes) {
+    case 1:
+      opperand = (u4) opperand_bytes[0];
+      break;
+
+    case 2:
+      opperand = (u4)((opperand_bytes[0] << 8) | opperand_bytes[1]);
+      break;
+
+    default:
+      opperand = read32bFrom8b(opperand_bytes);
+      break;
+  }
+  printf("%d", opperand);
+}
+
 void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo* cp) {
   printf("\nInstructions read:\n\n");
   for(u4 i = 0; i < n_instrs; i++) {
@@ -304,103 +445,10 @@ void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo*
     if(n_opperand_bytes) {
       u1 op_flag = instructionOpFlag(bytecode);
       if(op_flag == _OP_FLAG_CONSTANT_POOL) {
-        printf("#");
-        if(n_opperand_bytes == 1) {
-          u2 cp_index = (u2) *opperand_bytes;
-          printf("%d ", cp_index);
-          if(cp[cp_index].tag == CONSTANT_METHODREF) {
-            printMethodPath(cp, cp_index);
-          } else {
-            printConstantValue(cp, cp_index);
-          }  // FIXME bota isso numa funcao
-        } else {
-          u2 cp_index = (u2)((opperand_bytes[0] << 8) | opperand_bytes[1]);
-
-          printf("%d ", cp_index);
-
-          u1 printed_opperands = 2;
-          while(printed_opperands < n_opperand_bytes) {
-            printf("%d ", opperand_bytes[printed_opperands]);
-            printed_opperands++;
-          }
-
-          if(cp[cp_index].tag == CONSTANT_METHODREF) {
-            printMethodPath(cp, cp_index);
-          } else {
-            printConstantValue(cp, cp_index);
-          }  // FIXME bota isso numa funcao
-        }
+        printInstructionsConstantPool(n_opperand_bytes, opperand_bytes, cp);
       } else {
         if(op_flag == _OP_FLAG_SPECIAL_CASE) {
-          switch(bytecode) {
-            // Wide
-            case 196: {
-              char* widened_opcode = instruction_mnemonic_table[opperand_bytes[0]];
-              printf("%s #", widened_opcode);
-
-              u2 cp_index = (u2)((opperand_bytes[1] << 8) | opperand_bytes[2]);
-              printf("%d ", cp_index);
-
-              // If iinc
-              if(opperand_bytes[0] == 132) {
-                u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
-                printf("%d ", const_byte);
-              } else {
-                printMethodPath(cp, cp_index);  // TODO nao tem path pro iinc
-              }
-            } break;
-
-            // Iinc
-            case 132:
-              printf("%d by %d", opperand_bytes[0], (int8_t) opperand_bytes[1]);
-              break;
-
-            // TableSwitch
-            case 170: {
-              u1 padding       = n_opperand_bytes % 4;
-              u4 default_value = read32bFrom8b(opperand_bytes + padding);
-              u4 low, high, offset;
-              low  = read32bFrom8b(opperand_bytes + padding + 4);
-              high = read32bFrom8b(opperand_bytes + padding + 8);
-
-              printf("%d to %d\n", low, high);
-
-              for(u4 i = low; i <= high; i++) {
-                offset = read32bFrom8b(opperand_bytes + padding + 12 + 4 * (i - low));
-                printf("\t%d:\t\t%d\t(+%d)\n", i, pc + offset, offset);
-              }
-              printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
-            } break;
-
-            // LookupSwitch
-            case 171: {
-              u1 padding       = n_opperand_bytes % 4;
-              u4 default_value = read32bFrom8b(opperand_bytes + padding);
-              u4 n_pairs       = read32bFrom8b(opperand_bytes + padding + 4);
-
-              printf("%d\n", n_pairs);
-
-              u4 match, offset;
-
-              for(u4 i = 0; i < n_pairs; i++) {
-                match  = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1));
-                offset = read32bFrom8b(opperand_bytes + padding + 8 * (i + 1) + 4);
-
-                printf("\t%d:\t%d\t(+%d)\n", match, pc + offset, offset);
-              }
-              printf("\tdefault:\t%d\t(+%d)\n", pc + default_value, default_value);
-            } break;
-
-            // Bipush
-            case 16:
-              printf("%d ", (int8_t) opperand_bytes[0]);
-              break;
-
-            // Sipush
-            case 17:
-              printf("%d ", (int8_t)(opperand_bytes[0] << 8 | opperand_bytes[1]));
-              break;
-          }
+          printInstructionsSpecial(bytecode, n_opperand_bytes, opperand_bytes, cp, pc);
         } else {
           if(op_flag == _OP_FLAG_BRANCH) {
             // If goto_w or jsr_w
@@ -412,21 +460,7 @@ void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo*
               printf("%d (%d)", pc + branch_offset, branch_offset);
             }
           } else {
-            u4 opperand;
-            switch(n_opperand_bytes) {
-              case 1:
-                opperand = (u4) opperand_bytes[0];
-                break;
-
-              case 2:
-                opperand = (u4)((opperand_bytes[0] << 8) | opperand_bytes[1]);
-                break;
-
-              default:
-                opperand = read32bFrom8b(opperand_bytes);
-                break;
-            }
-            printf("%d", opperand);
+            printInstructionsNormal(n_opperand_bytes, opperand_bytes);
           }
         }
       }
