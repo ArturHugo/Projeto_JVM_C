@@ -93,14 +93,14 @@ ClassFile* readClassFile(File* fd) {
 
   class_file->magic = u4Read(fd);
   if(isMagicValid(class_file) == 0) {
-    printf("Class Format Error \n");
+    printf("Erro: nao tem cafebabe!\n");
     exit(2);
   }
 
   class_file->minor_version = u2Read(fd);
   class_file->major_version = u2Read(fd);
   if(!isVersionValid(class_file->major_version)) {
-    printf("Java version is invalid");
+    printf("Erro: versao errada do Java!\n");
     exit(3);
   }
   class_file->constant_pool_count = u2Read(fd);
