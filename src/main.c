@@ -26,8 +26,7 @@ int main(int numargs, char* arg[]) {
   char* class_file_name  = strtok(arg[1], ".");
 
   if(strcmp(source_file_name, class_file_name)) {
-    printf("%c[2", 27);
-    printf("\rErro: nome do source file e do class file sao diferentes!\n");
+    printf("Erro: nome do source file e do class file sao diferentes!\n");
     return 0;
   }
 
