@@ -47,7 +47,7 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
         cp->long_info.high_bytes = u4Read(fd);
         cp->long_info.low_bytes  = u4Read(fd);
         cp->long_info._value =
-            ((int64_t) cp->long_info.high_bytes << 32) | ((int64_t) cp->long_info.low_bytes);
+            ((uint64_t) cp->long_info.high_bytes << 32) | ((uint64_t) cp->long_info.low_bytes);
         cp++;  // Skip next constant pool slot, because 8 byte
                // constants occupy 2 slots.
         break;
@@ -55,8 +55,10 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
       case CONSTANT_DOUBLE:
         cp->double_info.high_bytes = u4Read(fd);
         cp->double_info.low_bytes  = u4Read(fd);
-        cp->double_info._value =
-            ((int64_t) cp->double_info.high_bytes << 32) | ((int64_t) cp->double_info.low_bytes);
+        int64_t double_bytes =
+            ((uint64_t) cp->double_info.high_bytes << 32) | ((uint64_t) cp->double_info.low_bytes);
+
+        memcpy(&cp->double_info._value, &double_bytes, sizeof(double));
         cp++;  // Skip next constant pool slot, because 8 byte
                // constants occupy 2 slots.
         break;
@@ -318,7 +320,7 @@ void printConstantPoolInfo(ConstantPoolInfo* constant_pool, int index) {
       u4 double_low  = constant_pool[index].double_info.low_bytes;
 
       int64_t double_bytes;
-      double_bytes = ((int64_t) double_high << 32) | ((int64_t) double_low);
+      double_bytes = ((uint64_t) double_high << 32) | ((uint64_t) double_low);
 
       double double_num;
       memcpy(&double_num, &double_bytes, sizeof(double));

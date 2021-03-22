@@ -17,18 +17,14 @@ int main(int numargs, char* arg[]) {
 
   ClassFile* class_file = readClassFile(fd);
 
-  /*char source_file_name[100];
-  strncpy(source_file_name, getSourceFile(class_file), strlen(getSourceFile(class_file)) - 6);
-
-  char class_file_name[100];
-  strncpy(class_file_name, arg[1], strlen(arg[1]) - 7);
-
-  printf("%s \n %s \n", source_file_name, class_file_name);
+  char* source_file_name = strtok(getSourceFile(class_file), ".");
+  char* class_file_name  = strtok(arg[1], ".");
 
   if(strcmp(source_file_name, class_file_name)) {
-    printf("Sourcefile and classfile name differ.");
-    return 1;
-  }*/
+    printf("%c[2K", 27);
+    printf("\rError: source file name and class file name differ!\n");
+    return 0;
+  }
 
   printClassFile(class_file);
 

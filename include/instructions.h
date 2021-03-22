@@ -13,7 +13,7 @@ typedef struct {
 
 u4 nInstructions(u1* code, u4 n_bytes);
 
-Instruction* readInstructions(u1* code, u4 n_bytes, u4 n_instruction);
+Instruction* readInstructions(u1* code, u4 n_instruction);
 
 void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo* cp);
 

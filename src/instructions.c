@@ -10,6 +10,15 @@
 // number of opperandBytes == 10, opperandBytes are of variable
 // ammount. y=2 -> 1 = constant pool, 2 = caso particular, 0 = não constant pool e normal
 
+#define T_BOOLEAN 4
+#define T_CHAR    5
+#define T_FLOAT   6
+#define T_DOUBLE  7
+#define T_BYTE    8
+#define T_SHORT   9
+#define T_INT     10
+#define T_LONG    11
+
 #define _BYTECODE 0
 
 #define _N_OPPERAND_BYTES 1
@@ -244,7 +253,10 @@ u4   read32bFrom8b(u1* array);
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
 
 /* --------------------- printInstructions() helper functions -----------------------------*/
-void printInstructionsConstantPool(u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp);
+void printInstructionsConstantPool(u1                bytecode,
+                                   u1                n_opperand_bytes,
+                                   u1*               opperand_bytes,
+                                   ConstantPoolInfo* cp);
 void printInstructionsConstantPoolArg(ConstantPoolInfo* cp, u2 cp_index);
 
 void printInstructionsSpecial(
@@ -264,7 +276,7 @@ u4 read32bFrom8b(u1* array) {
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
-Instruction* readInstructions(u1* code, u4 n_bytes, u4 n_instruction) {
+Instruction* readInstructions(u1* code, u4 n_instruction) {
   Instruction* instructions = calloc(n_instruction, sizeof(Instruction));
   u4           current_byte = 0;
   for(u4 i = 0; i < n_instruction; i++) {
@@ -298,14 +310,19 @@ if tem bytes
 */
 
 void printInstructionsConstantPoolArg(ConstantPoolInfo* cp, u2 cp_index) {
-  if(cp[cp_index].tag == CONSTANT_METHODREF) {
+  if((cp[cp_index].tag != CONSTANT_STRING) && (cp[cp_index].tag != CONSTANT_INTEGER) &&
+     (cp[cp_index].tag != CONSTANT_FLOAT) && (cp[cp_index].tag != CONSTANT_LONG) &&
+     (cp[cp_index].tag != CONSTANT_DOUBLE)) {
     printMethodPath(cp, cp_index);
   } else {
     printConstantValue(cp, cp_index);
   }
 }
 
-void printInstructionsConstantPool(u1 n_opperand_bytes, u1* opperand_bytes, ConstantPoolInfo* cp) {
+void printInstructionsConstantPool(u1                bytecode,
+                                   u1                n_opperand_bytes,
+                                   u1*               opperand_bytes,
+                                   ConstantPoolInfo* cp) {
   printf("#");
   u2 cp_index;
   if(n_opperand_bytes == 1) {
@@ -322,7 +339,13 @@ void printInstructionsConstantPool(u1 n_opperand_bytes, u1* opperand_bytes, Cons
       printed_opperands++;
     }
   }
+
   printInstructionsConstantPoolArg(cp, cp_index);
+
+  // If multianewarray
+  if(bytecode == 197) {
+    printf(" dim %d", opperand_bytes[2]);
+  }
 }
 
 void printInstructionsSpecialWide(u1* opperand_bytes, ConstantPoolInfo* cp) {
@@ -407,6 +430,44 @@ void printInstructionsSpecial(
     case 17:
       printf("%d ", (int8_t)(opperand_bytes[0] << 8 | opperand_bytes[1]));
       break;
+
+    // Newarray
+    case 188:
+      printf("%d ", opperand_bytes[0]);
+      switch(opperand_bytes[0]) {
+        case T_BOOLEAN:
+          printf("(boolean) ");
+          break;
+
+        case T_CHAR:
+          printf("(char) ");
+          break;
+
+        case T_FLOAT:
+          printf("(float) ");
+          break;
+
+        case T_DOUBLE:
+          printf("(double) ");
+          break;
+
+        case T_BYTE:
+          printf("(byte) ");
+          break;
+
+        case T_SHORT:
+          printf("(short) ");
+          break;
+
+        case T_INT:
+          printf("(int) ");
+          break;
+
+        case T_LONG:
+          printf("(long) ");
+          break;
+      }
+      break;
   }
 }
 
@@ -445,7 +506,7 @@ void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo*
     if(n_opperand_bytes) {
       u1 op_flag = instructionOpFlag(bytecode);
       if(op_flag == _OP_FLAG_CONSTANT_POOL) {
-        printInstructionsConstantPool(n_opperand_bytes, opperand_bytes, cp);
+        printInstructionsConstantPool(bytecode, n_opperand_bytes, opperand_bytes, cp);
       } else {
         if(op_flag == _OP_FLAG_SPECIAL_CASE) {
           printInstructionsSpecial(bytecode, n_opperand_bytes, opperand_bytes, cp, pc);

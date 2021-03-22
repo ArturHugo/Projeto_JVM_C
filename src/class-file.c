@@ -1,55 +1,57 @@
 #include "class-file.h"
 
-static char* access_flag_table[16] = {"public",
-                                      NULL,
-                                      NULL,
-                                      NULL,
-                                      NULL,
-                                      "final",
-                                      "super",
-                                      NULL,
-                                      NULL,
-                                      "interface",
-                                      "abstract",
-                                      "synthetic",
-                                      "annotation",
-                                      "enum",
-                                      NULL,
-                                      NULL};
+#include <string.h>
+
+static char* access_flag_table[16] = {"public",      // 0x1
+                                      NULL,          // 0x2
+                                      NULL,          // 0x4
+                                      NULL,          // 0x8
+                                      "final",       // 0x10
+                                      "super",       // 0x20
+                                      NULL,          // 0x40
+                                      NULL,          // 0x80
+                                      NULL,          // 0x100
+                                      "interface",   // 0x200
+                                      "abstract",    // 0x400
+                                      NULL,          // 0x800
+                                      "synthetic",   // 0x1000
+                                      "annotation",  // 0x2000
+                                      "enum",        // 0x4000
+                                      NULL};         // 0x8000
 
 void printAccessFlags(u2 access_flags) {
   for(int i = 0; i < 16; i++) {
     if((access_flags & 1) && (access_flag_table[i] != NULL)) {
       printf("%s ", access_flag_table[i]);
     }
-    access_flags >> 1;
+    access_flags >>= 1;
   }
 }
 
 void printGeneralInfo(ClassFile* class_file) {
-  printf("General info:\n");
-  printf("Minor version: \t%d\n", class_file->minor_version);
-  printf("Major version: \t%d\n", class_file->major_version);
-  printf("Constant pool count: \t%d\n", class_file->constant_pool_count);
+  printf("--------\nGeneral info:\n--------\n");
+  printf("Minor version:       %d\n", class_file->minor_version);
+  printf("Major version:       %d\n", class_file->major_version);
+  printf("Constant pool count: %d\n", class_file->constant_pool_count);
 
-  printf("Access flags: \t0x%04x [");
+  printf("Access flags:        0x%04x [", class_file->access_flags);
   printAccessFlags(class_file->access_flags);
   printf("]\n");
 
   u2 class_name_index = class_file->constant_pool[class_file->this_class].class_info.name_index;
-  printf("This class: \tcp_info #%d <%s>\n",
+  printf("This class:          cp_info #%d <%s>\n",
          class_file->this_class,
          class_file->constant_pool[class_name_index].utf8_info.bytes);
 
   class_name_index = class_file->constant_pool[class_file->super_class].class_info.name_index;
-  printf("Super class: \tcp_info #%d <%s>\n",
+  printf("Super class:         cp_info #%d <%s>\n",
          class_file->this_class,
          class_file->constant_pool[class_name_index].utf8_info.bytes);
 
-  printf("Interfaces count: \t%d\n", class_file->interfaces_count);
-  printf("Fields count: \t%d\n", class_file->fields_count);
-  printf("Methods count: \t%d\n", class_file->methods_count);
-  printf("Attrinbutes count: \t%d\n", class_file->attributes_count);
+  printf("Interfaces count:    %d\n", class_file->interfaces_count);
+  printf("Fields count:        %d\n", class_file->fields_count);
+  printf("Methods count:       %d\n", class_file->methods_count);
+  printf("Attrinbutes count:   %d\n", class_file->attributes_count);
 }
 
 int isVersionValid(u2 major_version) {
@@ -130,9 +132,9 @@ void printClassFile(ClassFile* class_file) {
 
 char* getSourceFile(ClassFile* class_file) {
   for(int i = 0; i < class_file->attributes_count; i++) {
-    if(class_file->attributes[i]._attribute_name == "SourceFile") {
+    if(!strcmp(class_file->attributes[i]._attribute_name, "SourceFile")) {
       u2 index = class_file->attributes[i].source_file_info.sourcefile_index;
-      return class_file->constant_pool[index].utf8_info.bytes;
+      return (char*) class_file->constant_pool[index].utf8_info.bytes;
     }
   }
   return NULL;

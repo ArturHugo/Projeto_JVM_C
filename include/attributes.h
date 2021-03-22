@@ -90,7 +90,7 @@ typedef struct AttributeInfo {
   u4 attribute_length;
 
   AttributeType _attribute_type;
-  u1*           _attribute_name;
+  char*         _attribute_name;
 
   union {
     ConstantValueInfo      constant_value_info;
