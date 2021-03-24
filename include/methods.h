@@ -13,6 +13,6 @@ typedef struct Method {
 } MethodInfo;
 
 MethodInfo* readMethods(u2 methods_count, File* fd, ConstantPoolInfo* cp);
-void printMethods(u2 methods_count, MethodInfo* methods, ConstantPoolInfo* cp);
+void        printMethods(u2 methods_count, MethodInfo* methods, ConstantPoolInfo* cp);
 
 #endif  // __METHODS_H

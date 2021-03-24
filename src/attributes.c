@@ -37,7 +37,7 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
 
     // TODO: check if index is on range
     ConstantPoolInfo attribute_name_reference = cp[attribute->attribute_name_index];
-    attribute->_attribute_name                = attribute_name_reference.utf8_info.bytes;
+    attribute->_attribute_name                = (char*) attribute_name_reference.utf8_info.bytes;
     attribute->_attribute_type = getAttributeType((char*) attribute->_attribute_name);
 
     switch(attribute->_attribute_type) {
@@ -60,9 +60,7 @@ AttributeInfo* readAttributes(u2 attributes_count, File* fd, ConstantPoolInfo* c
             nInstructions(attribute->code_info.code, attribute->code_info.code_length);
 
         attribute->code_info._instructions =
-            readInstructions(attribute->code_info.code,
-                             attribute->code_info.code_length,
-                             attribute->code_info._instructions_count);
+            readInstructions(attribute->code_info.code, attribute->code_info._instructions_count);
 
         // Read exception_table
         attribute->code_info.exception_table_length = u2Read(fd);

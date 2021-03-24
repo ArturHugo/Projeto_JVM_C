@@ -13,6 +13,6 @@ typedef struct Field {
 } FieldInfo;
 
 FieldInfo* readFields(u2 fields_count, File* fd, ConstantPoolInfo* cp);
-void printFields(u2 fields_count, FieldInfo* fields, ConstantPoolInfo* cp);
+void       printFields(u2 fields_count, FieldInfo* fields, ConstantPoolInfo* cp);
 
 #endif  // __FIELDS_H
