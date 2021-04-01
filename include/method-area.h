@@ -17,10 +17,10 @@ typedef struct Object {
 } Object;
 
 typedef struct MethodArea {
-  Map     loaded_classes;
+  Map*    loaded_classes;
   Object* objects;
 } MethodArea;
 
-extern MethodArea method_area;
+MethodArea method_area;
 
 #endif  //__METHOD_AREA_H
