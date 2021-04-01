@@ -9,6 +9,8 @@ typedef struct Node {
   struct Node* next;
 } Node;
 
+typedef Node* Stack;
+
 // push a Node to stack. To use it for the first time, declare a Node*
 // and pass it via reference in "nd". This will be your stack
 // variable.Then, pass a pointer to what is being stored in "data",

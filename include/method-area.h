@@ -6,8 +6,9 @@
 #include "methods.h"
 
 typedef struct JavaType {
-  uint8_t  cat_tag;
-  uint64_t value;
+  u1 cat_tag;
+  u4 high_bytes;
+  u4 low_bytes;
 } JavaType;
 
 typedef struct Object {
