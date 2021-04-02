@@ -21,6 +21,4 @@ typedef struct MethodArea {
   Object* objects;
 } MethodArea;
 
-MethodArea method_area;
-
 #endif  //__METHOD_AREA_H

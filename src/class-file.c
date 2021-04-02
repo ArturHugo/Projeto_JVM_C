@@ -1,4 +1,6 @@
 #include "class-file.h"
+#include "global.h"
+#include "object.h"
 
 #include <string.h>
 
@@ -119,6 +121,8 @@ ClassFile* readClassFile(File* fd) {
       readAttributes(class_file->attributes_count, fd, class_file->constant_pool);
   printf("\r                                               \r");
 
+  class_file->_status = loaded;
+
   return class_file;
 }
 
@@ -139,4 +143,55 @@ char* getSourceFile(ClassFile* class_file) {
     }
   }
   return NULL;
+}
+
+void loadObjectClass() {
+  File* fd   = malloc(sizeof(*fd));
+  fd->seek   = 0;
+  fd->buffer = Object_class;
+
+  ClassFile* class_file = readClassFile(fd);
+  mapAdd(method_area.loaded_classes, "java/lang/Object", class_file);
+
+  free(fd);
+}
+
+void loadClass(char* file_path) {
+  int   class_name_size = strlen(file_path) - 6;
+  char* class_file_name = calloc(class_name_size + 1, sizeof(char));
+  memcpy(class_file_name, file_path, class_name_size);
+
+  if(!mapGet(method_area.loaded_classes, class_file_name)) {
+    FILE* file = fopen(file_path, "rb");
+    File* fd   = convertFile(file);
+    fclose(file);
+
+    ClassFile* class_file = readClassFile(fd);
+
+    char* source_file_path      = getSourceFile(class_file);
+    int   source_file_name_size = strlen(source_file_path) - 5;
+    char* source_file_name      = calloc(source_file_name_size + 1, sizeof(char));
+    memcpy(source_file_name, source_file_path, source_file_name_size);
+
+    if(strcmp(source_file_name, class_file_name)) {
+      printf("Em %s\n", class_file_name);
+      printf("Erro: nome do source file e do class file sao diferentes!\n");
+      exit(1);
+    }
+    // If current class is not loaded
+    // Add to method_area
+    mapAdd(method_area.loaded_classes, class_file_name, class_file);
+
+    // If current class is not Object
+    char* super_class_name =
+        (char*) getUtf8String(class_file->constant_pool, class_file->super_class);
+
+    // Load super class
+    strcat(super_class_name, ".class");
+    loadClass(super_class_name);
+
+    free(fd->buffer);
+    free(fd);
+    free(source_file_name);
+  }
 }

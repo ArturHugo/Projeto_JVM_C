@@ -23,26 +23,40 @@
 
 // CONSTAT_item_info
 typedef struct {
-  u2 name_index;
+  u2  name_index;
+  u1* _name;
 } ClassInfo;
 
 typedef struct {
   u2 class_index;
   u2 name_and_type_index;
+
+  u1* _class;
+  u1* _name;
+  u1* _descriptor;
 } FieldrefInfo;
 
 typedef struct {
   u2 class_index;
   u2 name_and_type_index;
+
+  u1* _class;
+  u1* _name;
+  u1* _descriptor;
 } MethodrefInfo;
 
 typedef struct {
   u2 class_index;
   u2 name_and_type_index;
+
+  u1* _interface;
+  u1* _name;
+  u1* _descriptor;
 } InterfaceMethodrefInfo;
 
 typedef struct {
-  u2 string_index;
+  u2  string_index;
+  u1* _value;
 } StringInfo;
 
 typedef struct {

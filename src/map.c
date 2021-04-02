@@ -1,13 +1,20 @@
 #include "map.h"
 #include "string.h"
 
-Map* newMap() { return malloc(sizeof(Map*)); }
+Map* newMap() {
+
+  Map* map  = malloc(sizeof(Map*));
+  map->tail = NULL;
+  map->head = NULL;
+  return map;
+}
 
 // Adiciona uma entrada a tabela do Map. Não confere se a entrada é repetida.
 void mapAdd(Map* map, char* key, void* value) {
   Pair* new_pair  = malloc(sizeof(Pair*));
   new_pair->key   = key;
   new_pair->value = value;
+  new_pair->next  = NULL;
 
   if(map->head == NULL) {
     map->head = new_pair;
@@ -27,6 +34,9 @@ void* mapGet(Map* map, char* key) {
 
   while(current_pair != NULL && strcmp(current_pair->key, key))
     current_pair = current_pair->next;
+
+  if(current_pair == NULL)
+    return NULL;
 
   return current_pair->value;
 }

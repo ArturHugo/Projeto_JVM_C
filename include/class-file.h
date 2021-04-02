@@ -31,7 +31,10 @@
 #define ACC_ABSTRACT     0x0400
 #define ACC_STRICT       0x0800
 
+typedef enum { loaded, initialized } ClassStatus;
+
 typedef struct ClassFile {
+  ClassStatus       _status;
   u4                magic;
   u2                minor_version;
   u2                major_version;
@@ -60,5 +63,8 @@ ClassFile* readClassFile(File* fd);
 void printClassFile(ClassFile* class_file);
 
 char* getSourceFile(ClassFile* class_file);
+
+void loadObjectClass();
+void loadClass(char* file_path);
 
 #endif  // __CLASS_FILE_H

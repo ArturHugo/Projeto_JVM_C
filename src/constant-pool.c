@@ -13,25 +13,39 @@ ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd) {
     switch(cp->tag) {
       case CONSTANT_CLASS:
         cp->class_info.name_index = u2Read(fd);
+        cp->class_info._name      = NULL;
         break;
 
       case CONSTANT_FIELDREF:
         cp->fieldref_info.class_index         = u2Read(fd);
         cp->fieldref_info.name_and_type_index = u2Read(fd);
+
+        cp->fieldref_info._class      = NULL;
+        cp->fieldref_info._name       = NULL;
+        cp->fieldref_info._descriptor = NULL;
         break;
 
       case CONSTANT_METHODREF:
         cp->methodref_info.class_index         = u2Read(fd);
         cp->methodref_info.name_and_type_index = u2Read(fd);
+
+        cp->methodref_info._class      = NULL;
+        cp->methodref_info._name       = NULL;
+        cp->methodref_info._descriptor = NULL;
         break;
 
       case CONSTANT_INTERFACE_METHODREF:
         cp->interface_methodref_info.class_index         = u2Read(fd);
         cp->interface_methodref_info.name_and_type_index = u2Read(fd);
+
+        cp->interface_methodref_info._interface  = NULL;
+        cp->interface_methodref_info._name       = NULL;
+        cp->interface_methodref_info._descriptor = NULL;
         break;
 
       case CONSTANT_STRING:
         cp->string_info.string_index = u2Read(fd);
+        cp->string_info._value       = NULL;
         break;
 
       case CONSTANT_INTEGER:
