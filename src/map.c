@@ -27,15 +27,39 @@ Map* _newMap(short table_size) {
   Map* map        = malloc(sizeof(*map));
   map->length     = 0;
   map->table_size = table_size;
-  map->table      = calloc(map->table_size, sizeof(size_t));
+  map->table      = calloc(map->table_size, sizeof(map->table));
   return map;
+}
+
+void mapResize(Map* map) {
+  short new_table_size = map->table_size * RESIZE_RATIO;
+
+  Entry** new_table = calloc(new_table_size, sizeof(map->table));
+
+  // rehashing
+  for(int index = 0; index < map->table_size; index++) {
+    if(map->table[index]) {
+      short new_index = hash(map->table[index]->key) % new_table_size;
+      while(new_table[new_index] != NULL)
+        new_index++;
+      new_table[new_index] = map->table[index];
+    }
+  }
+
+  free(map->table);
+  map->table      = new_table;
+  map->table_size = new_table_size;
 }
 
 // Adiciona uma entrada a tabela do Map.
 void mapAdd(Map* map, char* key, void* value) {
-  int index = hash(key) % map->table_size;
+  if(((double) map->length) / map->table_size > MAX_LOAD_FACTOR)
+    mapResize(map);
+
+  short index = hash(key) % map->table_size;
   while(map->table[index] != NULL)
     index++;
+
   map->length++;
   map->table[index] = newEntry(key, value);
 }
@@ -43,7 +67,7 @@ void mapAdd(Map* map, char* key, void* value) {
 // Busca o index do elemento na tablea do Map.
 // Retorna -1 se não encontrado
 short mapFind(Map* map, char* key) {
-  int index = hash(key) % map->table_size;
+  short index = hash(key) % map->table_size;
 
   while(map->table[index]) {
     if(!strcmp(map->table[index]->key, key))
@@ -93,4 +117,13 @@ void* mapSet(Map* map, char* key, void* value) {
   void* old_value          = map->table[index]->value;
   map->table[index]->value = value;
   return old_value;
+}
+
+// Libera as referências do Map e suas Entries
+// Não libera as referências para as keys e values
+void mapFree(Map* map) {
+  for(short index = 0; index < map->table_size; index++)
+    free(map->table[index]);
+  free(map->table);
+  free(map);
 }

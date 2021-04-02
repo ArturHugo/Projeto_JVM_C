@@ -30,7 +30,7 @@ MunitResult get_existing_key() {
 
   assert_int(value, ==, *retrieved_value);
 
-  free(map);
+  mapFree(map);
   return MUNIT_OK;
 }
 
@@ -45,7 +45,7 @@ MunitResult remove_entry() {
 
   assert_int(value, ==, *removed_value);
 
-  free(map);
+  mapFree(map);
   return MUNIT_OK;
 }
 
@@ -58,7 +58,7 @@ MunitResult remove_null() {
 
   assert_null(mapRemove(map, "foo"));
 
-  free(map);
+  mapFree(map);
   return MUNIT_OK;
 }
 
@@ -71,7 +71,31 @@ MunitResult set_new_value() {
   assert_null(old_value);
   assert_int(42, ==, *(int*) mapGet(map, "foo"));
 
-  free(map);
+  mapFree(map);
+  return MUNIT_OK;
+}
+
+MunitResult resize() {
+  Map* map = _newMap(3);
+
+  int foo = 1;
+  int bar = 2;
+  int baz = 3;
+  int seg = 4;
+
+  mapAdd(map, "foo", &foo);
+  mapAdd(map, "bar", &bar);
+  mapAdd(map, "baz", &baz);
+  mapAdd(map, "seg", &seg);
+
+  assert_short(3, !=, map->table_size);
+
+  assert_int(foo, ==, *(int*) mapGet(map, "foo"));
+  assert_int(bar, ==, *(int*) mapGet(map, "bar"));
+  assert_int(baz, ==, *(int*) mapGet(map, "baz"));
+  assert_int(seg, ==, *(int*) mapGet(map, "seg"));
+
+  mapFree(map);
   return MUNIT_OK;
 }
 
@@ -79,7 +103,8 @@ MunitTest tests[] = {{"/get_null", get_non_existing_key, NULL, NULL, MUNIT_TEST_
                      {"/get_existing", get_existing_key, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
                      {"/remove_entry", remove_entry, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
                      {"/remove_null", remove_null, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-                     {"/set_new", set_new_value, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
+                     {"/set_new", set_new_value, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+                     {"/resize", resize, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite suite = {
     "/map",                 /* name */
