@@ -5,8 +5,10 @@
 #include "attributes.h"
 #include "class-file.h"
 #include "common.h"
+#include "frame.h"
 #include "instructions.h"
 #include "method-area.h"
+#include "stack.h"
 
 MethodArea method_area;
 
@@ -44,9 +46,10 @@ int main(int numargs, char* arg[]) {
     method_area.loaded_classes = newMap();
     loadObjectClass();
     loadClass(arg[2]);
-    ClassFile* class_file = mapGet(method_area.loaded_classes, "multi");
-    printClassFile(mapGet(method_area.loaded_classes, "multi"));
-  }
 
+    char* class_name = trimSuffix(arg[2], ".class");
+    resolveReferences(class_name);
+    free(class_name);
+  }
   return (0);
 }

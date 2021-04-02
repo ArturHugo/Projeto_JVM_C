@@ -35,6 +35,7 @@ typedef enum { loaded, initialized } ClassStatus;
 
 typedef struct ClassFile {
   ClassStatus       _status;
+  struct ClassFile* _super_class;
   u4                magic;
   u2                minor_version;
   u2                major_version;
@@ -66,5 +67,9 @@ char* getSourceFile(ClassFile* class_file);
 
 void loadObjectClass();
 void loadClass(char* file_path);
+
+char* trimSuffix(char* file_path, char* suffix);
+
+void resolveReferences(char* file_path);
 
 #endif  // __CLASS_FILE_H

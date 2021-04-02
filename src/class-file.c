@@ -121,7 +121,8 @@ ClassFile* readClassFile(File* fd) {
       readAttributes(class_file->attributes_count, fd, class_file->constant_pool);
   printf("\r                                               \r");
 
-  class_file->_status = loaded;
+  class_file->_status      = loaded;
+  class_file->_super_class = NULL;
 
   return class_file;
 }
@@ -145,6 +146,13 @@ char* getSourceFile(ClassFile* class_file) {
   return NULL;
 }
 
+char* trimSuffix(char* file_path, char* suffix) {
+  int   size = strlen(file_path) - strlen(suffix);
+  char* name = calloc(size + 1, sizeof(char));
+  memcpy(name, file_path, size);
+  return name;
+}
+
 void loadObjectClass() {
   File* fd   = malloc(sizeof(*fd));
   fd->seek   = 0;
@@ -157,9 +165,7 @@ void loadObjectClass() {
 }
 
 void loadClass(char* file_path) {
-  int   class_name_size = strlen(file_path) - 6;
-  char* class_file_name = calloc(class_name_size + 1, sizeof(char));
-  memcpy(class_file_name, file_path, class_name_size);
+  char* class_file_name = trimSuffix(file_path, ".class");
 
   if(!mapGet(method_area.loaded_classes, class_file_name)) {
     FILE* file = fopen(file_path, "rb");
@@ -168,10 +174,8 @@ void loadClass(char* file_path) {
 
     ClassFile* class_file = readClassFile(fd);
 
-    char* source_file_path      = getSourceFile(class_file);
-    int   source_file_name_size = strlen(source_file_path) - 5;
-    char* source_file_name      = calloc(source_file_name_size + 1, sizeof(char));
-    memcpy(source_file_name, source_file_path, source_file_name_size);
+    char* source_file_path = getSourceFile(class_file);
+    char* source_file_name = trimSuffix(source_file_path, ".java");
 
     if(strcmp(source_file_name, class_file_name)) {
       printf("Em %s\n", class_file_name);
@@ -187,11 +191,86 @@ void loadClass(char* file_path) {
         (char*) getUtf8String(class_file->constant_pool, class_file->super_class);
 
     // Load super class
-    strcat(super_class_name, ".class");
-    loadClass(super_class_name);
+    char* super_class_name_copy =
+        calloc(strlen(super_class_name) + strlen(".class") + 1, sizeof(char));
+    strcpy(super_class_name_copy, super_class_name);
+    strcat(super_class_name_copy, ".class");
+    loadClass(super_class_name_copy);
+    free(super_class_name_copy);
 
     free(fd->buffer);
     free(fd);
     free(source_file_name);
+  }
+}
+
+/// Função para resolver referências da constant pool
+void resolveReferences(char* class_name) {
+  ClassFile*        class_file = mapGet(method_area.loaded_classes, class_name);
+  ConstantPoolInfo* cp         = class_file->constant_pool;
+
+  for(int i = 1; i < class_file->constant_pool_count; i++) {
+    switch(cp[i].tag) {
+      case CONSTANT_CLASS:
+        cp[i].class_info._name = cp[cp[i].class_info.name_index].utf8_info.bytes;
+        break;
+
+      case CONSTANT_FIELDREF: {
+        u2 name_and_type_index = cp[i].fieldref_info.name_and_type_index;
+
+        u2 class_name_index        = cp[cp[i].fieldref_info.class_index].class_info.name_index;
+        cp[i].fieldref_info._class = cp[class_name_index].utf8_info.bytes;
+
+        u2 name_index             = cp[name_and_type_index].name_and_type_info.name_index;
+        cp[i].fieldref_info._name = cp[name_index].utf8_info.bytes;
+
+        u2 descriptor_index = cp[name_and_type_index].name_and_type_info.descriptor_index;
+        cp[i].fieldref_info._descriptor = cp[descriptor_index].utf8_info.bytes;
+      } break;
+
+      case CONSTANT_METHODREF: {
+        u2 name_and_type_index = cp[i].methodref_info.name_and_type_index;
+
+        u2 class_name_index         = cp[cp[i].methodref_info.class_index].class_info.name_index;
+        cp[i].methodref_info._class = cp[class_name_index].utf8_info.bytes;
+
+        u2 descriptor_index = cp[name_and_type_index].name_and_type_info.descriptor_index;
+        cp[i].methodref_info._descriptor = cp[descriptor_index].utf8_info.bytes;
+
+        u2 name_index              = cp[name_and_type_index].name_and_type_info.name_index;
+        cp[i].methodref_info._name = cp[name_index].utf8_info.bytes;
+      } break;
+
+      case CONSTANT_INTERFACE_METHODREF: {
+        u2 name_and_type_index = cp[i].interface_methodref_info.name_and_type_index;
+
+        u2 class_name_index = cp[cp[i].interface_methodref_info.class_index].class_info.name_index;
+        cp[i].interface_methodref_info._interface = cp[class_name_index].utf8_info.bytes;
+
+        u2 name_index = cp[name_and_type_index].name_and_type_info.name_index;
+        cp[i].interface_methodref_info._name = cp[name_index].utf8_info.bytes;
+
+        u2 descriptor_index = cp[name_and_type_index].name_and_type_info.descriptor_index;
+        cp[i].interface_methodref_info._descriptor = cp[descriptor_index].utf8_info.bytes;
+      } break;
+
+      case CONSTANT_STRING:
+        cp[i].string_info._value = cp[cp[i].string_info.string_index].utf8_info.bytes;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if(class_file->super_class) {
+    class_file->_super_class =
+        mapGet(method_area.loaded_classes, (char*) cp[class_file->super_class].class_info._name);
+
+    ConstantPoolInfo* super_cp = class_file->_super_class->constant_pool;
+
+    u2 super_class_name_index =
+        super_cp[class_file->_super_class->this_class].class_info.name_index;
+    resolveReferences((char*) super_cp[super_class_name_index].utf8_info.bytes);
   }
 }
