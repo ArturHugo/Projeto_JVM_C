@@ -11,6 +11,7 @@ typedef struct {
 } Entry;
 
 typedef struct {
+  short   table_size;
   short   length;
   Entry** table;
 } Map;
@@ -18,6 +19,8 @@ typedef struct {
 Map*  _newMap(short n_entries);
 void  mapAdd(Map* map, char* key, void* value);
 void* mapGet(Map* map, char* key);
+void* mapRemove(Map* map, char* key);
+void* mapSet(Map* map, char* key, void* value);
 
 #define newMap() _newMap(DEFAULT_MAP_LENGTH);
 
