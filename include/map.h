@@ -1,22 +1,24 @@
 #ifndef __MAP_H
 #define __MAP_H
 
-#include "common.h"
+#define DEFAULT_MAP_LENGTH 13
 
-typedef struct Pair {
-  char*        key;
-  void*        value;
-  struct Pair* next;
-} Pair;
+#include <stddef.h>
 
-typedef struct Map {
-  Pair* head;
-  Pair* tail;
+typedef struct {
+  char* key;
+  void* value;
+} Entry;
+
+typedef struct {
+  short   length;
+  Entry** table;
 } Map;
 
-Map*  newMap();
+Map*  _newMap(short n_entries);
 void  mapAdd(Map* map, char* key, void* value);
 void* mapGet(Map* map, char* key);
-void* mapRemove(Map* map, char* key);
+
+#define newMap() _newMap(DEFAULT_MAP_LENGTH);
 
 #endif  //__MAP_H
