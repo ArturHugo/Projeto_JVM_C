@@ -6,6 +6,6 @@
 #include "method-area.h"
 #include "stack.h"
 
-void (*instructions_ptrs[256])(u1*, Frame*);
+void (*instructions_handlers[256])(u1*);
 
 void run(char* start_class_name);

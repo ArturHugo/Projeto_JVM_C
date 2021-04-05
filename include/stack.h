@@ -21,4 +21,6 @@ void pushNode(Node** node, void* data, size_t size);
 // type, and pass its reference in "data" and size in "sz".
 void popNode(Node** node, void* data, size_t size);
 
+void* peekNode(Stack stack);
+
 #endif  //__STACK_H

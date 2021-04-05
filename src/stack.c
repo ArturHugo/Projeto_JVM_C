@@ -31,6 +31,8 @@ void popNode(Node** node, void* data, size_t size) {
   free(old_node);
 }
 
+void* peekNode(Stack stack) { return (*stack).data; }
+
 void testStack() {
   int testSuccesfull = 1;
 
@@ -41,8 +43,9 @@ void testStack() {
     u1    n_args;
   } test;
 
-  test i, i2;
-  test teste;
+  test  i, i2;
+  test  teste;
+  test* peekTest;
 
   char* mn   = "teste";
   i.bytecode = 42;
@@ -60,6 +63,11 @@ void testStack() {
 
   pushNode(&list, &i, sizeof(i));
   pushNode(&list, &i2, sizeof(i2));
+
+  peekTest = peekNode(list);
+  if(peekTest->bytecode != i2.bytecode || peekTest->n_args != i2.n_args || peekTest->pc != i2.pc) {
+    testSuccesfull = 0;
+  }
 
   popNode(&list, &teste, sizeof(teste));
   if(teste.bytecode != i2.bytecode || teste.n_args != i2.n_args || teste.pc != i2.pc) {

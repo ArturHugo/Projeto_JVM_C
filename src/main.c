@@ -11,6 +11,7 @@
 #include "stack.h"
 
 MethodArea method_area;
+Stack      frame_stack;
 
 int main(int numargs, char* arg[]) {
 
