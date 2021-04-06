@@ -15,11 +15,11 @@ typedef Node* Stack;
 // and pass it via reference in "nd". This will be your stack
 // variable.Then, pass a pointer to what is being stored in "data",
 // and its size (using sizeof()) in sz.
-void pushNode(Node** node, void* data, size_t size);
+void pushNode(Node** node, void* data);
 
 // pass reference to stack in nd. declare a variable of the expected
 // type, and pass its reference in "data" and size in "sz".
-void popNode(Node** node, void* data, size_t size);
+void* popNode(Node** node);
 
 void* peekNode(Stack stack);
 

@@ -5,7 +5,9 @@
 #include "attributes.h"
 #include "class-file.h"
 #include "common.h"
+#include "execution-engine.h"
 #include "frame.h"
+#include "global.h"
 #include "instructions.h"
 #include "method-area.h"
 #include "stack.h"
@@ -50,6 +52,7 @@ int main(int numargs, char* arg[]) {
 
     char* class_name = trimSuffix(arg[2], ".class");
     resolveReferences(class_name);
+    run(class_name);
     free(class_name);
   }
   return (0);
