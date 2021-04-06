@@ -11,7 +11,7 @@
 
 void func();
 
-static void (*instructions_handlers[256])(u1*) = {func};
+void (*instructions_handlers[256])(u1*) = {func};
 
 void run(char* start_class_name);
 
