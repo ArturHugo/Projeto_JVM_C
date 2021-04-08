@@ -23,4 +23,14 @@ void* popNode(Node** node);
 
 void* peekNode(Stack stack);
 
+/*
+ * Push a u4 value without the need to allocate the value
+ */
+void pushValue(Stack* stack, u4 value);
+
+/*
+ * Pop a u4 value from the stack, puting it on reference and freeing the alloc
+ */
+void popValue(Stack* stack, u4* reference);
+
 #endif  //__STACK_H
