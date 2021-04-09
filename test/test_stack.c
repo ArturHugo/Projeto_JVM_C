@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 
+#include "global.h"
 #include "stack.h"
+
 
 void test() {
   int testSuccesfull = 1;
