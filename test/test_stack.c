@@ -6,7 +6,7 @@
 
 #include "global.h"
 #include "stack.h"
-
+// FIXME teste completamente quebrado
 
 void test() {
   int testSuccesfull = 1;
