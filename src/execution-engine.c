@@ -261,6 +261,8 @@ void (*const instructions_handlers[256])(const u1*) = {
   /* 0xff */ NULL,
 };
 
+void (*instructions_handlers[256])(u1*) = {func};
+
 void run(char* starting_class_name) {
   frame_stack = NULL;
 

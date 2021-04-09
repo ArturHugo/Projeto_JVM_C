@@ -28,14 +28,14 @@ void* peekNode(Stack stack) {
   return NULL;
 }
 
-void pushValue(Stack* stack, u4 value) {
-  u4* data = malloc(sizeof(u4));
-  *data = value;
+void pushValue(Stack* stack, JavaType value) {
+  JavaType* data = malloc(sizeof(JavaType));
+  *data          = value;
   pushNode(stack, data);
 }
 
-void popValue(Stack* stack, u4* reference) {
-  u4* temp = popNode(stack);
-  *reference = *temp;
+void popValue(Stack* stack, JavaType* reference) {
+  JavaType* temp = popNode(stack);
+  *reference     = *temp;
   free(temp);
 }
