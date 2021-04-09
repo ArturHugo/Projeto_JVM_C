@@ -43,9 +43,45 @@ void test_istore(void *fixture) {
   assert_int(42, ==, frame->local_variables[0].int_value);
 }
 
-void test_lstore() {}
-void test_fstore() {}
-void test_dstore() {}
+void test_lstore(void *fixture) {
+  Frame* frame = fixture;
+  JavaType value = { .long_value = (42L << 32) + 1 };
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[] = {0x37, 0};
+  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_llong((42L << 32) + 1, ==, frame->local_variables[0].long_value);
+}
+
+void test_fstore(void *fixture) {
+  Frame* frame = fixture;
+  JavaType value = { .float_value = 0.42 };
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[] = {0x38, 0};
+  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_float(0.42, ==, frame->local_variables[0].float_value);
+}
+
+void test_dstore(void *fixture) {
+  Frame* frame = fixture;
+  JavaType value = { .double_value = 0.42 };
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[] = {0x39, 0};
+  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(0.42, ==, frame->local_variables[0].double_value);
+}
+
 void test_astore() {}
 void test_istore_0() {}
 void test_istore_1() {}
@@ -77,8 +113,9 @@ void test_castore() {}
 void test_sastore() {}
 
 create_test_with_fixture(test_istore);
-create_skip(test_lstore);
-create_skip(test_fstore);
+create_test_with_fixture(test_lstore);
+create_test_with_fixture(test_fstore);
+create_test_with_fixture(test_dstore);
 create_skip(test_istore_0);
 create_skip(test_istore_1);
 create_skip(test_istore_2);
@@ -110,8 +147,9 @@ create_skip(test_sastore);
 
 MunitTest tests[] = {
     add_test_with_fixtures(test_istore),
-    add_test(test_lstore),
-    add_test(test_fstore),
+    add_test_with_fixtures(test_lstore),
+    add_test_with_fixtures(test_fstore),
+    add_test_with_fixtures(test_dstore),
     add_test(test_istore_0),
     add_test(test_istore_1),
     add_test(test_istore_2),

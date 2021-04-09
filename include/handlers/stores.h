@@ -3,7 +3,6 @@
 
 #include "common.h"
 
-void istore(const u1* instruction);
-void lstore(const u1* instruction);
+void store(const u1* instruction);
 
 #endif  // __STORES_H
