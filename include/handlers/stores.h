@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-void istore(u1* operands);
-void lstore(u1* operands);
+void u4store(u1* operands);
+void u8store(u1* operands);
 
 #endif  // __STORES_H
