@@ -14,13 +14,3 @@ Frame* newFrame(ClassFile* current_class, u2 method_index) {
 
   return new_frame;
 }
-
-Frame* _newFrame(u2 max_locals) {
-  Frame* new_frame = malloc(sizeof(*new_frame));
-
-  new_frame->operand_stack  = NULL;
-  new_frame->local_pc       = 0;
-  new_frame->local_variables = malloc(max_locals * sizeof(u4));
-
-  return new_frame;
-}
