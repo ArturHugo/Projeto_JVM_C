@@ -29,12 +29,11 @@ void run(char* starting_class_name) {
   */
 
   while(peekNode(frame_stack)) {
-    Frame*       current_frame = (Frame*) peekNode(frame_stack);
-    Instruction* current_instructions =
-        current_frame->current_method->attributes[0].code_info._instructions;
-    Instruction current_instruction = current_instructions[current_frame->local_pc];
-    // void (*instruction)(u1*)        = instructions_handlers[current_instruction.bytecode];
+    Frame* current_frame        = (Frame*) peekNode(frame_stack);
+    u1*    current_instructions = current_frame->current_method->attributes[0].code_info.code;
+    u1*    current_instruction  = current_instructions + current_frame->local_pc;
+    // void (*instruction)(u1*)        = instructions_handlers[*current_instruction];
     void (*instruction)(u1*) = instructions_handlers[0];
-    instruction(current_instruction.opperand_bytes);
+    instruction(current_instruction);
   }
 }

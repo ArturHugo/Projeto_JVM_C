@@ -119,7 +119,6 @@ ClassFile* readClassFile(File* fd) {
   class_file->attributes_count = u2Read(fd);
   class_file->attributes =
       readAttributes(class_file->attributes_count, fd, class_file->constant_pool);
-  printf("\r                                               \r");
 
   class_file->_status      = loaded;
   class_file->_super_class = NULL;
