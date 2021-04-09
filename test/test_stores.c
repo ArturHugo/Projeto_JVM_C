@@ -32,14 +32,15 @@ static void teardown() {
 
 void test_istore(void *fixture) {
   Frame* frame = fixture;
-  pushValue(&frame->operand_stack, 42);
+  JavaType value = { .int_value = 42 };
+  pushValue(&frame->operand_stack, value);
 
   u1 current_instruction[] = {0x36, 0};
   void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
 
-  assert_int(42, ==, frame->local_variables[0]);
+  assert_int(42, ==, frame->local_variables[0].int_value);
 }
 
 void test_lstore() {}

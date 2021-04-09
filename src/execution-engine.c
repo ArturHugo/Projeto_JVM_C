@@ -2,6 +2,8 @@
 #include "frame.h"
 #include "global.h"
 
+#include "handlers/stores.h"
+
 void (*const instructions_handlers[256])(const u1*) = {
   /* 0x00 */ NULL,
   /* 0x01 */ NULL,
@@ -58,7 +60,7 @@ void (*const instructions_handlers[256])(const u1*) = {
   /* 0x34 */ NULL,
   /* 0x35 */ NULL,
   /* 0x36 */ istore,
-  /* 0x37 */ lstore,
+  /* 0x37 */ NULL,
   /* 0x38 */ NULL,
   /* 0x39 */ NULL,
   /* 0x3a */ NULL,
@@ -260,8 +262,6 @@ void (*const instructions_handlers[256])(const u1*) = {
   /* 0xfe */ NULL,
   /* 0xff */ NULL,
 };
-
-void (*instructions_handlers[256])(u1*) = {func};
 
 void run(char* starting_class_name) {
   frame_stack = NULL;
