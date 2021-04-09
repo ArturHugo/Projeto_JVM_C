@@ -3,11 +3,14 @@
 #include "global.h"
 
 /*
+ * Store int into local variable
+ *
+ * opcode:	0x36
  * format: 	[istore, index]
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void u4_store(u1* operands) {
+void istore(const u1* operands) {
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame->operand_stack, current_frame->local_variables + operands[1]);
   current_frame->local_pc += 2;
@@ -21,9 +24,4 @@ void u4_store(u1* operands) {
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void u8_store(u1* operands) {
-  Frame* current_frame = peekNode(frame_stack);
-  popValue(&current_frame->operand_stack, current_frame->local_variables + operands[1] + 1); /* high bytes */
-  popValue(&current_frame->operand_stack, current_frame->local_variables + operands[1]); /* low  bytes */
-  current_frame->local_pc += 2;
-}
+void lstore(const u1* operands);

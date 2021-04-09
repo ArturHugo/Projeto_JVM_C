@@ -14,6 +14,5 @@ typedef struct Frame {
 } Frame;
 
 Frame* newFrame(ClassFile* current_class, u2 method_index);
-Frame* _newFrame(u2 max_locals);
 
 #endif  // __FRAME_H
