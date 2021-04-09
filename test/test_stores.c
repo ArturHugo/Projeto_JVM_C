@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "execution-engine.h"
 #include "frame.h"
 #include "global.h"
 #include "stack.h"
-#include "execution-engine.h"
 
 MethodArea method_area;
 Stack      frame_stack;
@@ -17,9 +17,9 @@ static void* setup() {
   frame_stack  = NULL;
   Frame* frame = malloc(sizeof(*frame));
 
-  frame->operand_stack  = NULL;
-  frame->local_pc       = 0;
-  frame->local_variables = malloc(2 * sizeof(u4));
+  frame->operand_stack   = NULL;
+  frame->local_pc        = 0;
+  frame->local_variables = malloc(4 * sizeof(JavaType));
 
   pushNode(&frame_stack, frame);
   return frame;
@@ -30,63 +30,111 @@ static void teardown() {
   free(frame);
 }
 
-void test_istore(void *fixture) {
-  Frame* frame = fixture;
-  JavaType value = { .int_value = 42 };
+void test_istore(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.int_value = 42};
   pushValue(&frame->operand_stack, value);
 
-  u1 current_instruction[] = {0x36, 0};
-  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+  u1 current_instruction[]               = {0x36, 0};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
 
   assert_int(42, ==, frame->local_variables[0].int_value);
 }
 
-void test_lstore(void *fixture) {
-  Frame* frame = fixture;
-  JavaType value = { .long_value = (42L << 32) + 1 };
+void test_lstore(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.long_value = (42L << 32) + 1};
   pushValue(&frame->operand_stack, value);
 
-  u1 current_instruction[] = {0x37, 0};
-  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+  u1 current_instruction[]               = {0x37, 0};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
 
   assert_llong((42L << 32) + 1, ==, frame->local_variables[0].long_value);
 }
 
-void test_fstore(void *fixture) {
-  Frame* frame = fixture;
-  JavaType value = { .float_value = 0.42 };
+void test_fstore(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.float_value = 0.42};
   pushValue(&frame->operand_stack, value);
 
-  u1 current_instruction[] = {0x38, 0};
-  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+  u1 current_instruction[]               = {0x38, 0};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
 
   assert_float(0.42, ==, frame->local_variables[0].float_value);
 }
 
-void test_dstore(void *fixture) {
-  Frame* frame = fixture;
-  JavaType value = { .double_value = 0.42 };
+void test_dstore(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.double_value = 0.42};
   pushValue(&frame->operand_stack, value);
 
-  u1 current_instruction[] = {0x39, 0};
-  void (*instruction_handler)(const u1*)        = instructions_handlers[*current_instruction];
+  u1 current_instruction[]               = {0x39, 0};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
 
   assert_double(0.42, ==, frame->local_variables[0].double_value);
 }
 
+void test_istore_0(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.int_value = 42};
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x3b};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(42, ==, frame->local_variables[0].int_value);
+}
+
+void test_istore_1(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.int_value = 42};
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x3c};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(42, ==, frame->local_variables[1].int_value);
+}
+
+void test_istore_2(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.int_value = 42};
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x3d};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(42, ==, frame->local_variables[2].int_value);
+}
+
+void test_istore_3(void* fixture) {
+  Frame*   frame = fixture;
+  JavaType value = {.int_value = 42};
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x3e};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(42, ==, frame->local_variables[3].int_value);
+}
+
 void test_astore() {}
-void test_istore_0() {}
-void test_istore_1() {}
-void test_istore_2() {}
-void test_istore_3() {}
 void test_lstore_0() {}
 void test_lstore_1() {}
 void test_lstore_2() {}
@@ -116,10 +164,11 @@ create_test_with_fixture(test_istore);
 create_test_with_fixture(test_lstore);
 create_test_with_fixture(test_fstore);
 create_test_with_fixture(test_dstore);
-create_skip(test_istore_0);
-create_skip(test_istore_1);
-create_skip(test_istore_2);
-create_skip(test_istore_3);
+create_test_with_fixture(test_istore_0);
+create_test_with_fixture(test_istore_1);
+create_test_with_fixture(test_istore_2);
+create_test_with_fixture(test_istore_3);
+create_skip(test_astore);
 create_skip(test_lstore_0);
 create_skip(test_lstore_1);
 create_skip(test_lstore_2);
@@ -150,10 +199,11 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_lstore),
     add_test_with_fixtures(test_fstore),
     add_test_with_fixtures(test_dstore),
-    add_test(test_istore_0),
-    add_test(test_istore_1),
-    add_test(test_istore_2),
-    add_test(test_istore_3),
+    add_test_with_fixtures(test_istore_0),
+    add_test_with_fixtures(test_istore_1),
+    add_test_with_fixtures(test_istore_2),
+    add_test_with_fixtures(test_istore_3),
+    add_test(test_astore),
     add_test(test_lstore_0),
     add_test(test_lstore_1),
     add_test(test_lstore_2),
