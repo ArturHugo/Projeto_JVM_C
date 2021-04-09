@@ -20,7 +20,6 @@ void iload_pushes_int_local_variable_into_stack() {
 
   u1       operands[] = {21, 0};
   JavaType int_variable;
-  int_variable.type         = INT_TYPE;
   int_variable.int_value    = 42;
   frame->local_variables[0] = int_variable;
 
@@ -30,25 +29,84 @@ void iload_pushes_int_local_variable_into_stack() {
   assert_int32(value->int_value, ==, frame->local_variables[0].int_value);
 }
 
-// void lload_pushes_large_local_variable_into_stack() {
-//   frame_stack  = NULL;
-//   Frame* frame = _newFrame(2);
-//   pushNode(&frame_stack, frame);
+void lload_pushes_long_local_variable_into_stack() {
+  frame_stack  = NULL;
+  Frame* frame = _newFrame(2);
+  pushNode(&frame_stack, frame);
 
-//   u1       operands[] = {21, 0};
-//   JavaType local_variable;
-//   local_variable.cat_tag = CAT1;
+  u1       operands[] = {22, 0};
+  JavaType local_variable;
+  local_variable.long_value = 42;
+  frame->local_variables[0] = local_variable;
 
-//   frame->local_variables[0] = 42;
+  lload(operands);
 
-//   iload(operands);
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_int64(value->long_value, ==, frame->local_variables[0].long_value);
+}
 
-//   JavaType* value = (JavaType*) peekNode(frame->operand_stack);
-//   assert_int((int32_t) value->low_bytes, ==, frame->local_variables[0]);
-// }
+void fload_pushes_float_local_variable_into_stack() {
+  frame_stack  = NULL;
+  Frame* frame = _newFrame(2);
+  pushNode(&frame_stack, frame);
+
+  u1       operands[] = {24, 0};
+  JavaType local_variable;
+  local_variable.float_value = 420.69;
+  frame->local_variables[0]  = local_variable;
+
+  fload(operands);
+
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_float(value->float_value, ==, frame->local_variables[0].float_value);
+}
+
+void dload_pushes_double_local_variable_into_stack() {
+  frame_stack  = NULL;
+  Frame* frame = _newFrame(2);
+  pushNode(&frame_stack, frame);
+
+  u1       operands[] = {25, 0};
+  JavaType local_variable;
+  local_variable.double_value = 420.69;
+  frame->local_variables[0]   = local_variable;
+
+  dload(operands);
+
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_double(value->double_value, ==, frame->local_variables[0].double_value);
+}
+
+void aload_pushes_reference_local_variable_into_stack() {
+  frame_stack  = NULL;
+  Frame* frame = _newFrame(2);
+  pushNode(&frame_stack, frame);
+
+  Object dummy_object;
+
+  u1       operands[] = {26, 0};
+  JavaType local_variable;
+  local_variable.reference_value = &dummy_object;
+  frame->local_variables[0]      = local_variable;
+
+  aload(operands);
+
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_ptr(value->reference_value, ==, frame->local_variables[0].reference_value);
+}
 
 create_test(iload_pushes_int_local_variable_into_stack);
+create_test(lload_pushes_long_local_variable_into_stack);
+create_test(fload_pushes_float_local_variable_into_stack);
+create_test(dload_pushes_double_local_variable_into_stack);
+create_test(aload_pushes_reference_local_variable_into_stack);
 
-MunitTest tests[] = {add_test(iload_pushes_int_local_variable_into_stack)};
+MunitTest tests[] = {
+    add_test(iload_pushes_int_local_variable_into_stack),
+    add_test(lload_pushes_long_local_variable_into_stack),
+    add_test(fload_pushes_float_local_variable_into_stack),
+    add_test(dload_pushes_double_local_variable_into_stack),
+    add_test(aload_pushes_reference_local_variable_into_stack),
+};
 
 create_suite("loads", tests);

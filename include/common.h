@@ -23,19 +23,16 @@ typedef uint32_t u4;
 #define REFERENCE_TYPE      7
 #define RETURN_ADDRESS_TYPE 8
 
-typedef struct JavaType {
-  u1 type;
-  union {
-    int8_t   byte_value;
-    int16_t  short_value;
-    int32_t  int_value;
-    int64_t  long_value;
-    uint16_t char_value;
-    float    float_value;
-    double   double_value;
-    uint64_t reference_value;
-    uint32_t return_address_value;
-  };
+typedef union JavaType {
+  int8_t   byte_value;
+  int16_t  short_value;
+  int32_t  int_value;
+  int64_t  long_value;
+  uint16_t char_value;
+  float    float_value;
+  double   double_value;
+  void*    reference_value;
+  uint32_t return_address_value;
 } JavaType;
 
 #endif  // __COMMON_H
