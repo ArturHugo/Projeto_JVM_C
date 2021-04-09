@@ -292,7 +292,7 @@ void run(char* starting_class_name) {
     u1*    current_instructions = current_frame->current_method->attributes[0].code_info.code;
     u1*    current_instruction  = current_instructions + current_frame->local_pc;
     // void (*instruction)(u1*)        = instructions_handlers[*current_instruction];
-    void (*instruction)(u1*) = instructions_handlers[0];
+    void (*instruction)(const u1*) = instructions_handlers[0];
     instruction(current_instruction);
   }
 }
