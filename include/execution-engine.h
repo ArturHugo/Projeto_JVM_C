@@ -11,8 +11,6 @@
 
 void func();
 
-void (*instructions_handlers[256])(u1*) = {func};
-
 void run(char* start_class_name);
 
 #endif  // __EXECUTION_ENGINE_H

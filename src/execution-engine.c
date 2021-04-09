@@ -3,6 +3,8 @@
 
 void func() { printf("aaaaaaaaaaaaaaaaaaaaaaaaaa\n"); }
 
+void (*instructions_handlers[256])(u1*) = {func};
+
 void run(char* starting_class_name) {
   frame_stack = NULL;
 
