@@ -84,7 +84,7 @@ void astore_n(const u1* instruction) { store_with_offset(0x4b, 1); }
  * stack: 	(..., arrayref, index, value) -> (...)
  * description:	put value into array at index
  */
-void tastore() {
+void tastore(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);
@@ -93,6 +93,11 @@ void tastore() {
   if(array == NULL) {
     printf("NullPointerException at %x", current_frame->local_pc);
     exit(1);
+  }
+
+  // TODO: fix this warning
+  if(*instruction == 0x53) {
+    println("Warning: aastore does not make runtime type checks yet.");
   }
 
   // TODO: check if its out of bounds (store in first index its length?? 🤔)

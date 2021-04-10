@@ -8,6 +8,7 @@
 #include "execution-engine.h"
 #include "frame.h"
 #include "global.h"
+#include "method-area.h"
 #include "stack.h"
 #include "vector.h"
 
@@ -177,8 +178,8 @@ void test_astore_3(void* fixture) {
 }
 
 void test_iastore(void* fixture) {
-  JavaType* array   = munit_newa(JavaType, 2);
-  Frame*  frame = fixture;
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
 
   JavaType arrayref = {.reference_value = array};
   JavaType index    = {.int_value = 1};
@@ -188,7 +189,7 @@ void test_iastore(void* fixture) {
   pushValue(&frame->operand_stack, index);
   pushValue(&frame->operand_stack, value);
 
-  u1 current_instruction[]               = { 0x4f };
+  u1 current_instruction[]               = {0x4f};
   void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
 
   instruction_handler(current_instruction);
@@ -197,13 +198,154 @@ void test_iastore(void* fixture) {
   free(array);
 }
 
-void test_lastore() {}
-void test_fastore() {}
-void test_dastore() {}
-void test_aastore() {}
-void test_bastore() {}
-void test_castore() {}
-void test_sastore() {}
+void test_lastore(void* fixture) {
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.long_value = (42L << 32)};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x50};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_long(42L << 32, ==, array[1].long_value);
+  free(array);
+}
+
+void test_fastore(void* fixture) {
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.float_value = 0.42f};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x51};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_float(0.42f, ==, array[1].float_value);
+  free(array);
+}
+
+void test_dastore(void* fixture) {
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.double_value = 0.42};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x52};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_double(0.42, ==, array[1].double_value);
+  free(array);
+}
+
+void test_aastore(void* fixture) {
+  JavaType* array  = munit_newa(JavaType, 2);
+  Frame*    frame  = fixture;
+  Object*   object = munit_new(Object);
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.reference_value = object};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x53};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_ptr(object, ==, array[1].reference_value);
+  free(object);
+  free(array);
+}
+
+void test_bastore(void* fixture) {
+  JavaType* array  = munit_newa(JavaType, 2);
+  Frame*    frame  = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.byte_value = 42};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x54};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_char(42, ==, array[1].byte_value);
+  free(array);
+}
+
+void test_castore(void* fixture) {
+  JavaType* array  = munit_newa(JavaType, 2);
+  Frame*    frame  = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.char_value = 'a'};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x55};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_uint16('a', ==, array[1].char_value);
+  free(array);
+}
+
+void test_sastore(void* fixture) {
+  JavaType* array  = munit_newa(JavaType, 2);
+  Frame*    frame  = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.short_value = 42};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = {0x56};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_short(42, ==, array[1].short_value);
+  free(array);
+}
 
 create_test_with_fixture(test_istore);
 create_test_with_fixture(test_lstore);
@@ -231,13 +373,13 @@ create_test_with_fixture(test_astore_1);
 create_test_with_fixture(test_astore_2);
 create_test_with_fixture(test_astore_3);
 create_test_with_fixture(test_iastore);
-create_skip(test_lastore);
-create_skip(test_fastore);
-create_skip(test_dastore);
-create_skip(test_aastore);
-create_skip(test_bastore);
-create_skip(test_castore);
-create_skip(test_sastore);
+create_test_with_fixture(test_lastore);
+create_test_with_fixture(test_fastore);
+create_test_with_fixture(test_dastore);
+create_test_with_fixture(test_aastore);
+create_test_with_fixture(test_bastore);
+create_test_with_fixture(test_castore);
+create_test_with_fixture(test_sastore);
 
 MunitTest tests[] = {
     add_test_with_fixtures(test_istore),
@@ -266,13 +408,13 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_astore_2),
     add_test_with_fixtures(test_astore_3),
     add_test_with_fixtures(test_iastore),
-    add_test(test_lastore),
-    add_test(test_fastore),
-    add_test(test_dastore),
-    add_test(test_aastore),
-    add_test(test_bastore),
-    add_test(test_castore),
-    add_test(test_sastore),
+    add_test_with_fixtures(test_lastore),
+    add_test_with_fixtures(test_fastore),
+    add_test_with_fixtures(test_dastore),
+    add_test_with_fixtures(test_aastore),
+    add_test_with_fixtures(test_bastore),
+    add_test_with_fixtures(test_castore),
+    add_test_with_fixtures(test_sastore),
 };
 
 create_suite("stores", tests);
