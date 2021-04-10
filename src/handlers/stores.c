@@ -1,6 +1,10 @@
-#include "handlers/stores.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include "frame.h"
 #include "global.h"
+#include "handlers/stores.h"
+#include "vector.h"
 
 #define store_with_offset(offset, size)                                                            \
   Frame* current_frame = peekNode(frame_stack);                                                    \
@@ -71,3 +75,29 @@ void dstore_n(const u1* instruction) { store_with_offset(0x47, 2); }
  * description:	put value into operand_stack at index
  */
 void astore_n(const u1* instruction) { store_with_offset(0x4b, 1); }
+
+/*
+ * Store value into array
+ *
+ * opcode:	0x4f
+ * format: 	[tstore]
+ * stack: 	(..., arrayref, index, value) -> (...)
+ * description:	put value into array at index
+ */
+void tastore() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* value         = popNode(&current_frame->operand_stack);
+  JavaType* index         = popNode(&current_frame->operand_stack);
+  JavaType* array         = popNode(&current_frame->operand_stack);
+
+  if(array == NULL) {
+    printf("NullPointerException at %x", current_frame->local_pc);
+    exit(1);
+  }
+
+  // TODO: check if its out of bounds (store in first index its length?? 🤔)
+  ((JavaType*) array->reference_value)[index->int_value] = *value;
+
+  free(index);
+  free(value);
+}

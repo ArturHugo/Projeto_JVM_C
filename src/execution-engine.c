@@ -85,7 +85,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x4c */ astore_n,
     /* 0x4d */ astore_n,
     /* 0x4e */ astore_n,
-    /* 0x4f */ NULL,
+    /* 0x4f */ tastore,
     /* 0x50 */ NULL,
     /* 0x51 */ NULL,
     /* 0x52 */ NULL,

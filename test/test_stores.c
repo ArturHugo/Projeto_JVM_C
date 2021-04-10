@@ -141,42 +141,62 @@ void test_dstore_3(void* fixture) {
   assert_double(0.42, ==, frame->local_variables[6].double_value);
 }
 
-void test_astore(void *fixture) {
+void test_astore(void* fixture) {
   Vector* vec = newVector(2);
   makeStoreTest(0x3a, {.reference_value = vec}, 0);
   assert_ptr(vec, ==, frame->local_variables[0].reference_value);
   freeVector(vec);
 }
 
-void test_astore_0(void *fixture) {
+void test_astore_0(void* fixture) {
   Vector* vec = newVector(2);
   makeStoreTest(0x4b, {.reference_value = vec}, 0);
   assert_ptr(vec, ==, frame->local_variables[0].reference_value);
   freeVector(vec);
 }
 
-void test_astore_1(void *fixture) {
+void test_astore_1(void* fixture) {
   Vector* vec = newVector(2);
   makeStoreTest(0x4c, {.reference_value = vec}, 0);
   assert_ptr(vec, ==, frame->local_variables[1].reference_value);
   freeVector(vec);
 }
 
-void test_astore_2(void *fixture) {
+void test_astore_2(void* fixture) {
   Vector* vec = newVector(2);
   makeStoreTest(0x4d, {.reference_value = vec}, 0);
   assert_ptr(vec, ==, frame->local_variables[2].reference_value);
   freeVector(vec);
 }
 
-void test_astore_3(void *fixture) {
+void test_astore_3(void* fixture) {
   Vector* vec = newVector(2);
   makeStoreTest(0x4e, {.reference_value = vec}, 0);
   assert_ptr(vec, ==, frame->local_variables[3].reference_value);
   freeVector(vec);
 }
 
-void test_iastore() {}
+void test_iastore(void* fixture) {
+  JavaType* array   = munit_newa(JavaType, 2);
+  Frame*  frame = fixture;
+
+  JavaType arrayref = {.reference_value = array};
+  JavaType index    = {.int_value = 1};
+  JavaType value    = {.int_value = 42};
+
+  pushValue(&frame->operand_stack, arrayref);
+  pushValue(&frame->operand_stack, index);
+  pushValue(&frame->operand_stack, value);
+
+  u1 current_instruction[]               = { 0x4f };
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  assert_int(42, ==, array[1].int_value);
+  free(array);
+}
+
 void test_lastore() {}
 void test_fastore() {}
 void test_dastore() {}
@@ -210,7 +230,7 @@ create_test_with_fixture(test_astore_0);
 create_test_with_fixture(test_astore_1);
 create_test_with_fixture(test_astore_2);
 create_test_with_fixture(test_astore_3);
-create_skip(test_iastore);
+create_test_with_fixture(test_iastore);
 create_skip(test_lastore);
 create_skip(test_fastore);
 create_skip(test_dastore);
@@ -245,7 +265,7 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_astore_1),
     add_test_with_fixtures(test_astore_2),
     add_test_with_fixtures(test_astore_3),
-    add_test(test_iastore),
+    add_test_with_fixtures(test_iastore),
     add_test(test_lastore),
     add_test(test_fastore),
     add_test(test_dastore),
