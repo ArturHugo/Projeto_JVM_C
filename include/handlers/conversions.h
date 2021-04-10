@@ -3,9 +3,14 @@
 
 #include "common.h"
 
-void to_float();
-void to_double();
-void to_int();
+void l2f();                      /* i2f */
+void l2d();                      /* i2f */
+void f2l(const u1* instruction); /* f2i */
+void f2d();
+void d2l(const u1* instruction); /* d2i */
+void d2f();
+void i2b();
+void i2c();
+void i2s();
 
 #endif  // __CONVERSIONS_H
-
