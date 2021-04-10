@@ -9,6 +9,7 @@
 #include "frame.h"
 #include "global.h"
 #include "stack.h"
+#include "vector.h"
 
 MethodArea method_area;
 Stack      frame_stack;
@@ -106,17 +107,17 @@ void test_fstore_0(void* fixture) {
 }
 
 void test_fstore_1(void* fixture) {
-  makeStoreTest(0x44, {.float_value = 0.42f}, 1);
+  makeStoreTest(0x44, {.float_value = 0.42f}, 0);
   assert_float(0.42f, ==, frame->local_variables[1].float_value);
 }
 
 void test_fstore_2(void* fixture) {
-  makeStoreTest(0x45, {.float_value = 0.42f}, 2);
+  makeStoreTest(0x45, {.float_value = 0.42f}, 0);
   assert_float(0.42f, ==, frame->local_variables[2].float_value);
 }
 
 void test_fstore_3(void* fixture) {
-  makeStoreTest(0x46, {.float_value = 0.42f}, 3);
+  makeStoreTest(0x46, {.float_value = 0.42f}, 0);
   assert_float(0.42f, ==, frame->local_variables[3].float_value);
 }
 
@@ -126,25 +127,55 @@ void test_dstore_0(void* fixture) {
 }
 
 void test_dstore_1(void* fixture) {
-  makeStoreTest(0x48, {.double_value = 0.42}, 2);
+  makeStoreTest(0x48, {.double_value = 0.42}, 0);
   assert_double(0.42, ==, frame->local_variables[2].double_value);
 }
 
 void test_dstore_2(void* fixture) {
-  makeStoreTest(0x49, {.double_value = 0.42}, 4);
+  makeStoreTest(0x49, {.double_value = 0.42}, 0);
   assert_double(0.42, ==, frame->local_variables[4].double_value);
 }
 
 void test_dstore_3(void* fixture) {
-  makeStoreTest(0x4a, {.double_value = 0.42}, 6);
+  makeStoreTest(0x4a, {.double_value = 0.42}, 0);
   assert_double(0.42, ==, frame->local_variables[6].double_value);
 }
 
-void test_astore() {}
-void test_astore_0() {}
-void test_astore_1() {}
-void test_astore_2() {}
-void test_astore_3() {}
+void test_astore(void *fixture) {
+  Vector* vec = newVector(2);
+  makeStoreTest(0x3a, {.reference_value = vec}, 0);
+  assert_ptr(vec, ==, frame->local_variables[0].reference_value);
+  freeVector(vec);
+}
+
+void test_astore_0(void *fixture) {
+  Vector* vec = newVector(2);
+  makeStoreTest(0x4b, {.reference_value = vec}, 0);
+  assert_ptr(vec, ==, frame->local_variables[0].reference_value);
+  freeVector(vec);
+}
+
+void test_astore_1(void *fixture) {
+  Vector* vec = newVector(2);
+  makeStoreTest(0x4c, {.reference_value = vec}, 0);
+  assert_ptr(vec, ==, frame->local_variables[1].reference_value);
+  freeVector(vec);
+}
+
+void test_astore_2(void *fixture) {
+  Vector* vec = newVector(2);
+  makeStoreTest(0x4d, {.reference_value = vec}, 0);
+  assert_ptr(vec, ==, frame->local_variables[2].reference_value);
+  freeVector(vec);
+}
+
+void test_astore_3(void *fixture) {
+  Vector* vec = newVector(2);
+  makeStoreTest(0x4e, {.reference_value = vec}, 0);
+  assert_ptr(vec, ==, frame->local_variables[3].reference_value);
+  freeVector(vec);
+}
+
 void test_iastore() {}
 void test_lastore() {}
 void test_fastore() {}
@@ -158,9 +189,7 @@ create_test_with_fixture(test_istore);
 create_test_with_fixture(test_lstore);
 create_test_with_fixture(test_fstore);
 create_test_with_fixture(test_dstore);
-
-create_skip(test_astore);
-
+create_test_with_fixture(test_astore);
 create_test_with_fixture(test_istore_0);
 create_test_with_fixture(test_istore_1);
 create_test_with_fixture(test_istore_2);
@@ -177,10 +206,10 @@ create_test_with_fixture(test_dstore_0);
 create_test_with_fixture(test_dstore_1);
 create_test_with_fixture(test_dstore_2);
 create_test_with_fixture(test_dstore_3);
-create_skip(test_astore_0);
-create_skip(test_astore_1);
-create_skip(test_astore_2);
-create_skip(test_astore_3);
+create_test_with_fixture(test_astore_0);
+create_test_with_fixture(test_astore_1);
+create_test_with_fixture(test_astore_2);
+create_test_with_fixture(test_astore_3);
 create_skip(test_iastore);
 create_skip(test_lastore);
 create_skip(test_fastore);
@@ -199,7 +228,7 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_istore_1),
     add_test_with_fixtures(test_istore_2),
     add_test_with_fixtures(test_istore_3),
-    add_test(test_astore),
+    add_test_with_fixtures(test_astore),
     add_test_with_fixtures(test_lstore_0),
     add_test_with_fixtures(test_lstore_1),
     add_test_with_fixtures(test_lstore_2),
@@ -212,10 +241,10 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_dstore_1),
     add_test_with_fixtures(test_dstore_2),
     add_test_with_fixtures(test_dstore_3),
-    add_test(test_astore_0),
-    add_test(test_astore_1),
-    add_test(test_astore_2),
-    add_test(test_astore_3),
+    add_test_with_fixtures(test_astore_0),
+    add_test_with_fixtures(test_astore_1),
+    add_test_with_fixtures(test_astore_2),
+    add_test_with_fixtures(test_astore_3),
     add_test(test_iastore),
     add_test(test_lastore),
     add_test(test_fastore),
