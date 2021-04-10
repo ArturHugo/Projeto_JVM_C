@@ -19,7 +19,7 @@ static void* setup() {
 
   frame->operand_stack   = NULL;
   frame->local_pc        = 0;
-  frame->local_variables = malloc(4 * sizeof(JavaType));
+  frame->local_variables = malloc(8 * sizeof(JavaType));
 
   pushNode(&frame_stack, frame);
   return frame;
@@ -30,123 +30,117 @@ static void teardown() {
   free(frame);
 }
 
-void test_istore(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.int_value = 42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x36, 0};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
+#define makeStoreTest(opcode, attribution, index)                                                  \
+  Frame*   frame = fixture;                                                                        \
+  JavaType value = attribution;                                                                    \
+  pushValue(&frame->operand_stack, value);                                                         \
+                                                                                                   \
+  u1 current_instruction[]               = {opcode, index};                                        \
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];            \
+                                                                                                   \
   instruction_handler(current_instruction);
 
+void test_istore(void* fixture) {
+  makeStoreTest(0x36, {.int_value = 42}, 0);
   assert_int(42, ==, frame->local_variables[0].int_value);
 }
 
 void test_lstore(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.long_value = (42L << 32) + 1};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x37, 0};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x37, {.long_value = (42L << 32) + 1}, 0);
   assert_llong((42L << 32) + 1, ==, frame->local_variables[0].long_value);
 }
 
 void test_fstore(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.float_value = 0.42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x38, 0};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
-  assert_float(0.42, ==, frame->local_variables[0].float_value);
+  makeStoreTest(0x38, {.float_value = 0.42f}, 0);
+  assert_float(0.42f, ==, frame->local_variables[0].float_value);
 }
 
 void test_dstore(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.double_value = 0.42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x39, 0};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x39, {.double_value = 0.42}, 0);
   assert_double(0.42, ==, frame->local_variables[0].double_value);
 }
 
 void test_istore_0(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.int_value = 42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x3b};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x3b, {.int_value = 42}, 0);
   assert_double(42, ==, frame->local_variables[0].int_value);
 }
 
 void test_istore_1(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.int_value = 42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x3c};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x3c, {.int_value = 42}, 1);
   assert_double(42, ==, frame->local_variables[1].int_value);
 }
 
 void test_istore_2(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.int_value = 42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x3d};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x3d, {.int_value = 42}, 2);
   assert_double(42, ==, frame->local_variables[2].int_value);
 }
 
 void test_istore_3(void* fixture) {
-  Frame*   frame = fixture;
-  JavaType value = {.int_value = 42};
-  pushValue(&frame->operand_stack, value);
-
-  u1 current_instruction[]               = {0x3e};
-  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-  instruction_handler(current_instruction);
-
+  makeStoreTest(0x3e, {.int_value = 42}, 3);
   assert_double(42, ==, frame->local_variables[3].int_value);
 }
 
+void test_lstore_0(void* fixture) {
+  makeStoreTest(0x3f, {.long_value = (42L << 32) + 1}, 0);
+  assert_llong((42L << 32) + 1, ==, frame->local_variables[0].long_value);
+}
+
+void test_lstore_1(void* fixture) {
+  makeStoreTest(0x40, {.long_value = (42L << 32) + 1}, 2);
+  assert_llong((42L << 32) + 1, ==, frame->local_variables[2].long_value);
+}
+
+void test_lstore_2(void* fixture) {
+  makeStoreTest(0x41, {.long_value = (42L << 32) + 1}, 4);
+  assert_llong((42L << 32) + 1, ==, frame->local_variables[4].long_value);
+}
+
+void test_lstore_3(void* fixture) {
+  makeStoreTest(0x42, {.long_value = (42L << 32) + 1}, 6);
+  assert_llong((42L << 32) + 1, ==, frame->local_variables[6].long_value);
+}
+
+void test_fstore_0(void* fixture) {
+  makeStoreTest(0x43, {.float_value = 0.42f}, 0);
+  assert_float(0.42f, ==, frame->local_variables[0].float_value);
+}
+
+void test_fstore_1(void* fixture) {
+  makeStoreTest(0x44, {.float_value = 0.42f}, 1);
+  assert_float(0.42f, ==, frame->local_variables[1].float_value);
+}
+
+void test_fstore_2(void* fixture) {
+  makeStoreTest(0x45, {.float_value = 0.42f}, 2);
+  assert_float(0.42f, ==, frame->local_variables[2].float_value);
+}
+
+void test_fstore_3(void* fixture) {
+  makeStoreTest(0x46, {.float_value = 0.42f}, 3);
+  assert_float(0.42f, ==, frame->local_variables[3].float_value);
+}
+
+void test_dstore_0(void* fixture) {
+  makeStoreTest(0x47, {.double_value = 0.42}, 0);
+  assert_double(0.42, ==, frame->local_variables[0].double_value);
+}
+
+void test_dstore_1(void* fixture) {
+  makeStoreTest(0x48, {.double_value = 0.42}, 2);
+  assert_double(0.42, ==, frame->local_variables[2].double_value);
+}
+
+void test_dstore_2(void* fixture) {
+  makeStoreTest(0x49, {.double_value = 0.42}, 4);
+  assert_double(0.42, ==, frame->local_variables[4].double_value);
+}
+
+void test_dstore_3(void* fixture) {
+  makeStoreTest(0x4a, {.double_value = 0.42}, 6);
+  assert_double(0.42, ==, frame->local_variables[6].double_value);
+}
+
 void test_astore() {}
-void test_lstore_0() {}
-void test_lstore_1() {}
-void test_lstore_2() {}
-void test_lstore_3() {}
-void test_fstore_0() {}
-void test_fstore_1() {}
-void test_fstore_2() {}
-void test_fstore_3() {}
-void test_dstore_0() {}
-void test_dstore_1() {}
-void test_dstore_2() {}
-void test_dstore_3() {}
 void test_astore_0() {}
 void test_astore_1() {}
 void test_astore_2() {}
@@ -164,23 +158,25 @@ create_test_with_fixture(test_istore);
 create_test_with_fixture(test_lstore);
 create_test_with_fixture(test_fstore);
 create_test_with_fixture(test_dstore);
+
+create_skip(test_astore);
+
 create_test_with_fixture(test_istore_0);
 create_test_with_fixture(test_istore_1);
 create_test_with_fixture(test_istore_2);
 create_test_with_fixture(test_istore_3);
-create_skip(test_astore);
-create_skip(test_lstore_0);
-create_skip(test_lstore_1);
-create_skip(test_lstore_2);
-create_skip(test_lstore_3);
-create_skip(test_fstore_0);
-create_skip(test_fstore_1);
-create_skip(test_fstore_2);
-create_skip(test_fstore_3);
-create_skip(test_dstore_0);
-create_skip(test_dstore_1);
-create_skip(test_dstore_2);
-create_skip(test_dstore_3);
+create_test_with_fixture(test_lstore_0);
+create_test_with_fixture(test_lstore_1);
+create_test_with_fixture(test_lstore_2);
+create_test_with_fixture(test_lstore_3);
+create_test_with_fixture(test_fstore_0);
+create_test_with_fixture(test_fstore_1);
+create_test_with_fixture(test_fstore_2);
+create_test_with_fixture(test_fstore_3);
+create_test_with_fixture(test_dstore_0);
+create_test_with_fixture(test_dstore_1);
+create_test_with_fixture(test_dstore_2);
+create_test_with_fixture(test_dstore_3);
 create_skip(test_astore_0);
 create_skip(test_astore_1);
 create_skip(test_astore_2);
@@ -204,18 +200,18 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_istore_2),
     add_test_with_fixtures(test_istore_3),
     add_test(test_astore),
-    add_test(test_lstore_0),
-    add_test(test_lstore_1),
-    add_test(test_lstore_2),
-    add_test(test_lstore_3),
-    add_test(test_fstore_0),
-    add_test(test_fstore_1),
-    add_test(test_fstore_2),
-    add_test(test_fstore_3),
-    add_test(test_dstore_0),
-    add_test(test_dstore_1),
-    add_test(test_dstore_2),
-    add_test(test_dstore_3),
+    add_test_with_fixtures(test_lstore_0),
+    add_test_with_fixtures(test_lstore_1),
+    add_test_with_fixtures(test_lstore_2),
+    add_test_with_fixtures(test_lstore_3),
+    add_test_with_fixtures(test_fstore_0),
+    add_test_with_fixtures(test_fstore_1),
+    add_test_with_fixtures(test_fstore_2),
+    add_test_with_fixtures(test_fstore_3),
+    add_test_with_fixtures(test_dstore_0),
+    add_test_with_fixtures(test_dstore_1),
+    add_test_with_fixtures(test_dstore_2),
+    add_test_with_fixtures(test_dstore_3),
     add_test(test_astore_0),
     add_test(test_astore_1),
     add_test(test_astore_2),
