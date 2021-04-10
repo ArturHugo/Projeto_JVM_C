@@ -116,6 +116,7 @@ void tastore(const u1* instruction) {
   // TODO: check if its out of bounds (store in first index its length?? 🤔)
   ((JavaType*) array->reference_value)[index->int_value] = *value;
 
+  current_frame->local_pc += 1;
   free(index);
   free(value);
 }

@@ -4,9 +4,15 @@
 
 #include "handlers/loads.h"
 #include "handlers/stores.h"
+#include "handlers/conversions.h"
+
+void noop() {
+  Frame*    current_frame = peekNode(frame_stack);
+  current_frame->local_pc++;
+}
 
 void (*const instructions_handlers[256])(const u1*) = {
-    /* 0x00 */ NULL,
+    /* 0x00 */ noop,
     /* 0x01 */ NULL,
     /* 0x02 */ NULL,
     /* 0x03 */ NULL,
@@ -139,13 +145,13 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x82 */ NULL,
     /* 0x83 */ NULL,
     /* 0x84 */ NULL,
-    /* 0x85 */ NULL,
-    /* 0x86 */ NULL,
-    /* 0x87 */ NULL,
-    /* 0x88 */ NULL,
-    /* 0x89 */ NULL,
-    /* 0x8a */ NULL,
-    /* 0x8b */ NULL,
+    /* 0x85 */ noop,
+    /* 0x86 */ to_float,
+    /* 0x87 */ to_double,
+    /* 0x88 */ noop,
+    /* 0x89 */ to_float,
+    /* 0x8a */ to_double,
+    /* 0x8b */ to_int,
     /* 0x8c */ NULL,
     /* 0x8d */ NULL,
     /* 0x8e */ NULL,
