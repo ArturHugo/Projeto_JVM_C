@@ -4,13 +4,6 @@
 #include "frame.h"
 #include "global.h"
 #include "handlers/stores.h"
-#include "vector.h"
-
-#define store_with_offset(offset, size)                                                            \
-  Frame* current_frame = peekNode(frame_stack);                                                    \
-  popValue(&current_frame->operand_stack,                                                          \
-           current_frame->local_variables + (*instruction - offset) * size);                       \
-  current_frame->local_pc += 1;
 
 /*
  * Store value into local variable
@@ -34,7 +27,11 @@ void tstore(const u1* instruction) {
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void istore_n(const u1* instruction) { store_with_offset(0x3b, 1); }
+void istore_n(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3b));
+  current_frame->local_pc += 1;
+}
 
 /*
  * Store long into local variable
@@ -44,7 +41,11 @@ void istore_n(const u1* instruction) { store_with_offset(0x3b, 1); }
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void lstore_n(const u1* instruction) { store_with_offset(0x3f, 2); }
+void lstore_n(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3f) * 2);
+  current_frame->local_pc += 1;
+}
 
 /*
  * Store float into local variable
@@ -54,7 +55,11 @@ void lstore_n(const u1* instruction) { store_with_offset(0x3f, 2); }
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void fstore_n(const u1* instruction) { store_with_offset(0x43, 1); }
+void fstore_n(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x43));
+  current_frame->local_pc += 1;
+}
 
 /*
  * Store double into local variable
@@ -64,7 +69,11 @@ void fstore_n(const u1* instruction) { store_with_offset(0x43, 1); }
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void dstore_n(const u1* instruction) { store_with_offset(0x47, 2); }
+void dstore_n(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x47) * 2);
+  current_frame->local_pc += 1;
+}
 
 /*
  * Store reference or (TODO) returnAddress into local variable
@@ -74,7 +83,11 @@ void dstore_n(const u1* instruction) { store_with_offset(0x47, 2); }
  * stack: 	(..., value) -> (...)
  * description:	put value into operand_stack at index
  */
-void astore_n(const u1* instruction) { store_with_offset(0x4b, 1); }
+void astore_n(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x4b));
+  current_frame->local_pc += 1;
+}
 
 /*
  * Store value into array
