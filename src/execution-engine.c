@@ -2,6 +2,7 @@
 #include "frame.h"
 #include "global.h"
 
+#include "handlers/loads.h"
 #include "handlers/stores.h"
 
 void (*const instructions_handlers[256])(const u1*) = {
@@ -26,15 +27,15 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x12 */ NULL,
     /* 0x13 */ NULL,
     /* 0x14 */ NULL,
-    /* 0x15 */ NULL,
-    /* 0x16 */ NULL,
-    /* 0x17 */ NULL,
-    /* 0x18 */ NULL,
-    /* 0x19 */ NULL,
-    /* 0x1a */ NULL,
-    /* 0x1b */ NULL,
-    /* 0x1c */ NULL,
-    /* 0x1d */ NULL,
+    /* 0x15 */ tload,
+    /* 0x16 */ tload,
+    /* 0x17 */ tload,
+    /* 0x18 */ tload,
+    /* 0x19 */ tload,
+    /* 0x1a */ iload_n,
+    /* 0x1b */ iload_n,
+    /* 0x1c */ iload_n,
+    /* 0x1d */ iload_n,
     /* 0x1e */ NULL,
     /* 0x1f */ NULL,
     /* 0x20 */ NULL,
@@ -287,14 +288,11 @@ void run(char* starting_class_name) {
   */
 
   while(peekNode(frame_stack)) {
-    Frame* current_frame = (Frame*) peekNode(frame_stack);
-
-    u1* current_instructions = current_frame->current_method->attributes[0].code_info.code;
-
-    u1* current_instruction = current_instructions + current_frame->local_pc;
-
-    void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
-
-    instruction_handler(current_instruction);
+    Frame* current_frame        = (Frame*) peekNode(frame_stack);
+    u1*    current_instructions = current_frame->current_method->attributes[0].code_info.code;
+    u1*    current_instruction  = current_instructions + current_frame->local_pc;
+    // void (*instruction)(u1*)        = instructions_handlers[*current_instruction];
+    void (*instruction)(const u1*) = instructions_handlers[0];
+    instruction(current_instruction);
   }
 }

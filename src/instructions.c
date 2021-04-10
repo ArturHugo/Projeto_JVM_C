@@ -246,9 +246,6 @@ static char* instruction_mnemonic_table[206] = {"nop",
 /* --------------------- local function declarations -----------------------------*/
 u4   nInstructionOps(u1* code, u4 offset);
 u1   instructionOpFlag(u1 bytecode);
-u4   calcTableswitchOps(u1* code, u4 offset);
-u4   calcLookupswitchOps(u1* code, u4 offset);
-u1   calcWideOps(u1* code);
 u4   read32bFrom8b(u1* array);
 void printMethodPath(ConstantPoolInfo* cp, u2 cp_index);
 
@@ -547,9 +544,6 @@ void printMethodPath(ConstantPoolInfo* cp, u2 cp_index) {
 }
 
 u4 nInstructionOps(u1* code, u4 offset) {
-  if(*code == 162) {
-    printf("162");
-  }
   for(u1 i = 0; i < 55; i++) {
     u1 current_instruction_code = instruction_info_table[i][_BYTECODE];
     if(current_instruction_code > *code) {
