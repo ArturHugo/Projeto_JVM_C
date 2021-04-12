@@ -6,8 +6,8 @@
 #include "method-area.h"
 #include "stack.h"
 
-typedef struct Frame {
-  Stack             operand_stack;
+typedef struct Frame {Stack             operand_stack;
+  
   u4                local_pc;
   JavaType*         local_variables;
   ConstantPoolInfo* constant_pool;
