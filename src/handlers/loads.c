@@ -89,10 +89,20 @@ void aload_n(const u1* instruction) {
  */
 void taload(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
-  JavaType* arrayref      = popNode(&current_frame->operand_stack);
+  JavaType* array_ref     = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);
 
-  Array* array = (Array*) arrayref->reference_value;
+  if(array_ref == NULL) {
+    printf("NullPointerException at %x", current_frame->local_pc);
+    exit(1);
+  }
+
+  Array* array = (Array*) array_ref->reference_value;
+
+  if(index->int_value >= array->length) {
+    printf("ArrayIndexOutOfBoundsException at %x", current_frame->local_pc);
+    exit(1);
+  }
 
   pushValue(&current_frame->operand_stack, array->elements[index->int_value]);
   current_frame->local_pc += 1;

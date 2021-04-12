@@ -21,7 +21,7 @@ typedef struct Object {
 
 typedef struct Array {
   u1        type;
-  u4        length;
+  int32_t   length;
   JavaType* elements;
 } Array;
 

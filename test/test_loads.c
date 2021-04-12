@@ -238,6 +238,19 @@ void taload_pushes_int_value_at_array_index_into_stack(void* fixture) {
   int_array[0].int_value = 13;
   int_array[1].int_value = 42;
   Array array            = {.type = TYPE_INT, .length = 4, .elements = int_array};
+
+  JavaType array_ref   = {.cat_tag = CAT1, .reference_value = &array};
+  JavaType array_index = {.cat_tag = CAT1, .int_value = 1};
+
+  pushValue(&frame->operand_stack, array_ref);
+  pushValue(&frame->operand_stack, array_index);
+
+  u1 current_instruction[]               = {0x2e};
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+  instruction_handler(current_instruction);
+
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_int32(value->int_value, ==, array.elements[array_index.int_value].int_value);
 }
 
 create_test_with_fixture(tload_pushes_int_local_variable_into_stack);
