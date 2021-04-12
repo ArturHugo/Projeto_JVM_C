@@ -3,60 +3,57 @@
 #include "support/test_macros.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "execution-engine.h"
+#include "frame.h"
+#include "global.h"
 #include "stack.h"
 
-void test() {
-  int testSuccesfull = 1;
+MethodArea method_area;
+Stack      frame_stack;
 
-  typedef struct {
-    u1    bytecode;
-    char* mnemonic;
-    u1    pc;
-    u1    n_args;
-  } test;
+static void* setup() {
+  frame_stack  = NULL;
+  Frame* frame = malloc(sizeof(*frame));
 
-  test  i, i2;
-  test* teste;
+  frame->operand_stack   = NULL;
+  frame->local_pc        = 0;
+  frame->local_variables = malloc(4 * sizeof(JavaType));
 
-  char* mn   = "teste";
-  i.bytecode = 42;
-  i.mnemonic = mn;
-  i.pc       = 42;
-  i.n_args   = 4;
-
-  char* mn2   = "teste2";
-  i2.bytecode = 43;
-  i2.mnemonic = mn2;
-  i2.pc       = 43;
-  i2.n_args   = 5;
-
-  Node* list = NULL;
-
-  pushNode(&list, &i);
-  pushNode(&list, &i2);
-
-  teste = peekNode(list);
-
-  if(teste->bytecode != i2.bytecode || teste->n_args != i2.n_args || teste->pc != i2.pc) {
-    testSuccesfull = 0;
-  }
-
-  teste = popNode(&list);
-  if(teste->bytecode != i2.bytecode || teste->n_args != i2.n_args || teste->pc != i2.pc) {
-    testSuccesfull = 0;
-  }
-
-  teste = popNode(&list);
-  if(teste->bytecode != i.bytecode || teste->n_args != i.n_args || teste->pc != i.pc) {
-    testSuccesfull = 0;
-  }
-
-  assert_not_null(testSuccesfull);
+  pushNode(&frame_stack, frame);
+  return frame;
 }
 
-create_test(test);
+static void teardown() {
+  Frame* frame = popNode(&frame_stack);
+  free(frame);
+}
+/*
+void example(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
-MunitTest tests[] = {add_test(test)};
+  u1       current_instruction[] = {0x00, 0};
+  JavaType int_variable          = {.int_value = 42};
+  frame->local_variables[0]      = int_variable;
 
-create_suite("stack", tests);
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  JavaType* value = (JavaType*) peekNode(frame->operand_stack);
+  assert_int32(value->int_value, ==, frame->local_variables[0].int_value);
+}*/
+
+void test_ldc(/*void* fixture*/){};
+
+create_test_with_fixture(test_nop);
+create_skip(test_ldc_2_w);
+
+MunitTest tests[] = {
+    add_test_with_fixtures(test_nop),
+    add_test(test_ldc_2_w),
+};
+
+create_suite("constants", tests);
