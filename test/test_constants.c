@@ -299,6 +299,10 @@ void test_sipush(void* fixture) {
   assert_int32(value->int_value, ==, -2);
 }
 
+void test_ldc(/*void* fixture*/){};
+void test_ldc_w(/*void* fixture*/){};
+void test_ldc_2_w(/*void* fixture*/){};
+
 create_test_with_fixture(test_nop);
 create_test_with_fixture(test_aconst_null);
 create_test_with_fixture(test_iconst_ml);
@@ -317,6 +321,9 @@ create_test_with_fixture(test_dconst_0);
 create_test_with_fixture(test_dconst_1);
 create_test_with_fixture(test_bipush);
 create_test_with_fixture(test_sipush);
+create_skip(test_ldc);
+create_skip(test_ldc_w);
+create_skip(test_ldc_2_w);
 
 MunitTest tests[] = {
     add_test_with_fixtures(test_nop),
@@ -337,6 +344,9 @@ MunitTest tests[] = {
     add_test_with_fixtures(test_dconst_1),
     add_test_with_fixtures(test_bipush),
     add_test_with_fixtures(test_sipush),
+    add_test(test_ldc),
+    add_test(test_ldc_w),
+    add_test(test_ldc_2_w),
 };
 
 create_suite("constants", tests);
