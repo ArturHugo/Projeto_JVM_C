@@ -5,10 +5,25 @@
 #include "map.h"
 #include "methods.h"
 
+#define TYPE_INT       0
+#define TYPE_LONG      1
+#define TYPE_FLOAT     2
+#define TYPE_DOUBLE    3
+#define TYPE_REFERENCE 4
+#define TYPE_BYTE      5
+#define TYPE_CHAR      6
+#define TYPE_SHORT     7
+
 typedef struct Object {
   MethodInfo* methods;
   Map         fields_and_values;
 } Object;
+
+typedef struct Array {
+  u1        type;
+  u4        length;
+  JavaType* elements;
+} Array;
 
 typedef struct MethodArea {
   Map*    loaded_classes;
