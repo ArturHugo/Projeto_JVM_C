@@ -5,7 +5,7 @@
 #include "frame.h"
 #include "global.h"
 
-void pop(const u1* instruction);
+void pop_instruction(const u1* instruction);
 void pop2(const u1* instruction);
 void dup(const u1* instruction);
 void dup_x1(const u1* instruction);
