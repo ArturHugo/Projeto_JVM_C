@@ -23,4 +23,14 @@ void* popNode(Node** node);
 
 void* peekNode(Stack stack);
 
+/*
+ * Push a JavaType value without the need to allocate the value
+ */
+void pushValue(Stack* stack, JavaType value);
+
+/*
+ * Pop a JavaType value from the stack, puting it on reference and freeing the alloc
+ */
+void popValue(Stack* stack, JavaType* reference);
+
 #endif  //__STACK_H

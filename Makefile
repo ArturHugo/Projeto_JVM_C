@@ -32,8 +32,11 @@ ifeq ($(OS),Windows_NT)
 MAIN	:= main.exe
 TESTRUNNER := run_tests.exe
 SOURCEDIRS	:= $(SRC)
+SOURCEDIRS  := $(SOURCEDIRS) $(SRC)/handlers
 TESTDIRS	:= $(TEST)
+TESTDIRS	:= $(TESTDIRS) $(TEST)/munit $(TEST)/support
 INCLUDEDIRS	:= $(INCLUDE)
+INCLUDEDIRS	:= $(INCLUDEDIRS) $(INCLUDE)/handlers
 LIBDIRS		:= $(LIB)
 FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
