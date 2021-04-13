@@ -51,7 +51,7 @@ void test_pop(void* fixture) {
   pushNode(&frame_stack, frame);
 
   u1       current_instruction[] = {0x57};
-  JavaType test_variable         = {.int_value = 42};
+  JavaType test_variable         = {.int_value = 42, .cat_tag = CAT1};
   pushValue(&(frame->operand_stack), test_variable);
   test_variable.int_value = 1;
   pushValue(&(frame->operand_stack), test_variable);
@@ -64,32 +64,226 @@ void test_pop(void* fixture) {
   assert_int32(test_variable.int_value, ==, 42);
 }
 
-void test_pop2(/*void* fixture*/){};
-void test_dup(/*void* fixture*/){};
-void test_dup_x1(/*void* fixture*/){};
-void test_dup_x2(/*void* fixture*/){};
-void test_dup2(/*void* fixture*/){};
-void test_dup2_x1(/*void* fixture*/){};
-void test_dup2_x2(/*void* fixture*/){};
-void test_swap(/*void* fixture*/){};
+void test_pop2_cat1(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1       current_instruction[] = {0x58};
+  JavaType test_variable         = {.int_value = 42, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+  test_variable.int_value = 1;
+  pushValue(&(frame->operand_stack), test_variable);
+  test_variable.int_value = 192;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 42);
+}
+
+void test_pop2_cat2(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1       current_instruction[] = {0x58};
+  JavaType test_variable         = {.int_value = 42, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.long_value = 1;
+  test_variable.cat_tag    = CAT2;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 42);
+}
+
+void test_dup(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1       current_instruction[] = {0x59};
+  JavaType test_variable         = {.int_value = 42, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 42);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 42);
+}
+
+void test_dup_x1(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1 current_instruction[] = {0x5a};
+
+  JavaType test_variable = {.int_value = 42, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.int_value = 1;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 42);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+}
+
+void test_dup_x2_cat1(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1 current_instruction[] = {0x5b};
+
+  JavaType test_variable = {.int_value = 3, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.int_value = 2;
+  test_variable.cat_tag   = CAT1;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.int_value = 1;
+  test_variable.cat_tag   = CAT1;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 2);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 3);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+}
+
+void test_dup_x2_cat2(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1 current_instruction[] = {0x5b};
+
+  JavaType test_variable = {.int_value = 2, .cat_tag = CAT2};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.int_value = 1;
+  test_variable.cat_tag   = CAT1;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 2);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+}
+
+void test_dup2_cat1(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1       current_instruction[] = {0x5c};
+  JavaType test_variable         = {.int_value = 2, .cat_tag = CAT1};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  test_variable.int_value = 1;
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 2);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 1);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_int32(test_variable.int_value, ==, 2);
+}
+
+void test_dup2_cat2(void* fixture) {
+  Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
+
+  u1       current_instruction[] = {0x5c};
+  JavaType test_variable         = {.long_value = 42, .cat_tag = CAT2};
+  pushValue(&(frame->operand_stack), test_variable);
+
+  void (*instruction_handler)(const u1*) = instructions_handlers[*current_instruction];
+
+  instruction_handler(current_instruction);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_long(test_variable.int_value, ==, 42);
+
+  popValue(&(frame->operand_stack), &test_variable);
+  assert_long(test_variable.int_value, ==, 42);
+}
+
+void test_dup2_x1(/*void* fixture*/) {}
+void test_dup2_x2(/*void* fixture*/) {}
+void test_swap(/*void* fixture*/) {}
 
 create_test_with_fixture(test_pop);
-create_skip(test_pop2);
-create_skip(test_dup);
-create_skip(test_dup_x1);
-create_skip(test_dup_x2);
-create_skip(test_dup2);
+create_test_with_fixture(test_pop2_cat1);
+create_test_with_fixture(test_pop2_cat2);
+create_test_with_fixture(test_dup);
+create_test_with_fixture(test_dup_x1);
+create_test_with_fixture(test_dup_x2_cat1);
+create_test_with_fixture(test_dup_x2_cat2);
+create_test_with_fixture(test_dup2_cat1);
+create_test_with_fixture(test_dup2_cat2);
 create_skip(test_dup2_x1);
 create_skip(test_dup2_x2);
 create_skip(test_swap);
 
 MunitTest tests[] = {
     add_test_with_fixtures(test_pop),
-    add_test(test_pop2),
-    add_test(test_dup),
-    add_test(test_dup_x1),
-    add_test(test_dup_x2),
-    add_test(test_dup2),
+    add_test_with_fixtures(test_pop2_cat1),
+    add_test_with_fixtures(test_pop2_cat2),
+    add_test_with_fixtures(test_dup),
+    add_test_with_fixtures(test_dup_x1),
+    add_test_with_fixtures(test_dup_x2_cat1),
+    add_test_with_fixtures(test_dup_x2_cat2),
+    add_test_with_fixtures(test_dup2_cat1),
+    add_test_with_fixtures(test_dup2_cat2),
     add_test(test_dup2_x1),
     add_test(test_dup2_x2),
     add_test(test_swap),
