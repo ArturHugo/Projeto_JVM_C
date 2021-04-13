@@ -23,6 +23,17 @@ typedef uint32_t u4;
 #define REFERENCE_TYPE      7
 #define RETURN_ADDRESS_TYPE 8
 
+#define IEEE_MASK_F 0x7F800000
+#define IEEE_MASK_D 0x7FF0000000000000
+#define INF_F       0x7F800000
+#define INF_D       0x7FF0000000000000
+#define NEG_INF_F   0xFF800000
+#define NEG_INF_D   0xFFF0000000000000
+#define NAN_MASK_F  0x007FFFFF
+#define NAN_MASK_D  0x000FFFFFFFFFFFFF
+
+#define CAT1 1
+#define CAT2 2
 typedef struct JavaType {
   u1 cat_tag;
   union {
