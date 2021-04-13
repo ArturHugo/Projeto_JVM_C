@@ -12,6 +12,7 @@ void aconst_null(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.reference_value = NULL;
+  value.cat_tag         = CAT1;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc++;
 }
@@ -20,6 +21,7 @@ void iconst_n(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.int_value = (*instruction) - 3;
+  value.cat_tag   = CAT1;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc++;
 }
@@ -28,6 +30,7 @@ void lconst_n(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.long_value = (*instruction) - 9;
+  value.cat_tag    = CAT2;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc++;
 }
@@ -36,6 +39,7 @@ void fconst_n(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.float_value = (*instruction) - 11.0;
+  value.cat_tag     = CAT1;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc++;
 }
@@ -44,6 +48,7 @@ void dconst_n(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.double_value = (*instruction) - 14.0;
+  value.cat_tag      = CAT2;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc++;
 }
@@ -52,6 +57,7 @@ void bipush(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.int_value = (instruction[1]) | ((instruction[1] & 0x80) ? 0xFFFFFF00 : 0);
+  value.cat_tag   = CAT1;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc += 2;
 }
@@ -61,6 +67,7 @@ void sipush(const u1* instruction) {
   JavaType value;
   value.int_value =
       (instruction[1] << 8) | (instruction[2]) | ((instruction[1] & 0x80) ? 0xFFFF0000 : 0);
+  value.cat_tag = CAT1;
   pushValue(&(current_frame->operand_stack), value);
   current_frame->local_pc += 3;
 }
@@ -69,6 +76,8 @@ void ldc(const u1* instruction) {
   Frame*            current_frame = peekNode(frame_stack);
   JavaType          value;
   ConstantPoolInfo* current_info = &(current_frame->constant_pool[instruction[1]]);
+
+  value.cat_tag = CAT1;
   // TODO checar se o indice é valido
 
   switch(current_info->tag) {
