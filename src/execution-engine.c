@@ -2,12 +2,12 @@
 #include "frame.h"
 #include "global.h"
 
+#include "handlers/conversions.h"
 #include "handlers/loads.h"
 #include "handlers/stores.h"
-#include "handlers/conversions.h"
 
 void noop() {
-  Frame*    current_frame = peekNode(frame_stack);
+  Frame* current_frame = peekNode(frame_stack);
   current_frame->local_pc++;
 }
 
@@ -42,29 +42,29 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x1b */ iload_n,
     /* 0x1c */ iload_n,
     /* 0x1d */ iload_n,
-    /* 0x1e */ NULL,
-    /* 0x1f */ NULL,
-    /* 0x20 */ NULL,
-    /* 0x21 */ NULL,
-    /* 0x22 */ NULL,
-    /* 0x23 */ NULL,
-    /* 0x24 */ NULL,
-    /* 0x25 */ NULL,
-    /* 0x26 */ NULL,
-    /* 0x27 */ NULL,
-    /* 0x28 */ NULL,
-    /* 0x29 */ NULL,
-    /* 0x2a */ NULL,
-    /* 0x2b */ NULL,
-    /* 0x2c */ NULL,
-    /* 0x2d */ NULL,
-    /* 0x2e */ NULL,
-    /* 0x2f */ NULL,
-    /* 0x30 */ NULL,
-    /* 0x31 */ NULL,
-    /* 0x32 */ NULL,
-    /* 0x33 */ NULL,
-    /* 0x34 */ NULL,
+    /* 0x1e */ lload_n,
+    /* 0x1f */ lload_n,
+    /* 0x20 */ lload_n,
+    /* 0x21 */ lload_n,
+    /* 0x22 */ fload_n,
+    /* 0x23 */ fload_n,
+    /* 0x24 */ fload_n,
+    /* 0x25 */ fload_n,
+    /* 0x26 */ dload_n,
+    /* 0x27 */ dload_n,
+    /* 0x28 */ dload_n,
+    /* 0x29 */ dload_n,
+    /* 0x2a */ aload_n,
+    /* 0x2b */ aload_n,
+    /* 0x2c */ aload_n,
+    /* 0x2d */ aload_n,
+    /* 0x2e */ taload,
+    /* 0x2f */ taload,
+    /* 0x30 */ taload,
+    /* 0x31 */ taload,
+    /* 0x32 */ taload,
+    /* 0x33 */ taload,
+    /* 0x34 */ taload,
     /* 0x35 */ NULL,
     /* 0x36 */ tstore,
     /* 0x37 */ tstore,
