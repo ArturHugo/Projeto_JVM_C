@@ -136,7 +136,7 @@ void fdiv() {
     Frame* current_frame = peekNode(frame_stack);
     popValue(&current_frame->operand_stack, &value2.float_value);
     popValue(&current_frame->operand_stack, &value1.float_value);
-    result.float_value = (float)value1.float_value + (float)value2.float_value;
+    result.float_value = (float)value1.float_value / (float)value2.float_value;
     pushValue(&current_frame->operand_stack, result);
 }
 
@@ -145,7 +145,7 @@ void ddiv() {
     Frame* current_frame = peekNode(frame_stack);
     popValue(&current_frame->operand_stack, &value2.double_value);
     popValue(&current_frame->operand_stack, &value1.double_value);
-    result.double_value = (double)value1.double_value + (double)value2.double_value;
+    result.double_value = (double)value1.double_value / (double)value2.double_value;
     pushValue(&current_frame->operand_stack, result);
 }
 
