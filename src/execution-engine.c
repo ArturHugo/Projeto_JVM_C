@@ -108,7 +108,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x5c */ dup2_instruction,
     /* 0x5d */ dup2_x1,
     /* 0x5e */ dup2_x2,
-    /* 0x5f */ NULL,
+    /* 0x5f */ swap,
     /* 0x60 */ NULL,
     /* 0x61 */ NULL,
     /* 0x62 */ NULL,
