@@ -106,4 +106,6 @@ void taload(const u1* instruction) {
 
   pushValue(&current_frame->operand_stack, array->elements[index->int_value]);
   current_frame->local_pc += 1;
+  free(array_ref);
+  free(index);
 }
