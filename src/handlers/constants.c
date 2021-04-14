@@ -73,11 +73,23 @@ void sipush(const u1* instruction) {
 }
 
 void ldc(const u1* instruction) {
-  Frame*            current_frame = peekNode(frame_stack);
-  JavaType          value;
-  ConstantPoolInfo* current_info = &(current_frame->constant_pool[instruction[1]]);
+  Frame*   current_frame = peekNode(frame_stack);
+  JavaType value;
+  u2       index       = instruction[1];
+  u1       pc_increase = 2;
+  u1       is_ldc_w    = 0;
 
-  value.cat_tag = CAT1;
+  // if instruction is ldc_w
+  if(instruction[0] == 0x13) {
+    index = (instruction[1] << 8) | instruction[2];
+    pc_increase++;
+    is_ldc_w = 1;
+  }
+
+  ConstantPoolInfo* current_info = &(current_frame->constant_pool[index]);
+
+  value.cat_tag         = CAT1;
+  value.reference_value = NULL;
   // TODO checar se o indice é valido
 
   switch(current_info->tag) {
@@ -91,23 +103,56 @@ void ldc(const u1* instruction) {
       value.reference_value = current_info->string_info._value;
       break;
     case CONSTANT_CLASS:
-      value.reference_value = mapGet(method_area.loaded_classes, current_info->class_info._name);
+      value.reference_value =
+          mapGet(method_area.loaded_classes, (char*) (current_info->class_info._name));
       break;
     case CONSTANT_METHOD_TYPE:
       // TODO, ldc Method type não imlpementado ainda
-      printf("ldc Method type não imlpementado ainda");
+      printf("\npc = %d: ldc%s Method type not implemented",
+             current_frame->local_pc,
+             is_ldc_w ? "_w" : "");
       break;
     case CONSTANT_METHOD_HANDLE:
       // TODO, ldc Method handle não imlpementado ainda
-      printf("ldc Method type não imlpementado ainda");
+      printf("\npc = %d: ldc%s Method handle not implemented",
+             current_frame->local_pc,
+             is_ldc_w ? "_w" : "");
       break;
     default:
-      printf("ERRO: Instrução ldc aponta para campo de tipo inválido na constant pool.");
+      printf("\npc = %d: ldc%s resolved to unsupported constant pool item\n",
+             current_frame->local_pc,
+             is_ldc_w ? "_w" : "");
       exit(1);
   }
   pushValue(&(current_frame->operand_stack), value);
-  current_frame->local_pc += 2;
+  current_frame->local_pc += pc_increase;
 }
 
-void ldc_w(const u1* instruction) {}
-void ldc_2_w(const u1* instruction) {}
+void ldc_2_w(const u1* instruction) {
+  Frame*   current_frame = peekNode(frame_stack);
+  JavaType value;
+
+  ConstantPoolInfo* current_info =
+      &(current_frame->constant_pool[(instruction[1] << 8) | instruction[2]]);
+
+  value.cat_tag         = CAT2;
+  value.reference_value = NULL;
+  // TODO checar se o indice é valido
+
+  switch(current_info->tag) {
+    case CONSTANT_LONG:
+      value.long_value = current_info->long_info._value;
+      break;
+
+    case CONSTANT_DOUBLE:
+      value.double_value = current_info->double_info._value;
+      break;
+
+    default:
+      printf("\npc = %d: ldc_2_w resolved to unsupported constant pool item\n",
+             current_frame->local_pc);
+      exit(1);
+  }
+  pushValue(&(current_frame->operand_stack), value);
+  current_frame->local_pc += 3;
+}

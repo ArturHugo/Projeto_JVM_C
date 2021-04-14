@@ -14,7 +14,6 @@ void dconst_n(const u1* instruction);
 void bipush(const u1* instruction);
 void sipush(const u1* instruction);
 void ldc(const u1* instruction);
-void ldc_w(const u1* instruction);
 void ldc_2_w(const u1* instruction);
 
 #endif  // __CONSTANTS_H
