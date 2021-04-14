@@ -107,13 +107,13 @@ void ldc(const u1* instruction) {
           mapGet(method_area.loaded_classes, (char*) (current_info->class_info._name));
       break;
     case CONSTANT_METHOD_TYPE:
-      // TODO, ldc Method type não imlpementado ainda
+      // TODO, ldc Method type not yet implemented
       printf("\npc = %d: ldc%s Method type not implemented",
              current_frame->local_pc,
              is_ldc_w ? "_w" : "");
       break;
     case CONSTANT_METHOD_HANDLE:
-      // TODO, ldc Method handle não imlpementado ainda
+      // TODO, ldc Method handle not yet implemented
       printf("\npc = %d: ldc%s Method handle not implemented",
              current_frame->local_pc,
              is_ldc_w ? "_w" : "");
