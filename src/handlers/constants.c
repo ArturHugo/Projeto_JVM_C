@@ -3,12 +3,12 @@
 #include "global.h"
 #include "stack.h"
 
-void nop() {
+void nop(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   current_frame->local_pc++;
 }
 
-void aconst_null() {
+void aconst_null(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   value.reference_value = NULL;

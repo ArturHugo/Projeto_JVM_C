@@ -5,8 +5,8 @@
 #include "frame.h"
 #include "global.h"
 
-void nop();
-void aconst_null();
+void nop(const u1* instruction);
+void aconst_null(const u1* instruction);
 void iconst_n(const u1* instruction);
 void lconst_n(const u1* instruction);
 void fconst_n(const u1* instruction);
