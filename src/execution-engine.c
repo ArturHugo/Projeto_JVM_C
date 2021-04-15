@@ -4,6 +4,7 @@
 
 #include "handlers/conversions.h"
 #include "handlers/loads.h"
+#include "handlers/stack.h"
 #include "handlers/stores.h"
 #include "handlers/math.h"
 
@@ -100,15 +101,15 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x54 */ tastore,
     /* 0x55 */ tastore,
     /* 0x56 */ tastore,
-    /* 0x57 */ NULL,
-    /* 0x58 */ NULL,
-    /* 0x59 */ NULL,
-    /* 0x5a */ NULL,
-    /* 0x5b */ NULL,
-    /* 0x5c */ NULL,
-    /* 0x5d */ NULL,
-    /* 0x5e */ NULL,
-    /* 0x5f */ NULL,
+    /* 0x57 */ pop_instruction,
+    /* 0x58 */ pop2,
+    /* 0x59 */ dup_instruction,
+    /* 0x5a */ dup_x1,
+    /* 0x5b */ dup_x2,
+    /* 0x5c */ dup2_instruction,
+    /* 0x5d */ dup2_x1,
+    /* 0x5e */ dup2_x2,
+    /* 0x5f */ swap,
     /* 0x60 */ iadd,
     /* 0x61 */ ladd,
     /* 0x62 */ fadd,
