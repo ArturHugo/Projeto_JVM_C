@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+// a mod b
+static int mod(int a, int b) {
+  int r = a % b;
+  return r < 0 ? r + b : r;
+}
+
 /**
  * djb2 goes brrr
  */
@@ -39,10 +45,10 @@ void mapResize(Map* map) {
   // rehashing
   for(int index = 0; index < map->table_size; index++) {
     if(map->table[index]) {
-      short new_index = hash(map->table[index]->key) % new_table_size;
-      while(new_table[new_index] != NULL)
+      short new_index = hash(map->table[index]->key);
+      while(new_table[mod(new_index, new_table_size)] != NULL)
         new_index++;
-      new_table[new_index] = map->table[index];
+      new_table[mod(new_index,new_table_size)] = map->table[index];
     }
   }
 
@@ -56,22 +62,21 @@ void mapAdd(Map* map, char* key, void* value) {
   if(((double) map->length) / map->table_size > MAX_LOAD_FACTOR)
     mapResize(map);
 
-  short index = hash(key) % map->table_size;
-  while(map->table[index] != NULL)
+  short index = hash(key);
+  while(map->table[mod(index, map->table_size)] != NULL)
     index++;
-
   map->length++;
-  map->table[index] = newEntry(key, value);
+  map->table[mod(index, map->table_size)] = newEntry(key, value);
 }
 
 // Busca o index do elemento na tablea do Map.
 // Retorna -1 se não encontrado
 short mapFind(Map* map, char* key) {
-  short index = hash(key) % map->table_size;
+  short index = hash(key);
 
-  while(map->table[index]) {
-    if(!strcmp(map->table[index]->key, key))
-      return index;
+  while(map->table[mod(index, map->table_size)]) {
+    if(!strcmp(map->table[mod(index, map->table_size)]->key, key))
+      return mod(index, map->table_size);
     index++;
   }
 
