@@ -86,13 +86,6 @@ void ldc(const u1* instruction) {
     is_ldc_w = 1;
   }
 
-  if(index >= current_frame->constant_pool_count - 2) {
-    printf("\npc = %d: ldc%s called with invalid constant pool index\n",
-           current_frame->local_pc,
-           is_ldc_w ? "_w" : "");
-    exit(1);
-  }
-
   ConstantPoolInfo* current_info = &(current_frame->constant_pool[index]);
 
   value.cat_tag         = CAT1;
@@ -137,11 +130,6 @@ void ldc(const u1* instruction) {
 void ldc_2_w(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
-
-  if((instruction[1] << 8) | instruction[2] >= current_frame->constant_pool_count - 2) {
-    printf("\npc = %d: ldc_2_w called with invalid constant pool index\n", current_frame->local_pc);
-    exit(1);
-  }
 
   ConstantPoolInfo* current_info =
       &(current_frame->constant_pool[(instruction[1] << 8) | instruction[2]]);

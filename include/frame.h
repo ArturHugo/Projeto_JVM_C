@@ -10,7 +10,6 @@ typedef struct Frame {
   Stack             operand_stack;
   u4                local_pc;
   JavaType*         local_variables;
-  u2                constant_pool_count;
   ConstantPoolInfo* constant_pool;
   MethodInfo*       current_method;
 } Frame;
