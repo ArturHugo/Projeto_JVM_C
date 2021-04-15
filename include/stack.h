@@ -1,5 +1,5 @@
-#ifndef __STACK_H
-#define __STACK_H
+#ifndef __JVM_STACK_H
+#define __JVM_STACK_H
 
 #include "common.h"
 
@@ -33,4 +33,4 @@ void pushValue(Stack* stack, JavaType value);
  */
 void popValue(Stack* stack, JavaType* reference);
 
-#endif  //__STACK_H
+#endif  //__JVM_STACK_H

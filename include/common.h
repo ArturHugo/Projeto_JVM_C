@@ -34,7 +34,6 @@ typedef uint32_t u4;
 
 #define CAT1 1
 #define CAT2 2
-
 typedef struct JavaType {
   u1 cat_tag;
   union {
