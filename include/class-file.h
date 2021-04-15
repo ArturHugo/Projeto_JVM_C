@@ -76,7 +76,7 @@ void loadClass(char* file_path);
 
 char* trimSuffix(char* file_path, char* suffix);
 
-void resolveReferences(char* file_path);
+void resolveReferences(ClassFile *class_file);
 void initializeClass(ClassFile* class_file);
 
 #endif  // __CLASS_FILE_H

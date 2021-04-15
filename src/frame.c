@@ -5,13 +5,14 @@
 #include "map.h"
 
 Frame* newFrame(ClassFile* current_class, char* method_name) {
-  Frame* new_frame         = malloc(sizeof(*new_frame));
-  new_frame->constant_pool = current_class->constant_pool;
-
   MethodInfo* method = mapGet(current_class->_method_map, method_name);
 
-  if(method == NULL)
+  if(method == NULL) {
     panic("Method not found while trying to create frame: %s", method_name);
+  }
+
+  Frame* new_frame         = malloc(sizeof(*new_frame));
+  new_frame->constant_pool = current_class->constant_pool;
 
   new_frame->current_method = method;
   new_frame->operand_stack  = NULL;

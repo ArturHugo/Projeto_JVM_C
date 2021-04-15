@@ -1,10 +1,10 @@
 #include "class-file.h"
 #include "fields.h"
+#include "frame.h"
 #include "global.h"
 #include "map.h"
 #include "methods.h"
 #include "object.h"
-#include "frame.h"
 
 #include <string.h>
 
@@ -208,9 +208,8 @@ void loadClass(char* file_path) {
 }
 
 /// Função para resolver referências da constant pool
-void resolveReferences(char* class_name) {
-  ClassFile*        class_file = mapGet(method_area.loaded_classes, class_name);
-  ConstantPoolInfo* cp         = class_file->constant_pool;
+void resolveReferences(ClassFile* class_file) {
+  ConstantPoolInfo* cp = class_file->constant_pool;
 
   for(int i = 1; i < class_file->constant_pool_count; i++) {
     switch(cp[i].tag) {
@@ -270,17 +269,16 @@ void resolveReferences(char* class_name) {
     class_file->_super_class =
         mapGet(method_area.loaded_classes, (char*) cp[class_file->super_class].class_info._name);
 
-    ConstantPoolInfo* super_cp = class_file->_super_class->constant_pool;
-
-    u2 super_class_name_index =
-        super_cp[class_file->_super_class->this_class].class_info.name_index;
-    resolveReferences((char*) super_cp[super_class_name_index].utf8_info.bytes);
+    resolveReferences(class_file->_super_class);
   }
 }
 
 void initializeClass(Class* class) {
-  class->_method_map = newMap();
-  class->_field_map  = newMap();
+  if(class->_status == initialized)
+    return;
+
+  class->_method_map = _newMap(class->methods_count * 1.5);
+  class->_field_map  = _newMap(class->fields_count * 1.5);
 
   // popula o map de methods
   for(u2 index = 0; index < class->methods_count; index++) {
@@ -297,12 +295,18 @@ void initializeClass(Class* class) {
     mapAdd(class->_field_map, field_name, field);
   }
 
-  /**
-   * 🌸 TODO 🌸: Carregar super classes recursivamente
-   */
+  // Inicializa super classes recursivamente
+  if(class->super_class) {
+    initializeClass(class->_super_class);
+  }
 
-  Frame *frame = newFrame(class, "<clinit>");
-  pushNode(&frame_stack, frame);
+  /** FIXME da pra otimizar essa call */
+  void* has_clinit = mapGet(class->_method_map, "<clinit>");
+
+  if(has_clinit) {
+    Frame* frame = newFrame(class, "<clinit>");
+    pushNode(&frame_stack, frame);
+  }
 
   class->_status = initialized;
 }

@@ -6,6 +6,8 @@
 #include <stdlib.h>
 
 #define println(format, ...) printf(format "\n", ##__VA_ARGS__)
+
+/** exibe mensagem e da exit. É uma macro, então não use if(prt == NULL) panic() */
 #define panic(message, ...)                                                                        \
   println(message "\n", ##__VA_ARGS__);                                                            \
   exit(1)

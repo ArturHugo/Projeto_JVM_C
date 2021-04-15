@@ -29,16 +29,20 @@ void getstatic(const u1* instruction) {
 
   Class* field_class = mapGet(method_area.loaded_classes, (char*) field_info._class);
 
-  if(field_class == NULL)
+  if(field_class == NULL) {
     panic("Class not found during getstatic: %s", field_info._class);
+  }
 
   if(field_class->_status != initialized)
     initializeClass(field_class);
 
   FieldInfo* field = mapGet(field_class->_field_map, (char*) field_info._name);
 
-  if(field == NULL)
+  if(field == NULL) {
     panic("NoSuchFieldError: %s", field_info._name);
+  }
+
+  // TODO: checar se é estático
 
   pushValue(&current_frame->operand_stack, field->value);
 
