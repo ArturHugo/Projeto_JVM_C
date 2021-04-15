@@ -37,7 +37,7 @@ void ishl();
 void lshl();
 
 void ishr();
-void lshl();
+void lshr();
 
 void iushr();
 void lushr();
