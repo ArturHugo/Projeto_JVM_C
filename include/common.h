@@ -6,6 +6,9 @@
 #include <stdlib.h>
 
 #define println(format, ...) printf(format "\n", ##__VA_ARGS__)
+#define panic(message, ...)                                                                        \
+  println(message "\n", ##__VA_ARGS__);                                                            \
+  exit(1)
 
 // Size specific data types
 typedef uint8_t  u1;

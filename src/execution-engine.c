@@ -1,4 +1,5 @@
 #include "execution-engine.h"
+#include "class-file.h"
 #include "frame.h"
 #include "global.h"
 
@@ -276,11 +277,11 @@ void run(char* starting_class_name) {
 
   // execution engine
   ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
-  int        main_index     = 1;  // TODO encontrar metodo main da primeira classe
+  initializeClass(starting_class);
 
   // criando frame
   Frame* starting_frame;
-  starting_frame = newFrame(starting_class, main_index);
+  starting_frame = newFrame(starting_class, "main");
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);

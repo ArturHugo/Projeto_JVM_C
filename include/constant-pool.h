@@ -31,27 +31,27 @@ typedef struct {
   u2 class_index;
   u2 name_and_type_index;
 
-  u1* _class;
-  u1* _name;
-  u1* _descriptor;
+  u1* _class;      /** o nome da classe que esse field se encontra */
+  u1* _name;       /** o nome do field */
+  u1* _descriptor; /** o descritor do field */
 } FieldrefInfo;
 
 typedef struct {
   u2 class_index;
   u2 name_and_type_index;
 
-  u1* _class;
-  u1* _name;
-  u1* _descriptor;
+  u1* _class;      /** o nome da classe que esse método se encontra */
+  u1* _name;       /** o nome do método */
+  u1* _descriptor; /** o descritor do método */
 } MethodrefInfo;
 
 typedef struct {
   u2 class_index;
   u2 name_and_type_index;
 
-  u1* _interface;
-  u1* _name;
-  u1* _descriptor;
+  u1* _interface;  /** o nome da classe que essa interface se encontra */
+  u1* _name;       /** o nome da interface */
+  u1* _descriptor; /** o descritor da interface */
 } InterfaceMethodrefInfo;
 
 typedef struct {

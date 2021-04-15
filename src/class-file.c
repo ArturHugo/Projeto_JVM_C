@@ -1,6 +1,10 @@
 #include "class-file.h"
+#include "fields.h"
 #include "global.h"
+#include "map.h"
+#include "methods.h"
 #include "object.h"
+#include "frame.h"
 
 #include <string.h>
 
@@ -272,4 +276,33 @@ void resolveReferences(char* class_name) {
         super_cp[class_file->_super_class->this_class].class_info.name_index;
     resolveReferences((char*) super_cp[super_class_name_index].utf8_info.bytes);
   }
+}
+
+void initializeClass(Class* class) {
+  class->_method_map = newMap();
+  class->_field_map  = newMap();
+
+  // popula o map de methods
+  for(u2 index = 0; index < class->methods_count; index++) {
+    MethodInfo* method      = class->methods + index;
+    char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
+    // TODO: if final, initialize it
+    mapAdd(class->_method_map, method_name, method);
+  }
+
+  // popula o map de fields
+  for(u2 index = 0; index < class->fields_count; index++) {
+    FieldInfo* field      = class->fields + index;
+    char*      field_name = (char*) getUtf8String(class->constant_pool, field->name_index);
+    mapAdd(class->_field_map, field_name, field);
+  }
+
+  /**
+   * 🌸 TODO 🌸: Carregar super classes recursivamente
+   */
+
+  Frame *frame = newFrame(class, "<clinit>");
+  pushNode(&frame_stack, frame);
+
+  class->_status = initialized;
 }

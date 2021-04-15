@@ -18,7 +18,7 @@ typedef struct {
   Entry** table;
 } Map;
 
-Map*  _newMap(short n_entries);
+Map*   _newMap(short n_entries);
 void  mapAdd(Map* map, char* key, void* value);
 void* mapGet(Map* map, char* key);
 void* mapRemove(Map* map, char* key);
