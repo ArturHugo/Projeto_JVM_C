@@ -27,7 +27,8 @@ void pop2() {
     if(value.cat_tag == CAT2) {
       printf("\npc = %d: Inconsistency detected on opperand stack, read jvms8.pdf page 549\n pop2 "
              "called "
-             "with stack = ...,cat2,cat1\n");
+             "with stack = ...,cat2,cat1\n",
+             current_frame->local_pc);
       exit(1);
     }
   }
