@@ -132,5 +132,5 @@ void printConstantValue(ConstantPoolInfo* constant_pool, u2 index);
 
 u1*  getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
 u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_t index);
-
+u2   getArgumentCount(u1* descriptor);
 #endif  // __CONSTANT_POOL_H
