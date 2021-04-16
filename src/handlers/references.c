@@ -35,12 +35,10 @@ void invokestatic(const u1* instruction) {
 
   Frame* new_frame = newFrame(new_class, new_method_name);
 
-  u2 n_args = getArgumentCount((u1*) new_method_descriptor);
-
+  // loading opperands from current stack to new local variables
+  u2       n_args               = getArgumentCount((u1*) new_method_descriptor);
   u2       local_variable_index = 0;
   JavaType temp_value;
-
-  // loading opperands from current stack to new local variables
   for(u2 i = 0; i < n_args; i++) {
     popValue(&(current_frame->operand_stack), &temp_value);
     new_frame->local_variables[local_variable_index] = temp_value;
