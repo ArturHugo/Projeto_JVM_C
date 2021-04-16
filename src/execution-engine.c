@@ -1,11 +1,4 @@
 #include "execution-engine.h"
-#include "frame.h"
-#include "global.h"
-
-#include "handlers/conversions.h"
-#include "handlers/loads.h"
-#include "handlers/stack.h"
-#include "handlers/stores.h"
 
 void noop() {
   Frame* current_frame = peekNode(frame_stack);
@@ -197,7 +190,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xb5 */ NULL,
     /* 0xb6 */ NULL,
     /* 0xb7 */ NULL,
-    /* 0xb8 */ NULL,
+    /* 0xb8 */ invokestatic,
     /* 0xb9 */ NULL,
     /* 0xba */ NULL,
     /* 0xbb */ NULL,
