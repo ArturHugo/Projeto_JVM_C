@@ -24,7 +24,7 @@ SRC		:= src
 INCLUDE	:= include
 
 # define lib directory
-LIB		:= lib
+LIB		:= 
 
 TEST := test
 
@@ -88,10 +88,10 @@ $(OUTPUT):
 	$(MD) $(OUTPUT)
 
 $(MAIN): $(OBJECTS) 
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS)
 
 $(TESTRUNNER): $(TESTOBJECTS) 
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTEST) $(WITHOUTMAIN) $(TESTSOURCES) $(LFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTEST) $(WITHOUTMAIN) $(TESTSOURCES) $(LFLAGS) 
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -113,4 +113,9 @@ run: all
 	@echo Executing 'run: all' complete!
 
 test: build_tests
+ifeq ($(valgrind), 1)
+	valgrind ./$(OUTPUTTEST)
+else
 	./$(OUTPUTTEST)
+endif
+

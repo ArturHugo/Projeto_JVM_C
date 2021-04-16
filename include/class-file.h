@@ -8,6 +8,7 @@
 #include "attributes.h"
 #include "constant-pool.h"
 #include "fields.h"
+#include "map.h"
 #include "methods.h"
 
 // Access flag values
@@ -48,11 +49,16 @@ typedef struct ClassFile {
   u2*               interfaces;
   u2                fields_count;
   FieldInfo*        fields;
+  Map*              _field_map;
   u2                methods_count;
   MethodInfo*       methods;
+  Map*              _method_map;
   u2                attributes_count;
   AttributeInfo*    attributes;
 } ClassFile;
+
+// Um alias pra ClassFile. Só pra ficar mais fácil de mudar depois
+typedef ClassFile Class;
 
 int isVersionValid(u2 major_version);
 int isMagicValid(ClassFile* class_file);
@@ -70,6 +76,7 @@ void loadClass(char* file_path);
 
 char* trimSuffix(char* file_path, char* suffix);
 
-void resolveReferences(char* file_path);
+void resolveReferences(ClassFile *class_file);
+void initializeClass(ClassFile* class_file);
 
 #endif  // __CLASS_FILE_H
