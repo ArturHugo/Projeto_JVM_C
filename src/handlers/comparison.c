@@ -129,9 +129,7 @@ void dcmpg(){
 void ifeq(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -139,7 +137,7 @@ void ifeq(){
     popValue(&current_frame -> operand_stack, &value);
 
     if ((int32_t)value.int_value == 0) {
-            current_frame->local_pc = baseAddress + branchOffset;
+            current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame-> local_pc = current_frame->local_pc + 2 + 1;
 }
@@ -147,9 +145,7 @@ void ifeq(){
 void ifne(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -157,7 +153,7 @@ void ifne(){
     popValue(&current_frame -> operand_stack, &value);
 
     if ((int32_t)value.int_value != 0) {
-            current_frame->local_pc = baseAddress + branchOffset;
+            current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame-> local_pc = current_frame->local_pc + 2 + 1;
 }
@@ -165,9 +161,7 @@ void ifne(){
 void iflt(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -175,7 +169,7 @@ void iflt(){
     popValue(&current_frame -> operand_stack, &value);
 
     if ((int32_t)value.int_value < 0) {
-            current_frame->local_pc = baseAddress + branchOffset;
+            current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame-> local_pc = current_frame->local_pc + 2 + 1;
 }
@@ -183,7 +177,6 @@ void iflt(){
 void ifle(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
     uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
@@ -201,7 +194,6 @@ void ifle(){
 void ifge(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
     uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
@@ -219,7 +211,6 @@ void ifge(){
 void ifgt(){
     Frame* current_frame = peekNode(frame_stack);
     JavaType value;
-    //sera:?
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
     uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
@@ -238,7 +229,6 @@ void ifgt(){
 void if_icmpeq(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -249,14 +239,13 @@ void if_icmpeq(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value == (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;
 }
 void if_icmpne(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -267,7 +256,7 @@ void if_icmpne(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value != (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;  
 }
@@ -275,7 +264,6 @@ void if_icmpne(){
 void if_icmplt(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -286,14 +274,13 @@ void if_icmplt(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value < (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;  
 }
 void if_icmpge(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -304,14 +291,13 @@ void if_icmpge(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value >= (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;   
 }
 void if_icmpgt(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -322,14 +308,13 @@ void if_icmpgt(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value > (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;   
 }
 void if_icmple(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -340,14 +325,14 @@ void if_icmple(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if ((int32_t)value1.int_value <= (int32_t)value2.int_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;   
 }
 void if_acmpeq(){
+    //testar
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -358,14 +343,13 @@ void if_acmpeq(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if (value1.reference_value == value2.reference_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;
 }
 void if_acmpne(){
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
-    uint32_t baseAddress = current_frame->local_pc;
     uint8_t byte1 = bytecode[current_frame->local_pc + 1];
     uint8_t byte2 = bytecode[current_frame->local_pc + 2];
     int16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
@@ -376,7 +360,7 @@ void if_acmpne(){
     popValue(&current_frame -> operand_stack, &value1);
 
     if (value1.reference_value != value2.reference_value) {
-        current_frame->local_pc = baseAddress + branchOffset;
+        current_frame->local_pc = current_frame->local_pc + branchOffset;
     }
     current_frame->local_pc = current_frame->local_pc + 2 + 1;
 }
