@@ -1,6 +1,7 @@
 #ifndef __METHOD_AREA_H
 #define __METHOD_AREA_H
 
+#include "class-file.h"
 #include "fields.h"
 #include "map.h"
 #include "methods.h"
@@ -15,8 +16,8 @@
 #define TYPE_SHORT     7
 
 typedef struct Object {
-  MethodInfo* methods;
-  Map*        fields_and_values; /** Map<char*, JavaType*> */
+  Class *class;
+  Map* fields_and_values; /** Map<JavaType*> */
 } Object;
 
 typedef struct Array {

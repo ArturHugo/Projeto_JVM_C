@@ -3,6 +3,7 @@
 #include "class-file.h"
 #include "common.h"
 #include "map.h"
+#include "method-area.h"
 
 Frame* newFrame(ClassFile* current_class, char* method_name) {
   MethodInfo* method = mapGet(current_class->_method_map, method_name);

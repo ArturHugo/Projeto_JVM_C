@@ -10,5 +10,6 @@
 //_insctruction appended to reserved names
 
 void invokestatic(const u1* instruction);
+void invokespecial(const u1* instruction);
 
 #endif  // __REFERENCES_H
