@@ -87,7 +87,7 @@ void aload_n(const u1* instruction) {
  * and index from the top of the stack.
  * Pushes the value of array[index] into the operand stack.
  */
-void taload(const u1* instruction) {
+void taload() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* array_ref     = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);

@@ -3,6 +3,7 @@
 #include "global.h"
 
 #include "handlers/conversions.h"
+#include "handlers/extended.h"
 #include "handlers/loads.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
@@ -209,12 +210,12 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xc1 */ NULL,
     /* 0xc2 */ NULL,
     /* 0xc3 */ NULL,
-    /* 0xc4 */ NULL,
-    /* 0xc5 */ NULL,
-    /* 0xc6 */ NULL,
-    /* 0xc7 */ NULL,
-    /* 0xc8 */ NULL,
-    /* 0xc9 */ NULL,
+    /* 0xc4 */ wide,
+    /* 0xc5 */ multianewarray,
+    /* 0xc6 */ ifnull,
+    /* 0xc7 */ ifnonnull,
+    /* 0xc8 */ goto_w,
+    /* 0xc9 */ jsr_w,
     /* 0xca */ NULL,
     /* 0xcb */ NULL,
     /* 0xcc */ NULL,
