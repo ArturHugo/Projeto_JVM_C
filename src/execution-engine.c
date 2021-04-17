@@ -4,6 +4,7 @@
 #include "global.h"
 
 #include "handlers/conversions.h"
+#include "handlers/fields.h"
 #include "handlers/loads.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
@@ -192,8 +193,8 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xaf */ NULL,
     /* 0xb0 */ NULL,
     /* 0xb1 */ NULL,
-    /* 0xb2 */ NULL,
-    /* 0xb3 */ NULL,
+    /* 0xb2 */ getstatic,
+    /* 0xb3 */ putstatic,
     /* 0xb4 */ NULL,
     /* 0xb5 */ NULL,
     /* 0xb6 */ NULL,

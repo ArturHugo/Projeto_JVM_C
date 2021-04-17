@@ -48,12 +48,11 @@ int main(int numargs, char* arg[]) {
     free(fd);
   } else if(!strcmp(arg[1], "-i")) {
     method_area.loaded_classes = newMap();
-
     loadObjectClass();
-    loadClass(arg[2]);
 
     char* class_name = trimSuffix(arg[2], ".class");
-    Class* class     = mapGet(method_area.loaded_classes, class_name);
+
+    Class* class = loadClass(class_name);
     resolveReferences(class);
 
     run(class_name);
