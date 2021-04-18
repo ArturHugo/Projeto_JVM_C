@@ -51,3 +51,5 @@ void invokestatic(const u1* instruction) {
 
   current_frame->local_pc += 3;
 }
+
+void new(const u1* instruction) {}
