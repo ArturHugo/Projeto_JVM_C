@@ -192,10 +192,10 @@ void multianewarray_aux(Array*    current_array,
   }
 
   for(int i = 0; i < current_array->length; i++) {
-    Array new_subarray;
-    multianewarray_aux(&new_subarray, counts, dimensions, current_dimension + 1);
+    Array* new_subarray = malloc(sizeof(*new_subarray));
+    multianewarray_aux(new_subarray, counts, dimensions, current_dimension + 1);
 
-    JavaType new_subarray_ref = {.cat_tag = CAT1, .reference_value = &new_subarray};
+    JavaType new_subarray_ref = {.cat_tag = CAT1, .reference_value = new_subarray};
 
     current_array->elements[i] = new_subarray_ref;
   }
