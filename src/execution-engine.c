@@ -2,7 +2,9 @@
 #include "class-file.h"
 #include "frame.h"
 #include "global.h"
+#include "handlers/constants.h"
 
+#include "handlers/constants.h"
 #include "handlers/conversions.h"
 #include "handlers/fields.h"
 #include "handlers/loads.h"
@@ -15,27 +17,27 @@ void noop() {
 }
 
 void (*const instructions_handlers[256])(const u1*) = {
-    /* 0x00 */ noop,
-    /* 0x01 */ NULL,
-    /* 0x02 */ NULL,
-    /* 0x03 */ NULL,
-    /* 0x04 */ NULL,
-    /* 0x05 */ NULL,
-    /* 0x06 */ NULL,
-    /* 0x07 */ NULL,
-    /* 0x08 */ NULL,
-    /* 0x09 */ NULL,
-    /* 0x0a */ NULL,
-    /* 0x0b */ NULL,
-    /* 0x0c */ NULL,
-    /* 0x0d */ NULL,
-    /* 0x0e */ NULL,
-    /* 0x0f */ NULL,
-    /* 0x10 */ NULL,
-    /* 0x11 */ NULL,
-    /* 0x12 */ NULL,
-    /* 0x13 */ NULL,
-    /* 0x14 */ NULL,
+    /* 0x00 */ nop,
+    /* 0x01 */ aconst_null,
+    /* 0x02 */ iconst_n,
+    /* 0x03 */ iconst_n,
+    /* 0x04 */ iconst_n,
+    /* 0x05 */ iconst_n,
+    /* 0x06 */ iconst_n,
+    /* 0x07 */ iconst_n,
+    /* 0x08 */ iconst_n,
+    /* 0x09 */ lconst_n,
+    /* 0x0a */ lconst_n,
+    /* 0x0b */ fconst_n,
+    /* 0x0c */ fconst_n,
+    /* 0x0d */ fconst_n,
+    /* 0x0e */ dconst_n,
+    /* 0x0f */ dconst_n,
+    /* 0x10 */ bipush,
+    /* 0x11 */ sipush,
+    /* 0x12 */ ldc,
+    /* 0x13 */ ldc,
+    /* 0x14 */ ldc_2_w,
     /* 0x15 */ tload,
     /* 0x16 */ tload,
     /* 0x17 */ tload,
