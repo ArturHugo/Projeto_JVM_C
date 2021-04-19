@@ -4,9 +4,9 @@
 
 #include "handlers/conversions.h"
 #include "handlers/loads.h"
+#include "handlers/math.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
-#include "handlers/math.h"
 
 void noop() {
   Frame* current_frame = peekNode(frame_stack);
@@ -123,7 +123,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x6a */ fmul,
     /* 0x6b */ dmul,
     /* 0x6c */ idiv,
-    /* 0x6d */ ldiv,
+    /* 0x6d */ ldiv_instruction,
     /* 0x6e */ fdiv,
     /* 0x6f */ ddiv,
     /* 0x70 */ irem,
