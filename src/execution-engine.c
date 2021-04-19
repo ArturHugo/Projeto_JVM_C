@@ -1,8 +1,10 @@
 #include "execution-engine.h"
+#include "class-file.h"
 #include "frame.h"
 #include "global.h"
 
 #include "handlers/conversions.h"
+#include "handlers/fields.h"
 #include "handlers/loads.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
@@ -191,10 +193,10 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xaf */ NULL,
     /* 0xb0 */ NULL,
     /* 0xb1 */ NULL,
-    /* 0xb2 */ NULL,
-    /* 0xb3 */ NULL,
-    /* 0xb4 */ NULL,
-    /* 0xb5 */ NULL,
+    /* 0xb2 */ getstatic,
+    /* 0xb3 */ putstatic,
+    /* 0xb4 */ getfield,
+    /* 0xb5 */ putfield,
     /* 0xb6 */ NULL,
     /* 0xb7 */ NULL,
     /* 0xb8 */ NULL,
@@ -276,11 +278,11 @@ void run(char* starting_class_name) {
 
   // execution engine
   ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
-  int        main_index     = 1;  // TODO encontrar metodo main da primeira classe
+  initializeClass(starting_class);
 
   // criando frame
   Frame* starting_frame;
-  starting_frame = newFrame(starting_class, main_index);
+  starting_frame = newFrame(starting_class, "main");
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);
