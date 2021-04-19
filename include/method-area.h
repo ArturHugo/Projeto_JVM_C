@@ -15,8 +15,8 @@
 #define TYPE_SHORT     7
 
 typedef struct Object {
-  MethodInfo* methods;
-  Map*        fields_and_values; /** Map<char*, JavaType*> */
+  Class* class;
+  Map* fields_and_values; /** Map<char*, JavaType*> */
 } Object;
 
 typedef struct Array {

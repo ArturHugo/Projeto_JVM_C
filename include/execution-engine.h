@@ -7,6 +7,7 @@
 #include "global.h"
 
 #include "handlers/conversions.h"
+#include "handlers/fields.h"
 #include "handlers/loads.h"
 #include "handlers/references.h"
 #include "handlers/stack.h"

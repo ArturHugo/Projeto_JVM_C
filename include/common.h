@@ -42,6 +42,7 @@ typedef uint32_t u4;
 typedef struct JavaType {
   u1 cat_tag;
   union {
+    uint8_t  boolean_value;
     int8_t   byte_value;
     int16_t  short_value;
     int32_t  int_value;
