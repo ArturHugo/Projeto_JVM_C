@@ -72,7 +72,7 @@ void printClassFile(ClassFile* class_file);
 char* getSourceFile(ClassFile* class_file);
 
 void loadObjectClass();
-void loadClass(char* file_path);
+Class* loadClass(char* file_path);
 
 char* trimSuffix(char* file_path, char* suffix);
 
