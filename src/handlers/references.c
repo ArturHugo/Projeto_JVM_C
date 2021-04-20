@@ -100,7 +100,6 @@ void new(const u1* instruction) {
     field_name = (char*) new_class->constant_pool[field_name_index].utf8_info.bytes;
     field_type = (char) new_class->constant_pool[field_type_index].utf8_info.bytes[0];
 
-        break;
     // calloc used to initialize values as zero
     field_value = calloc(1, sizeof(*field_value));
 
