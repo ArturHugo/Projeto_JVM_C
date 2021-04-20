@@ -6,12 +6,83 @@
 #include "global.h"
 #include "handlers/conversions.h"
 
-/*
- * Convert int or long to float
+/**
+ * Convert int to long
  *
- * opcode:	0x86, 0x
- * format: 	[i2f/l2f]
+ * opcode:	0x85
+ * format: 	[i2l]
+ * stack: 	(..., value: integer) -> (..., value: long)
+ * description:	convert to int to long
+ */
+void i2l() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* value         = peekNode(current_frame->operand_stack);
+
+  value->long_value = value->int_value;
+  value->cat_tag    = CAT2;
+
+  current_frame->local_pc++;
+}
+
+/**
+ * Convert int to float
+ *
+ * opcode:	0x86
+ * format: 	[i2f]
  * stack: 	(..., value: integer) -> (..., value: float)
+ * description:	convert to int to float
+ */
+void i2f() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* value         = peekNode(current_frame->operand_stack);
+
+  value->float_value = value->int_value;
+
+  current_frame->local_pc++;
+}
+
+/**
+ * Convert int to double
+ *
+ * opcode:	0x87
+ * format: 	[i2d]
+ * stack: 	(..., value: integer) -> (..., value: double)
+ * description:	convert to int to double
+ */
+void i2d() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* value         = peekNode(current_frame->operand_stack);
+
+  value->double_value = value->int_value;
+  value->cat_tag      = CAT2;
+
+  current_frame->local_pc++;
+}
+
+/**
+ * Convert long to int
+ *
+ * opcode:	0x88
+ * format: 	[l2i]
+ * stack: 	(..., value: long) -> (..., value: int)
+ * description:	convert to long to int
+ */
+void l2i() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* value         = peekNode(current_frame->operand_stack);
+
+  value->long_value = value->int_value;
+  value->cat_tag    = CAT2;
+
+  current_frame->local_pc++;
+}
+
+/**
+ * Convert long to float
+ *
+ * opcode:	0x89
+ * format: 	[l2f]
+ * stack: 	(..., value: long) -> (..., value: float)
  * description:	convert to IEEE 754 using round to nearest
  */
 void l2f() {
@@ -19,16 +90,17 @@ void l2f() {
   JavaType* value         = peekNode(current_frame->operand_stack);
 
   value->float_value = value->long_value;
+  value->cat_tag     = CAT1;
 
   current_frame->local_pc++;
 }
 
-/*
- * Convert int or long to double
+/**
+ * Convert long to double
  *
- * opcode:	0x87, 0x
- * format: 	[i2d/l2d]
- * stack: 	(..., value: integer) -> (..., value: double)
+ * opcode:	0x8a
+ * format: 	[l2d]
+ * stack: 	(..., value: long) -> (..., value: double)
  * description:	convert to IEEE 754 using round to nearest
  */
 void l2d() {
@@ -65,6 +137,8 @@ void f2l(const u1* instruction) {
   } else {
     value->long_value = value->float_value;
   }
+
+  value->cat_tag = is_long ? CAT2 : CAT1;
 
   current_frame->local_pc++;
 }
@@ -128,6 +202,8 @@ void d2l(const u1* instruction) {
   } else {
     value->long_value = value->double_value;
   }
+
+  value->cat_tag = is_long ? CAT2 : CAT1;
 
   current_frame->local_pc++;
 }

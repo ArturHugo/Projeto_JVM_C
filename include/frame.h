@@ -14,6 +14,6 @@ typedef struct Frame {
   MethodInfo*       current_method;
 } Frame;
 
-Frame* newFrame(ClassFile* current_class, u2 method_index);
+Frame* newFrame(ClassFile* current_class, char * method_name);
 
 #endif  // __FRAME_H

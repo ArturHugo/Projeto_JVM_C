@@ -9,6 +9,7 @@
 #include "frame.h"
 #include "global.h"
 #include "stack.h"
+// FIXME teste completamente quebrado
 
 MethodArea method_area;
 Stack      frame_stack;

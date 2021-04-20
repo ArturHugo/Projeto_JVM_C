@@ -1,8 +1,14 @@
 #include "execution-engine.h"
+#include "class-file.h"
 #include "frame.h"
 #include "global.h"
+#include "handlers/constants.h"
 
+#include "handlers/constants.h"
 #include "handlers/conversions.h"
+#include "handlers/extended.h"
+#include "handlers/fields.h"
+#include "handlers/invokevirtual.h"
 #include "handlers/loads.h"
 #include "handlers/math.h"
 #include "handlers/stack.h"
@@ -14,27 +20,27 @@ void noop() {
 }
 
 void (*const instructions_handlers[256])(const u1*) = {
-    /* 0x00 */ noop,
-    /* 0x01 */ NULL,
-    /* 0x02 */ NULL,
-    /* 0x03 */ NULL,
-    /* 0x04 */ NULL,
-    /* 0x05 */ NULL,
-    /* 0x06 */ NULL,
-    /* 0x07 */ NULL,
-    /* 0x08 */ NULL,
-    /* 0x09 */ NULL,
-    /* 0x0a */ NULL,
-    /* 0x0b */ NULL,
-    /* 0x0c */ NULL,
-    /* 0x0d */ NULL,
-    /* 0x0e */ NULL,
-    /* 0x0f */ NULL,
-    /* 0x10 */ NULL,
-    /* 0x11 */ NULL,
-    /* 0x12 */ NULL,
-    /* 0x13 */ NULL,
-    /* 0x14 */ NULL,
+    /* 0x00 */ nop,
+    /* 0x01 */ aconst_null,
+    /* 0x02 */ iconst_n,
+    /* 0x03 */ iconst_n,
+    /* 0x04 */ iconst_n,
+    /* 0x05 */ iconst_n,
+    /* 0x06 */ iconst_n,
+    /* 0x07 */ iconst_n,
+    /* 0x08 */ iconst_n,
+    /* 0x09 */ lconst_n,
+    /* 0x0a */ lconst_n,
+    /* 0x0b */ fconst_n,
+    /* 0x0c */ fconst_n,
+    /* 0x0d */ fconst_n,
+    /* 0x0e */ dconst_n,
+    /* 0x0f */ dconst_n,
+    /* 0x10 */ bipush,
+    /* 0x11 */ sipush,
+    /* 0x12 */ ldc,
+    /* 0x13 */ ldc,
+    /* 0x14 */ ldc2_w,
     /* 0x15 */ tload,
     /* 0x16 */ tload,
     /* 0x17 */ tload,
@@ -67,7 +73,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x32 */ taload,
     /* 0x33 */ taload,
     /* 0x34 */ taload,
-    /* 0x35 */ NULL,
+    /* 0x35 */ taload,
     /* 0x36 */ tstore,
     /* 0x37 */ tstore,
     /* 0x38 */ tstore,
@@ -147,10 +153,10 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x82 */ ixor,
     /* 0x83 */ lxor,
     /* 0x84 */ iinc,
-    /* 0x85 */ noop,
-    /* 0x86 */ l2f,
-    /* 0x87 */ l2d,
-    /* 0x88 */ noop,
+    /* 0x85 */ i2l,
+    /* 0x86 */ i2f,
+    /* 0x87 */ i2d,
+    /* 0x88 */ l2i,
     /* 0x89 */ l2f,
     /* 0x8a */ l2d,
     /* 0x8b */ f2l,
@@ -192,11 +198,11 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xaf */ NULL,
     /* 0xb0 */ NULL,
     /* 0xb1 */ NULL,
-    /* 0xb2 */ NULL,
-    /* 0xb3 */ NULL,
-    /* 0xb4 */ NULL,
-    /* 0xb5 */ NULL,
-    /* 0xb6 */ NULL,
+    /* 0xb2 */ getstatic,
+    /* 0xb3 */ putstatic,
+    /* 0xb4 */ getfield,
+    /* 0xb5 */ putfield,
+    /* 0xb6 */ invokevirtual,
     /* 0xb7 */ NULL,
     /* 0xb8 */ NULL,
     /* 0xb9 */ NULL,
@@ -210,12 +216,12 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xc1 */ NULL,
     /* 0xc2 */ NULL,
     /* 0xc3 */ NULL,
-    /* 0xc4 */ NULL,
-    /* 0xc5 */ NULL,
-    /* 0xc6 */ NULL,
-    /* 0xc7 */ NULL,
-    /* 0xc8 */ NULL,
-    /* 0xc9 */ NULL,
+    /* 0xc4 */ wide,
+    /* 0xc5 */ multianewarray,
+    /* 0xc6 */ ifnull,
+    /* 0xc7 */ ifnonnull,
+    /* 0xc8 */ goto_w,
+    /* 0xc9 */ jsr_w,
     /* 0xca */ NULL,
     /* 0xcb */ NULL,
     /* 0xcc */ NULL,
@@ -277,11 +283,11 @@ void run(char* starting_class_name) {
 
   // execution engine
   ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
-  int        main_index     = 1;  // TODO encontrar metodo main da primeira classe
+  initializeClass(starting_class);
 
   // criando frame
   Frame* starting_frame;
-  starting_frame = newFrame(starting_class, main_index);
+  starting_frame = newFrame(starting_class, "main");
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);
