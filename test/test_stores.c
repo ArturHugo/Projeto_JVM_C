@@ -178,10 +178,12 @@ void test_astore_3(void* fixture) {
 }
 
 void test_iastore(void* fixture) {
-  JavaType* array = munit_newa(JavaType, 2);
-  Frame*    frame = fixture;
+  Array array    = {.length = 2};
+  array.elements = calloc(array.length, sizeof(JavaType));
 
-  JavaType arrayref = {.reference_value = array};
+  Frame* frame = fixture;
+
+  JavaType arrayref = {.reference_value = &array};
   JavaType index    = {.int_value = 1};
   JavaType value    = {.int_value = 42};
 
@@ -194,8 +196,8 @@ void test_iastore(void* fixture) {
 
   instruction_handler(current_instruction);
 
-  assert_int(42, ==, array[1].int_value);
-  free(array);
+  assert_int(42, ==, array.elements[1].int_value);
+  free(array.elements);
 }
 
 void test_lastore(void* fixture) {
@@ -285,8 +287,8 @@ void test_aastore(void* fixture) {
 }
 
 void test_bastore(void* fixture) {
-  JavaType* array  = munit_newa(JavaType, 2);
-  Frame*    frame  = fixture;
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
 
   JavaType arrayref = {.reference_value = array};
   JavaType index    = {.int_value = 1};
@@ -306,8 +308,8 @@ void test_bastore(void* fixture) {
 }
 
 void test_castore(void* fixture) {
-  JavaType* array  = munit_newa(JavaType, 2);
-  Frame*    frame  = fixture;
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
 
   JavaType arrayref = {.reference_value = array};
   JavaType index    = {.int_value = 1};
@@ -327,8 +329,8 @@ void test_castore(void* fixture) {
 }
 
 void test_sastore(void* fixture) {
-  JavaType* array  = munit_newa(JavaType, 2);
-  Frame*    frame  = fixture;
+  JavaType* array = munit_newa(JavaType, 2);
+  Frame*    frame = fixture;
 
   JavaType arrayref = {.reference_value = array};
   JavaType index    = {.int_value = 1};
@@ -382,38 +384,22 @@ create_test_with_fixture(test_castore);
 create_test_with_fixture(test_sastore);
 
 MunitTest tests[] = {
-    add_test_with_fixtures(test_istore),
-    add_test_with_fixtures(test_lstore),
-    add_test_with_fixtures(test_fstore),
-    add_test_with_fixtures(test_dstore),
-    add_test_with_fixtures(test_istore_0),
-    add_test_with_fixtures(test_istore_1),
-    add_test_with_fixtures(test_istore_2),
-    add_test_with_fixtures(test_istore_3),
-    add_test_with_fixtures(test_astore),
-    add_test_with_fixtures(test_lstore_0),
-    add_test_with_fixtures(test_lstore_1),
-    add_test_with_fixtures(test_lstore_2),
-    add_test_with_fixtures(test_lstore_3),
-    add_test_with_fixtures(test_fstore_0),
-    add_test_with_fixtures(test_fstore_1),
-    add_test_with_fixtures(test_fstore_2),
-    add_test_with_fixtures(test_fstore_3),
-    add_test_with_fixtures(test_dstore_0),
-    add_test_with_fixtures(test_dstore_1),
-    add_test_with_fixtures(test_dstore_2),
-    add_test_with_fixtures(test_dstore_3),
-    add_test_with_fixtures(test_astore_0),
-    add_test_with_fixtures(test_astore_1),
-    add_test_with_fixtures(test_astore_2),
-    add_test_with_fixtures(test_astore_3),
-    add_test_with_fixtures(test_iastore),
-    add_test_with_fixtures(test_lastore),
-    add_test_with_fixtures(test_fastore),
-    add_test_with_fixtures(test_dastore),
-    add_test_with_fixtures(test_aastore),
-    add_test_with_fixtures(test_bastore),
-    add_test_with_fixtures(test_castore),
+    add_test_with_fixtures(test_istore),   add_test_with_fixtures(test_lstore),
+    add_test_with_fixtures(test_fstore),   add_test_with_fixtures(test_dstore),
+    add_test_with_fixtures(test_istore_0), add_test_with_fixtures(test_istore_1),
+    add_test_with_fixtures(test_istore_2), add_test_with_fixtures(test_istore_3),
+    add_test_with_fixtures(test_astore),   add_test_with_fixtures(test_lstore_0),
+    add_test_with_fixtures(test_lstore_1), add_test_with_fixtures(test_lstore_2),
+    add_test_with_fixtures(test_lstore_3), add_test_with_fixtures(test_fstore_0),
+    add_test_with_fixtures(test_fstore_1), add_test_with_fixtures(test_fstore_2),
+    add_test_with_fixtures(test_fstore_3), add_test_with_fixtures(test_dstore_0),
+    add_test_with_fixtures(test_dstore_1), add_test_with_fixtures(test_dstore_2),
+    add_test_with_fixtures(test_dstore_3), add_test_with_fixtures(test_astore_0),
+    add_test_with_fixtures(test_astore_1), add_test_with_fixtures(test_astore_2),
+    add_test_with_fixtures(test_astore_3), add_test_with_fixtures(test_iastore),
+    add_test_with_fixtures(test_lastore),  add_test_with_fixtures(test_fastore),
+    add_test_with_fixtures(test_dastore),  add_test_with_fixtures(test_aastore),
+    add_test_with_fixtures(test_bastore),  add_test_with_fixtures(test_castore),
     add_test_with_fixtures(test_sastore),
 };
 
