@@ -80,6 +80,8 @@ void multianewarray(const u1* instruction) {
   pushValue(&current_frame->operand_stack, array_ref);
 
   free(counts);
+
+  current_frame->local_pc += 4;
 }
 
 void ifnull(const u1* instruction) {
@@ -185,7 +187,7 @@ void multianewarray_aux(Array*    current_array,
                         int       dimensions,
                         int       current_dimension) {
   current_array->length   = counts[current_dimension].int_value;
-  current_array->elements = malloc(current_array->length * sizeof(JavaType));
+  current_array->elements = calloc(current_array->length, sizeof(JavaType));
 
   if(current_dimension == dimensions - 1) {
     return;
