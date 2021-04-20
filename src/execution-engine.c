@@ -6,10 +6,9 @@
 
 #include "handlers/constants.h"
 #include "handlers/conversions.h"
-#include "handlers/extended.h"
 #include "handlers/fields.h"
-#include "handlers/invokevirtual.h"
 #include "handlers/loads.h"
+#include "handlers/references.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
 
@@ -72,7 +71,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x32 */ taload,
     /* 0x33 */ taload,
     /* 0x34 */ taload,
-    /* 0x35 */ taload,
+    /* 0x35 */ NULL,
     /* 0x36 */ tstore,
     /* 0x37 */ tstore,
     /* 0x38 */ tstore,
@@ -201,26 +200,26 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xb3 */ putstatic,
     /* 0xb4 */ getfield,
     /* 0xb5 */ putfield,
-    /* 0xb6 */ invokevirtual,
+    /* 0xb6 */ NULL,
     /* 0xb7 */ NULL,
-    /* 0xb8 */ NULL,
+    /* 0xb8 */ invokestatic,
     /* 0xb9 */ NULL,
     /* 0xba */ NULL,
-    /* 0xbb */ NULL,
-    /* 0xbc */ NULL,
-    /* 0xbd */ NULL,
-    /* 0xbe */ NULL,
+    /* 0xbb */ new,
+    /* 0xbc */ newarray,
+    /* 0xbd */ anewarray,
+    /* 0xbe */ arraylength,
     /* 0xbf */ NULL,
     /* 0xc0 */ NULL,
     /* 0xc1 */ NULL,
     /* 0xc2 */ NULL,
     /* 0xc3 */ NULL,
-    /* 0xc4 */ wide,
-    /* 0xc5 */ multianewarray,
-    /* 0xc6 */ ifnull,
-    /* 0xc7 */ ifnonnull,
-    /* 0xc8 */ goto_w,
-    /* 0xc9 */ jsr_w,
+    /* 0xc4 */ NULL,
+    /* 0xc5 */ NULL,
+    /* 0xc6 */ NULL,
+    /* 0xc7 */ NULL,
+    /* 0xc8 */ NULL,
+    /* 0xc9 */ NULL,
     /* 0xca */ NULL,
     /* 0xcb */ NULL,
     /* 0xcc */ NULL,
