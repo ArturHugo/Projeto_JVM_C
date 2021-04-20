@@ -28,9 +28,7 @@ void goto_w(){
     current_frame->local_pc = current_frame->local_pc + branchOffset;
 }
 
-//verificar os incrmentos de pcs
 void jsr(){
-	//verificar os cast se deram certo
     Frame* current_frame = peekNode(frame_stack);  
     uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
 
@@ -39,17 +37,20 @@ void jsr(){
     uint16_t branchOffset = ((int16_t)byte1 << 8) | byte2;
     JavaType return_address;
 
-    return_address.reference_value = (void *) branchOffset;
+    return_address.return_address_value = current_frame->local_pc + 3;
     pushValue(&current_frame -> operand_stack, return_address);
-    current_frame->local_pc = current_frame->local_pc + 2 + 1;
+    current_frame->local_pc = current_frame->local_pc + branchOffset;
 
 }
 
 void ret(){
-	//falta essa
-	exit(0);
-	Frame* current_frame = peekNode(frame_stack);  
-	current_frame->local_pc = current_frame->local_pc + 1 + 1;
+    Frame* current_frame = peekNode(frame_stack);  
+    uint8_t* bytecode = current_frame->current_method->attributes->code_info.code;
+    uint8_t index = bytecode[current_frame->local_pc + 1];
+
+    JavaType value ;
+    value = current_frame->local_variables[index];
+    current_frame->local_pc = value.return_address_value;
 }
 
 void ireturn(){
@@ -104,6 +105,7 @@ void areturn(){
 }
 
 void return_op(){
+	JavaType value;	
 	Frame* current_frame = peekNode(frame_stack);
-	current_frame->local_pc = current_frame->local_pc + 1 ;
+	popValue(&current_frame -> operand_stack, &value);
 }
