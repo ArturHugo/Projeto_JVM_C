@@ -72,7 +72,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x32 */ taload,
     /* 0x33 */ taload,
     /* 0x34 */ taload,
-    /* 0x35 */ NULL,
+    /* 0x35 */ taload,
     /* 0x36 */ tstore,
     /* 0x37 */ tstore,
     /* 0x38 */ tstore,
