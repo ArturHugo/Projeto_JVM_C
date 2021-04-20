@@ -50,7 +50,7 @@ void ret(){
 
     JavaType value ;
     value = current_frame->local_variables[index];
-    current_frame->local_pc = value.return_address_value;
+    current_frame->local_pc = current_frame->local_pc + value.return_address_value;
 }
 
 void ireturn(){
