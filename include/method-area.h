@@ -16,7 +16,7 @@
 
 typedef struct Object {
   MethodInfo* methods;
-  Map         fields_and_values;
+  Map*        fields_and_values; /** Map<char*, JavaType*> */
 } Object;
 
 typedef struct Array {

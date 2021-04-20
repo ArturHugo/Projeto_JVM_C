@@ -10,6 +10,7 @@ typedef struct Field {
   u2             descriptor_index;
   u2             attributes_count;
   AttributeInfo* attributes;
+  JavaType       value; /** o valor do field durante a execução */
 } FieldInfo;
 
 FieldInfo* readFields(u2 fields_count, File* fd, ConstantPoolInfo* cp);
