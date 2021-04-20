@@ -7,6 +7,7 @@
 #include "handlers/constants.h"
 #include "handlers/conversions.h"
 #include "handlers/fields.h"
+#include "handlers/invokevirtual.h"
 #include "handlers/loads.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
@@ -199,7 +200,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xb3 */ putstatic,
     /* 0xb4 */ getfield,
     /* 0xb5 */ putfield,
-    /* 0xb6 */ NULL,
+    /* 0xb6 */ invokevirtual,
     /* 0xb7 */ NULL,
     /* 0xb8 */ NULL,
     /* 0xb9 */ NULL,
