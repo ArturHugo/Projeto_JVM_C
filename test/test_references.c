@@ -46,10 +46,23 @@ void test_invokestatic(/*void* fixture*/) {
   assert_int32(value->int_value, ==, frame->local_variables[0].int_value);*/
 }
 
+void test_new(/*void* fixture*/) {}
+void test_newarray(/*void* fixture*/) {}
+void test_anewarray(/*void* fixture*/) {}
+void test_arraylength(/*void* fixture*/) {}
+
 create_skip(test_invokestatic);
+create_skip(test_new);
+create_skip(test_newarray);
+create_skip(test_anewarray);
+create_skip(test_arraylength);
 
 MunitTest tests[] = {
     add_test(test_invokestatic),
+    add_test(test_new),
+    add_test(test_newarray),
+    add_test(test_anewarray),
+    add_test(test_arraylength),
 };
 
 create_suite("stack", tests);

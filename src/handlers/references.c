@@ -100,49 +100,15 @@ void new(const u1* instruction) {
     field_name = (char*) new_class->constant_pool[field_name_index].utf8_info.bytes;
     field_type = (char) new_class->constant_pool[field_type_index].utf8_info.bytes[0];
 
-    field_value = malloc(sizeof(*field_value));
+        break;
+    // calloc used to initialize values as zero
+    field_value = calloc(1, sizeof(*field_value));
 
-    field_value->cat_tag = CAT1;
+    if(field_type == 'D' || field_type == 'J')
+      field_value->cat_tag = CAT2;
+    else
+      field_value->cat_tag = CAT1;
 
-    switch(field_type) {
-      case 'B':
-        field_value->byte_value = 0;
-        break;
-      case 'C':
-        field_value->char_value = '\u0000';
-        break;
-      case 'D':
-        field_value->cat_tag      = CAT2;
-        field_value->double_value = 0;
-        break;
-      case 'F':
-        field_value->float_value = 0;
-        break;
-      case 'I':
-        field_value->int_value = 0;
-        break;
-      case 'J':
-        field_value->cat_tag    = CAT2;
-        field_value->long_value = 0;
-        break;
-      case 'L':
-        field_value->reference_value = NULL;
-        break;
-      case 'S':
-        field_value->short_value = 0;
-        break;
-      case 'Z':
-        field_value->boolean_value = 0;
-        break;
-      case '[':
-        field_value->reference_value = NULL;
-        break;
-      default:
-        printf("\npc = %d: new called with invalid field type: %c\n",
-               current_frame->local_pc,
-               field_type);
-        exit(1);
-    }
     mapAdd(&new_object->fields_and_values, field_name, field_value);
   }
 
