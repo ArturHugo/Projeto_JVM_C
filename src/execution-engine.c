@@ -308,3 +308,4 @@ void run(char* starting_class_name) {
     void (*instruction)(u1*)    = instructions_handlers[*current_instruction];
     instruction(current_instruction);
   }
+}

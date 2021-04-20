@@ -43,7 +43,7 @@ void istore_n(const u1* instruction) {
  */
 void lstore_n(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
-  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3f) * 2);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3f));
   current_frame->local_pc += 1;
 }
 
@@ -71,7 +71,7 @@ void fstore_n(const u1* instruction) {
  */
 void dstore_n(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
-  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x47) * 2);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x47));
   current_frame->local_pc += 1;
 }
 
