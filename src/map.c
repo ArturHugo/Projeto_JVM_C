@@ -2,7 +2,6 @@
 #include "string.h"
 
 Map* newMap() {
-
   Map* map  = malloc(sizeof(Map*));
   map->tail = NULL;
   map->head = NULL;

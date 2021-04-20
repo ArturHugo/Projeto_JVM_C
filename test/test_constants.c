@@ -17,9 +17,19 @@ static void* setup() {
   frame_stack  = NULL;
   Frame* frame = malloc(sizeof(*frame));
 
+  /*frame->operand_stack   = NULL;
+  frame->local_pc        = 0;
+  frame->local_variables = malloc(4 * sizeof(JavaType));*/
+
   frame->operand_stack   = NULL;
   frame->local_pc        = 0;
-  frame->local_variables = malloc(4 * sizeof(JavaType));
+  frame->local_variables = malloc(257 * sizeof(JavaType));
+
+  method_area.loaded_classes = newMap();
+  loadObjectClass();
+  loadClass("multi.class");
+  ClassFile* test_class = mapGet(method_area.loaded_classes, "multi");
+  frame->constant_pool  = test_class->constant_pool;
 
   pushNode(&frame_stack, frame);
   return frame;
@@ -299,7 +309,9 @@ void test_sipush(void* fixture) {
   assert_int32(value->int_value, ==, -2);
 }
 
-void test_ldc(/*void* fixture*/){};
+void test_ldc(/*void* fixture*/){
+
+};
 void test_ldc_w(/*void* fixture*/){};
 void test_ldc_2_w(/*void* fixture*/){};
 
