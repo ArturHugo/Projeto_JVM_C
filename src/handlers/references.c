@@ -195,7 +195,39 @@ void newarray(const u1* instruction) {
   current_frame->local_pc += 2;
 }
 
-void anewarray(const u1* instruction) {}
+void anewarray(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+
+  JavaType count_javatype;
+
+  popValue(&current_frame->operand_stack, &count_javatype);
+
+  int32_t count = count_javatype.int_value;
+
+  if(count < 0) {
+    printf("\npc = %d: newarray NegativeArraySizeException\n", current_frame->local_pc);
+    exit(1);
+  }
+
+  JavaType* elements = calloc(count, sizeof(JavaType));
+
+  for(int i = 0; i < count; i++) {
+    elements[i].cat_tag = CAT1;
+  }
+
+  Array* new_array    = malloc(sizeof(Array));
+  new_array->elements = elements;
+  new_array->length   = count;
+  new_array->type     = TYPE_REFERENCE;
+
+  JavaType arrayref;
+  arrayref.cat_tag         = CAT1;
+  arrayref.reference_value = new_array;
+
+  pushValue(&current_frame->operand_stack, arrayref);
+
+  current_frame->local_pc += 3;
+}
 
 void arraylength(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
