@@ -3,11 +3,12 @@
 #include "frame.h"
 #include "global.h"
 
+#include <stdio.h>
 #include <string.h>
 
 void invokevirtual(const u1* instruction) {
-  Frame* current_frame = peekNode(frame_stack);
-  u1*    operands      = instruction + 1;
+  Frame*    current_frame = peekNode(frame_stack);
+  const u1* operands      = instruction + 1;
 
   u2 index = (operands[0] << 8) | operands[1];
 
@@ -61,7 +62,7 @@ void invokevirtual(const u1* instruction) {
           if(!strcmp(method_descriptor, "(Ljava/lang/String;)V")) {
             printf("%s", (char*) value_to_print.reference_value);
           } else {
-            print("Argumento de metodo print ou println nao reconhecido\n");
+            printf("Argumento de metodo print ou println nao reconhecido\n");
           }
           break;
 
@@ -69,14 +70,14 @@ void invokevirtual(const u1* instruction) {
           break;
 
         default:
-          print("Argumento de metodo print ou println nao reconhecido\n");
+          printf("Argumento de metodo print ou println nao reconhecido\n");
           break;
       }
       if(!strcmp(method_name, "println")) {
-        print("\n");
+        printf("\n");
       }
     } else {
-      print("Metodo da classe PrintStream nao simulado\n");
+      printf("Metodo da classe PrintStream nao simulado\n");
     }
   } else if(!strcmp(class_name, "java/lang/StringBuilder")) {
     // TODO talvez fazer depois
