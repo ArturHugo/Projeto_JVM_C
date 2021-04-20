@@ -3,7 +3,7 @@
 #include "global.h"
 #include "stack.h"
 
-void pop_instruction(const u1* instruction) {
+void pop_instruction() {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
   popValue(&(current_frame->operand_stack), &value);
@@ -16,7 +16,7 @@ void pop_instruction(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void pop2(const u1* instruction) {
+void pop2() {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
 
@@ -27,14 +27,15 @@ void pop2(const u1* instruction) {
     if(value.cat_tag == CAT2) {
       printf("\npc = %d: Inconsistency detected on opperand stack, read jvms8.pdf page 549\n pop2 "
              "called "
-             "with stack = ...,cat2,cat1\n");
+             "with stack = ...,cat2,cat1\n",
+             current_frame->local_pc);
       exit(1);
     }
   }
   current_frame->local_pc++;
 }
 
-void dup_instruction(const u1* instruction) {
+void dup_instruction() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value;
@@ -49,7 +50,7 @@ void dup_instruction(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void dup_x1(const u1* instruction) {
+void dup_x1() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2;
@@ -67,7 +68,7 @@ void dup_x1(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void dup_x2(const u1* instruction) {
+void dup_x2() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2, value3;
@@ -98,7 +99,7 @@ void dup_x2(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void dup2_instruction(const u1* instruction) {
+void dup2_instruction() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2;
@@ -123,7 +124,7 @@ void dup2_instruction(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void dup2_x1(const u1* instruction) {
+void dup2_x1() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2, value3;
@@ -159,7 +160,7 @@ void dup2_x1(const u1* instruction) {
 
   current_frame->local_pc++;
 }
-void dup2_x2(const u1* instruction) {
+void dup2_x2() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2, value3, value4;
@@ -239,7 +240,7 @@ void dup2_x2(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-void swap(const u1* instruction) {
+void swap() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType value1, value2;
