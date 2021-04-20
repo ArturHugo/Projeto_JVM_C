@@ -108,7 +108,7 @@ void new(const u1* instruction) {
     else
       field_value->cat_tag = CAT1;
 
-    mapAdd(&new_object->fields_and_values, field_name, field_value);
+    mapAdd(new_object->fields_and_values, field_name, field_value);
   }
 
   pushValue(&current_frame->operand_stack, object_reference);

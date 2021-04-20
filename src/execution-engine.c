@@ -1,15 +1,4 @@
 #include "execution-engine.h"
-#include "class-file.h"
-#include "frame.h"
-#include "global.h"
-#include "handlers/constants.h"
-
-#include "handlers/constants.h"
-#include "handlers/conversions.h"
-#include "handlers/fields.h"
-#include "handlers/loads.h"
-#include "handlers/stack.h"
-#include "handlers/stores.h"
 
 void noop() {
   Frame* current_frame = peekNode(frame_stack);

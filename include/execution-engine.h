@@ -6,12 +6,14 @@
 #include "frame.h"
 #include "global.h"
 
+#include "handlers/constants.h"
 #include "handlers/conversions.h"
 #include "handlers/fields.h"
 #include "handlers/loads.h"
 #include "handlers/references.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
+
 
 extern void (*const instructions_handlers[256])(const u1*);
 void run(char* start_class_name);
