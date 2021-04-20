@@ -32,6 +32,7 @@ static void teardown() {
 
 void tload_pushes_int_local_variable_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1       current_instruction[] = {0x15, 0};
   JavaType int_variable          = {.int_value = 42};
@@ -47,6 +48,7 @@ void tload_pushes_int_local_variable_into_stack(void* fixture) {
 
 void tload_pushes_long_local_variable_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1       current_instruction[] = {0x16, 0};
   JavaType long_variable         = {.long_value = (42L << 32) + 1};
@@ -62,6 +64,7 @@ void tload_pushes_long_local_variable_into_stack(void* fixture) {
 
 void tload_pushes_float_local_variable_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1       current_instruction[] = {0x17, 0};
   JavaType float_variable        = {.float_value = 420.69};
@@ -77,6 +80,7 @@ void tload_pushes_float_local_variable_into_stack(void* fixture) {
 
 void tload_pushes_double_local_variable_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1       current_instruction[] = {0x18, 0};
   JavaType double_variable       = {.double_value = 520.69};
@@ -92,6 +96,7 @@ void tload_pushes_double_local_variable_into_stack(void* fixture) {
 
 void tload_pushes_reference_local_variable_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   Object dummy_object;
 
@@ -109,6 +114,7 @@ void tload_pushes_reference_local_variable_into_stack(void* fixture) {
 
 void iload_n_pushes_int_local_variables_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1  iload_0[]               = {0x1a};
   u1  iload_1[]               = {0x1b};
@@ -131,6 +137,7 @@ void iload_n_pushes_int_local_variables_into_stack(void* fixture) {
 
 void lload_n_pushes_long_local_variables_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1  lload_0[]               = {0x1e};
   u1  lload_1[]               = {0x1f};
@@ -153,6 +160,7 @@ void lload_n_pushes_long_local_variables_into_stack(void* fixture) {
 
 void fload_n_pushes_float_local_variables_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1  fload_0[]               = {0x22};
   u1  fload_1[]               = {0x23};
@@ -175,6 +183,7 @@ void fload_n_pushes_float_local_variables_into_stack(void* fixture) {
 
 void dload_n_pushes_double_local_variables_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1  dload_0[]               = {0x26};
   u1  dload_1[]               = {0x27};
@@ -197,6 +206,7 @@ void dload_n_pushes_double_local_variables_into_stack(void* fixture) {
 
 void aload_n_pushes_reference_local_variables_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   u1  aload_0[]               = {0x2a};
   u1  aload_1[]               = {0x2b};
@@ -222,6 +232,7 @@ void aload_n_pushes_reference_local_variables_into_stack(void* fixture) {
 
 void taload_pushes_int_value_at_array_index_into_stack(void* fixture) {
   Frame* frame = fixture;
+  pushNode(&frame_stack, frame);
 
   JavaType* int_array    = malloc(2 * sizeof(int_array));
   int_array[0].int_value = 13;
