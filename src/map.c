@@ -48,7 +48,7 @@ void mapResize(Map* map) {
       short new_index = hash(map->table[index]->key);
       while(new_table[mod(new_index, new_table_size)] != NULL)
         new_index++;
-      new_table[mod(new_index,new_table_size)] = map->table[index];
+      new_table[mod(new_index, new_table_size)] = map->table[index];
     }
   }
 

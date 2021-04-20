@@ -37,7 +37,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x11 */ sipush,
     /* 0x12 */ ldc,
     /* 0x13 */ ldc,
-    /* 0x14 */ ldc_2_w,
+    /* 0x14 */ ldc2_w,
     /* 0x15 */ tload,
     /* 0x16 */ tload,
     /* 0x17 */ tload,
