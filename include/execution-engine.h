@@ -1,7 +1,16 @@
 #ifndef __EXECUTION_ENGINE_H
 #define __EXECUTION_ENGINE_H
 
+#include "class-file.h"
 #include "common.h"
+#include "frame.h"
+#include "global.h"
+
+#include "handlers/conversions.h"
+#include "handlers/loads.h"
+#include "handlers/references.h"
+#include "handlers/stack.h"
+#include "handlers/stores.h"
 
 
 

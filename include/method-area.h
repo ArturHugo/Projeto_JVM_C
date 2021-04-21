@@ -1,6 +1,7 @@
 #ifndef __METHOD_AREA_H
 #define __METHOD_AREA_H
 
+#include "class-file.h"
 #include "fields.h"
 #include "map.h"
 #include "methods.h"

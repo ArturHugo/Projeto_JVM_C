@@ -10,6 +10,7 @@
 //_insctruction appended to reserved names
 
 void invokestatic(const u1* instruction);
+void invokespecial(const u1* instruction);
 void new(const u1* instruction);
 void newarray(const u1* instruction);
 void anewarray();

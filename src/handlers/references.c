@@ -1,4 +1,10 @@
 #include "handlers/references.h"
+#include "class-file.h"
+#include "constant-pool.h"
+#include "frame.h"
+#include "stack.h"
+
+#include <stdlib.h>
 
 void invokestatic(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
@@ -51,6 +57,44 @@ void invokestatic(const u1* instruction) {
   pushNode(&frame_stack, new_frame);
 
   current_frame->local_pc += 3;
+}
+
+/**
+ * Invoke instance method; special handling for superclass, private,
+ * and instance initialization method invocations
+ *
+ * opcode:	0xb7
+ * format: 	[invokestatic, indexbyte1, indexbyte2]
+ * stack: 	(..., objectref, [arg1, [arg2 ...]]) -> (...)
+ * description: TODO
+ * constaints:
+ *  [ ]
+ * observation: only implementation of 1. (JVM 8 spec, p482) is implemented
+ */
+void invokespecial(const u1* instruction) {
+  Frame* current_frame = peekNode(frame_stack);
+  u2     index         = (instruction[1] << 8 | instruction[2]);
+
+  MethodrefInfo methodref_info = current_frame->constant_pool[index].methodref_info;
+
+  u2 n_args = getArgumentCount((u1*) methodref_info._descriptor) + 1; /** + 1 para o objectref?? */
+  JavaType* method_parameters = malloc(sizeof(*method_parameters) * n_args);
+
+  for(u2 i = 0; i < n_args; i++) {
+    popValue(&current_frame->operand_stack, method_parameters + (n_args - i));
+  }
+
+  Object* objectref = method_parameters[0].reference_value;
+
+  Frame* new_frame = newFrame(objectref->class, (char*) methodref_info._name);
+
+  for(u2 i = 0; i < n_args; i++) {
+    new_frame->local_variables[i] = method_parameters[i];
+    if(method_parameters[i].cat_tag == CAT2)
+      i++;
+  }
+
+  current_frame->local_pc += n_args;
 }
 
 void new(const u1* instruction) {
