@@ -190,7 +190,7 @@ void frem() {
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.float_value -= (value1.float_value / value2.float_value) * value2.float_value;
+  value1.float_value -= ((int)(value1.float_value / value2.float_value)) * value2.float_value;
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
@@ -200,7 +200,7 @@ void drem() {
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.double_value -= (value1.double_value / value2.double_value) * value2.double_value;
+  value1.double_value -= ((long long)(value1.double_value / value2.double_value)) * value2.double_value;
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
@@ -256,7 +256,7 @@ void lshl() {
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.long_value <<= (value2.long_value & 0x1f);
+  value1.long_value <<= (value2.long_value & 0x3f);
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
@@ -278,32 +278,36 @@ void lshr() {
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.long_value >>= (value2.long_value & 0x1f);
+  value1.long_value >>= (value2.long_value & 0x3f);
+  value1.long_value |=
+      (value1.long_value & (1 << 63)) ? (0xFFFFFFFFFFFFFFFF) << (64 - (value2.long_value & 0x3f)) : 0;
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
 
-void iushr() {  // revisar no documento
+void iushr() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.int_value >>= value2.int_value;
+  value1.int_value >>= (value2.int_value & 0x1f);
+  value1.int_value &= (uint32_t)(0xFFFFFFFF) >> (value2.int_value & 0x1f);
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
 
-void lushr() {  // revisar no documento
+void lushr() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
   popValue(&current_frame -> operand_stack, &value1);
-  value1.long_value >>= value2.long_value;
+  value1.long_value >>= (value2.long_value & 0x3f);
+  value1.long_value &= (uint64_t)(0xFFFFFFFFFFFFFFFF) >> (value2.long_value & 0x3f);
   pushValue(&current_frame -> operand_stack, value1);
   current_frame -> local_pc ++;
 }
 
-void iand() {  // revisar no documento
+void iand() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -313,7 +317,7 @@ void iand() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void land() {  // revisar no documento
+void land() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -323,7 +327,7 @@ void land() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void ior() {  // revisar no documento
+void ior() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -333,7 +337,7 @@ void ior() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void lor() {  // revisar no documento
+void lor() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -343,7 +347,7 @@ void lor() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void ixor() {  // revisar no documento
+void ixor() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -353,7 +357,7 @@ void ixor() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void lxor() {  // revisar no documento
+void lxor() {
   JavaType value1, value2;
   Frame* current_frame = peekNode(frame_stack);
   popValue(&current_frame -> operand_stack, &value2);
@@ -363,10 +367,10 @@ void lxor() {  // revisar no documento
   current_frame -> local_pc ++;
 }
 
-void iinc(const u1* instruction) {  // revisado
+void iinc(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   JavaType* local_variable_value = &(current_frame -> local_variables[instruction[1]]);
-  int32_t value_to_increase = (instruction[2]) | ((instruction[2] & 0x80) ? 0xFFFFFF00 : 0);
-  local_variable_value -> int_value += value_to_increase;
+  // int32_t value_to_increase = (instruction[2]) | ((instruction[2] & 0x80) ? 0xFFFFFF00 : 0);
+  local_variable_value -> int_value += (int8_t)(instruction[2]);
   current_frame -> local_pc += 3;
 }
