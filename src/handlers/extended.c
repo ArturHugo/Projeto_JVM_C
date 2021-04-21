@@ -54,7 +54,7 @@ void multianewarray(const u1* instruction) {
   const u1* operands      = instruction + 1;
   Frame*    current_frame = peekNode(frame_stack);
 
-  u2 wide_index = (operands[0] << 8) | operands[1];
+  // u2 wide_index = (operands[0] << 8) | operands[1];
   u1 dimensions = operands[2];
 
   JavaType* counts = malloc(dimensions * sizeof(JavaType));

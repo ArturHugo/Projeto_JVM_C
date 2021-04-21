@@ -163,7 +163,7 @@ void loadObjectClass() {
 
   ClassFile* class_file = readClassFile(fd);
   mapAdd(method_area.loaded_classes, "java/lang/Object", class_file);
-
+  class_file->_status = initialized;
   free(fd);
 }
 

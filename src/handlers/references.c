@@ -160,7 +160,7 @@ void newarray(const u1* instruction) {
   current_frame->local_pc += 2;
 }
 
-void anewarray(const u1* instruction) {
+void anewarray() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType count_javatype;
@@ -194,7 +194,7 @@ void anewarray(const u1* instruction) {
   current_frame->local_pc += 3;
 }
 
-void arraylength(const u1* instruction) {
+void arraylength() {
   Frame* current_frame = peekNode(frame_stack);
 
   JavaType arrayref;

@@ -4,13 +4,16 @@
 #include "global.h"
 #include "handlers/constants.h"
 
+#include "handlers/comparison.h"
 #include "handlers/constants.h"
+#include "handlers/control.h"
 #include "handlers/conversions.h"
 #include "handlers/extended.h"
 #include "handlers/fields.h"
 #include "handlers/invokevirtual.h"
 #include "handlers/loads.h"
 #include "handlers/math.h"
+#include "handlers/references.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
 
@@ -168,49 +171,49 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x91 */ i2b,
     /* 0x92 */ i2c,
     /* 0x93 */ i2s,
-    /* 0x94 */ NULL,
-    /* 0x95 */ NULL,
-    /* 0x96 */ NULL,
-    /* 0x97 */ NULL,
-    /* 0x98 */ NULL,
-    /* 0x99 */ NULL,
-    /* 0x9a */ NULL,
-    /* 0x9b */ NULL,
-    /* 0x9c */ NULL,
-    /* 0x9d */ NULL,
-    /* 0x9e */ NULL,
-    /* 0x9f */ NULL,
-    /* 0xa0 */ NULL,
-    /* 0xa1 */ NULL,
-    /* 0xa2 */ NULL,
-    /* 0xa3 */ NULL,
-    /* 0xa4 */ NULL,
-    /* 0xa5 */ NULL,
-    /* 0xa6 */ NULL,
-    /* 0xa7 */ NULL,
-    /* 0xa8 */ NULL,
-    /* 0xa9 */ NULL,
+    /* 0x94 */ lcmp,
+    /* 0x95 */ fcmpl,
+    /* 0x96 */ fcmpg,
+    /* 0x97 */ dcmpl,
+    /* 0x98 */ dcmpg,
+    /* 0x99 */ ifeq,
+    /* 0x9a */ ifne,
+    /* 0x9b */ iflt,
+    /* 0x9c */ ifge,
+    /* 0x9d */ ifgt,
+    /* 0x9e */ ifle,
+    /* 0x9f */ if_icmpeq,
+    /* 0xa0 */ if_icmpne,
+    /* 0xa1 */ if_icmplt,
+    /* 0xa2 */ if_icmpge,
+    /* 0xa3 */ if_icmpgt,
+    /* 0xa4 */ if_icmple,
+    /* 0xa5 */ if_acmpeq,
+    /* 0xa6 */ if_acmpne,
+    /* 0xa7 */ go_to,
+    /* 0xa8 */ jsr,
+    /* 0xa9 */ ret,
     /* 0xaa */ NULL,
     /* 0xab */ NULL,
-    /* 0xac */ NULL,
-    /* 0xad */ NULL,
-    /* 0xae */ NULL,
-    /* 0xaf */ NULL,
-    /* 0xb0 */ NULL,
-    /* 0xb1 */ NULL,
+    /* 0xac */ ireturn,
+    /* 0xad */ lreturn,
+    /* 0xae */ freturn,
+    /* 0xaf */ dreturn,
+    /* 0xb0 */ areturn,
+    /* 0xb1 */ return_op,
     /* 0xb2 */ getstatic,
     /* 0xb3 */ putstatic,
     /* 0xb4 */ getfield,
     /* 0xb5 */ putfield,
     /* 0xb6 */ invokevirtual,
     /* 0xb7 */ NULL,
-    /* 0xb8 */ NULL,
+    /* 0xb8 */ invokestatic,
     /* 0xb9 */ NULL,
     /* 0xba */ NULL,
-    /* 0xbb */ NULL,
-    /* 0xbc */ NULL,
-    /* 0xbd */ NULL,
-    /* 0xbe */ NULL,
+    /* 0xbb */ new,
+    /* 0xbc */ newarray,
+    /* 0xbd */ anewarray,
+    /* 0xbe */ arraylength,
     /* 0xbf */ NULL,
     /* 0xc0 */ NULL,
     /* 0xc1 */ NULL,
@@ -302,10 +305,10 @@ void run(char* starting_class_name) {
   */
 
   while(peekNode(frame_stack)) {
-    Frame* current_frame        = (Frame*) peekNode(frame_stack);
-    u1*    current_instructions = current_frame->current_method->attributes[0].code_info.code;
-    u1*    current_instruction  = current_instructions + current_frame->local_pc;
-    void (*instruction)(u1*)    = instructions_handlers[*current_instruction];
+    Frame* current_frame           = (Frame*) peekNode(frame_stack);
+    u1*    current_instructions    = current_frame->current_method->attributes[0].code_info.code;
+    u1*    current_instruction     = current_instructions + current_frame->local_pc;
+    void (*instruction)(const u1*) = instructions_handlers[*current_instruction];
     instruction(current_instruction);
   }
 }

@@ -29,8 +29,7 @@ void getstatic(const u1* instruction) {
   u2     index         = (instruction[1] << 8 | instruction[2]);
 
   FieldrefInfo field_info = current_frame->constant_pool[index].fieldref_info;
-  // TODO: a classe pode ser java/lang/System. pq??
-  if(strcmp(field_info._class, "java/lang/System")) {
+  if(strcmp((char*) field_info._class, "java/lang/System")) {
     Class* field_class = loadClass((char*) field_info._class);
 
     if(field_class->_status != initialized)
