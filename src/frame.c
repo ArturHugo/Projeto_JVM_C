@@ -23,7 +23,7 @@ Frame* newFrame(ClassFile* current_class, char* method_name) {
   // TODO malloc de variáveis locais sendo feita em u4, mas mudamos as variaveis locais para
   // javatype
   new_frame->local_variables =
-      malloc((new_frame->current_method->attributes->code_info.max_locals) * sizeof(u4));
+      malloc((new_frame->current_method->attributes->code_info.max_locals) * sizeof(JavaType));
 
   return new_frame;
 }

@@ -4,10 +4,16 @@
 #include "global.h"
 #include "handlers/constants.h"
 
+#include "handlers/comparison.h"
 #include "handlers/constants.h"
+#include "handlers/control.h"
 #include "handlers/conversions.h"
+#include "handlers/extended.h"
 #include "handlers/fields.h"
+#include "handlers/invokevirtual.h"
 #include "handlers/loads.h"
+#include "handlers/math.h"
+#include "handlers/references.h"
 #include "handlers/stack.h"
 #include "handlers/stores.h"
 
@@ -37,7 +43,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x11 */ sipush,
     /* 0x12 */ ldc,
     /* 0x13 */ ldc,
-    /* 0x14 */ ldc_2_w,
+    /* 0x14 */ ldc2_w,
     /* 0x15 */ tload,
     /* 0x16 */ tload,
     /* 0x17 */ tload,
@@ -70,7 +76,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x32 */ taload,
     /* 0x33 */ taload,
     /* 0x34 */ taload,
-    /* 0x35 */ NULL,
+    /* 0x35 */ taload,
     /* 0x36 */ tstore,
     /* 0x37 */ tstore,
     /* 0x38 */ tstore,
@@ -113,47 +119,47 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x5d */ dup2_x1,
     /* 0x5e */ dup2_x2,
     /* 0x5f */ swap,
-    /* 0x60 */ NULL,
-    /* 0x61 */ NULL,
-    /* 0x62 */ NULL,
-    /* 0x63 */ NULL,
-    /* 0x64 */ NULL,
-    /* 0x65 */ NULL,
-    /* 0x66 */ NULL,
-    /* 0x67 */ NULL,
-    /* 0x68 */ NULL,
-    /* 0x69 */ NULL,
-    /* 0x6a */ NULL,
-    /* 0x6b */ NULL,
-    /* 0x6c */ NULL,
-    /* 0x6d */ NULL,
-    /* 0x6e */ NULL,
-    /* 0x6f */ NULL,
-    /* 0x70 */ NULL,
-    /* 0x71 */ NULL,
-    /* 0x72 */ NULL,
-    /* 0x73 */ NULL,
-    /* 0x74 */ NULL,
-    /* 0x75 */ NULL,
-    /* 0x76 */ NULL,
-    /* 0x77 */ NULL,
-    /* 0x78 */ NULL,
-    /* 0x79 */ NULL,
-    /* 0x7a */ NULL,
-    /* 0x7b */ NULL,
-    /* 0x7c */ NULL,
-    /* 0x7d */ NULL,
-    /* 0x7e */ NULL,
-    /* 0x7f */ NULL,
-    /* 0x80 */ NULL,
-    /* 0x81 */ NULL,
-    /* 0x82 */ NULL,
-    /* 0x83 */ NULL,
-    /* 0x84 */ NULL,
-    /* 0x85 */ noop,
-    /* 0x86 */ l2f,
-    /* 0x87 */ l2d,
-    /* 0x88 */ noop,
+    /* 0x60 */ iadd,
+    /* 0x61 */ ladd,
+    /* 0x62 */ fadd,
+    /* 0x63 */ dadd,
+    /* 0x64 */ isub,
+    /* 0x65 */ lsub,
+    /* 0x66 */ fsub,
+    /* 0x67 */ dsub,
+    /* 0x68 */ imul,
+    /* 0x69 */ lmul,
+    /* 0x6a */ fmul,
+    /* 0x6b */ dmul,
+    /* 0x6c */ idiv,
+    /* 0x6d */ ldiv_instruction,
+    /* 0x6e */ fdiv,
+    /* 0x6f */ ddiv,
+    /* 0x70 */ irem,
+    /* 0x71 */ lrem,
+    /* 0x72 */ frem,
+    /* 0x73 */ drem,
+    /* 0x74 */ ineg,
+    /* 0x75 */ lneg,
+    /* 0x76 */ fneg,
+    /* 0x77 */ dneg,
+    /* 0x78 */ ishl,
+    /* 0x79 */ lshl,
+    /* 0x7a */ ishr,
+    /* 0x7b */ lshr,
+    /* 0x7c */ iushr,
+    /* 0x7d */ lushr,
+    /* 0x7e */ iand,
+    /* 0x7f */ land,
+    /* 0x80 */ ior,
+    /* 0x81 */ lor,
+    /* 0x82 */ ixor,
+    /* 0x83 */ lxor,
+    /* 0x84 */ iinc,
+    /* 0x85 */ i2l,
+    /* 0x86 */ i2f,
+    /* 0x87 */ i2d,
+    /* 0x88 */ l2i,
     /* 0x89 */ l2f,
     /* 0x8a */ l2d,
     /* 0x8b */ f2l,
@@ -165,60 +171,60 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0x91 */ i2b,
     /* 0x92 */ i2c,
     /* 0x93 */ i2s,
-    /* 0x94 */ NULL,
-    /* 0x95 */ NULL,
-    /* 0x96 */ NULL,
-    /* 0x97 */ NULL,
-    /* 0x98 */ NULL,
-    /* 0x99 */ NULL,
-    /* 0x9a */ NULL,
-    /* 0x9b */ NULL,
-    /* 0x9c */ NULL,
-    /* 0x9d */ NULL,
-    /* 0x9e */ NULL,
-    /* 0x9f */ NULL,
-    /* 0xa0 */ NULL,
-    /* 0xa1 */ NULL,
-    /* 0xa2 */ NULL,
-    /* 0xa3 */ NULL,
-    /* 0xa4 */ NULL,
-    /* 0xa5 */ NULL,
-    /* 0xa6 */ NULL,
-    /* 0xa7 */ NULL,
-    /* 0xa8 */ NULL,
-    /* 0xa9 */ NULL,
+    /* 0x94 */ lcmp,
+    /* 0x95 */ fcmpl,
+    /* 0x96 */ fcmpg,
+    /* 0x97 */ dcmpl,
+    /* 0x98 */ dcmpg,
+    /* 0x99 */ ifeq,
+    /* 0x9a */ ifne,
+    /* 0x9b */ iflt,
+    /* 0x9c */ ifge,
+    /* 0x9d */ ifgt,
+    /* 0x9e */ ifle,
+    /* 0x9f */ if_icmpeq,
+    /* 0xa0 */ if_icmpne,
+    /* 0xa1 */ if_icmplt,
+    /* 0xa2 */ if_icmpge,
+    /* 0xa3 */ if_icmpgt,
+    /* 0xa4 */ if_icmple,
+    /* 0xa5 */ if_acmpeq,
+    /* 0xa6 */ if_acmpne,
+    /* 0xa7 */ go_to,
+    /* 0xa8 */ jsr,
+    /* 0xa9 */ ret,
     /* 0xaa */ NULL,
     /* 0xab */ NULL,
-    /* 0xac */ NULL,
-    /* 0xad */ NULL,
-    /* 0xae */ NULL,
-    /* 0xaf */ NULL,
-    /* 0xb0 */ NULL,
-    /* 0xb1 */ NULL,
+    /* 0xac */ ireturn,
+    /* 0xad */ lreturn,
+    /* 0xae */ freturn,
+    /* 0xaf */ dreturn,
+    /* 0xb0 */ areturn,
+    /* 0xb1 */ return_op,
     /* 0xb2 */ getstatic,
     /* 0xb3 */ putstatic,
     /* 0xb4 */ getfield,
     /* 0xb5 */ putfield,
-    /* 0xb6 */ NULL,
+    /* 0xb6 */ invokevirtual,
     /* 0xb7 */ NULL,
     /* 0xb8 */ invokestatic,
     /* 0xb9 */ NULL,
     /* 0xba */ NULL,
-    /* 0xbb */ NULL,
-    /* 0xbc */ NULL,
-    /* 0xbd */ NULL,
-    /* 0xbe */ NULL,
+    /* 0xbb */ new,
+    /* 0xbc */ newarray,
+    /* 0xbd */ anewarray,
+    /* 0xbe */ arraylength,
     /* 0xbf */ NULL,
     /* 0xc0 */ NULL,
     /* 0xc1 */ NULL,
     /* 0xc2 */ NULL,
     /* 0xc3 */ NULL,
-    /* 0xc4 */ NULL,
-    /* 0xc5 */ NULL,
-    /* 0xc6 */ NULL,
-    /* 0xc7 */ NULL,
-    /* 0xc8 */ NULL,
-    /* 0xc9 */ NULL,
+    /* 0xc4 */ wide,
+    /* 0xc5 */ multianewarray,
+    /* 0xc6 */ ifnull,
+    /* 0xc7 */ ifnonnull,
+    /* 0xc8 */ goto_w,
+    /* 0xc9 */ jsr_w,
     /* 0xca */ NULL,
     /* 0xcb */ NULL,
     /* 0xcc */ NULL,
@@ -280,7 +286,6 @@ void run(char* starting_class_name) {
 
   // execution engine
   ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
-  initializeClass(starting_class);
 
   // criando frame
   Frame* starting_frame;
@@ -288,22 +293,13 @@ void run(char* starting_class_name) {
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);
-
-  /*
-  1) iniciar stack de frames com um frame contendo o método main da classe inicial
-
-  2) handler das instruções invoke empilham um frame
-
-  3) no while, o frame "no controle" eh o do topo da pilha
-
-  */
+  initializeClass(starting_class);
 
   while(peekNode(frame_stack)) {
-    Frame* current_frame        = (Frame*) peekNode(frame_stack);
-    u1*    current_instructions = current_frame->current_method->attributes[0].code_info.code;
-    u1*    current_instruction  = current_instructions + current_frame->local_pc;
-    // void (*instruction)(u1*)        = instructions_handlers[*current_instruction];
-    void (*instruction)(const u1*) = instructions_handlers[0];
+    Frame* current_frame           = (Frame*) peekNode(frame_stack);
+    u1*    current_instructions    = current_frame->current_method->attributes[0].code_info.code;
+    u1*    current_instruction     = current_instructions + current_frame->local_pc;
+    void (*instruction)(const u1*) = instructions_handlers[*current_instruction];
     instruction(current_instruction);
   }
 }

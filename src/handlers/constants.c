@@ -127,7 +127,7 @@ void ldc(const u1* instruction) {
   current_frame->local_pc += pc_increase;
 }
 
-void ldc_2_w(const u1* instruction) {
+void ldc2_w(const u1* instruction) {
   Frame*   current_frame = peekNode(frame_stack);
   JavaType value;
 
