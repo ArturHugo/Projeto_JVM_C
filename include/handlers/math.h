@@ -19,7 +19,7 @@ void fmul();
 void dmul();
 
 void idiv();
-void ldiv();
+void ldiv_instruction();
 void fdiv();
 void ddiv();
 
@@ -51,6 +51,6 @@ void lor();
 void ixor();
 void lxor();
 
-void iinc();
+void iinc(const u1* instruction);
 
-#endif // __MATH_H
+#endif  // __MATH_H

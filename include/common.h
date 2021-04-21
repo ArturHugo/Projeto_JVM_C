@@ -7,6 +7,11 @@
 
 #define println(format, ...) printf(format "\n", ##__VA_ARGS__)
 
+/** exibe mensagem e da exit. É uma macro, então não use if(prt == NULL) panic() */
+#define panic(message, ...)                                                                        \
+  println(message "\n", ##__VA_ARGS__);                                                            \
+  exit(1)
+
 // Size specific data types
 typedef uint8_t  u1;
 typedef uint16_t u2;
@@ -37,6 +42,7 @@ typedef uint32_t u4;
 typedef struct JavaType {
   u1 cat_tag;
   union {
+    uint8_t  boolean_value;
     int8_t   byte_value;
     int16_t  short_value;
     int32_t  int_value;
