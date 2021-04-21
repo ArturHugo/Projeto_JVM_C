@@ -12,7 +12,7 @@ void iadd() {
     popValue(&current_frame -> operand_stack, &value1);
     value1.int_value += value2.int_value;
     pushValue(&current_frame -> operand_stack, value1);
-    current_frame -> local_pc ++; // ver depois quantos bytes tem
+    current_frame -> local_pc ++;
 }
 
 void ladd() {
