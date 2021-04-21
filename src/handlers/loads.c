@@ -89,8 +89,8 @@ void aload_n(const u1* instruction) {
  */
 void taload(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
-  JavaType* array_ref     = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);
+  JavaType* array_ref     = popNode(&current_frame->operand_stack);
 
   if(array_ref == NULL) {
     printf("NullPointerException at %x", current_frame->local_pc);

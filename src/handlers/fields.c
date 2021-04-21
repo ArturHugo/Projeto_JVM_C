@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * get static field from class
@@ -29,22 +30,24 @@ void getstatic(const u1* instruction) {
 
   FieldrefInfo field_info = current_frame->constant_pool[index].fieldref_info;
   // TODO: a classe pode ser java/lang/System. pq??
+  if(strcmp(field_info._class, "java/lang/System")) {
+    Class* field_class = loadClass((char*) field_info._class);
 
-  Class* field_class = loadClass((char*) field_info._class);
+    if(field_class->_status != initialized)
+      initializeClass(field_class);
 
-  if(field_class->_status != initialized)
-    initializeClass(field_class);
+    FieldInfo* field = mapGet(field_class->_field_map, (char*) field_info._name);
 
-  FieldInfo* field = mapGet(field_class->_field_map, (char*) field_info._name);
-
-  if(field == NULL) {
-    panic("NoSuchFieldError: %s", field_info._name);
+    if(field == NULL) {
+      panic("NoSuchFieldError: %s", field_info._name);
+    }
+    pushValue(&current_frame->operand_stack, field->value);
+    // TODO: checar se é estático
+  } else {
+    // Push dummy value if java/lang/System
+    JavaType dummy_value;
+    pushValue(&current_frame->operand_stack, dummy_value);
   }
-
-  // TODO: checar se é estático
-
-  pushValue(&current_frame->operand_stack, field->value);
-
   current_frame->local_pc += 3;
 }
 
@@ -153,7 +156,7 @@ void putfield(const u1* instruction) {
   FieldrefInfo field_info = current_frame->constant_pool[index].fieldref_info;
 
   JavaType* current_value = mapGet(object->fields_and_values, (char*) field_info._name);
-  *current_value = value;
+  *current_value          = value;
 
   current_frame->local_pc += 3;
 }
