@@ -73,10 +73,10 @@ void multianewarray(const u1* instruction) {
 
   // char* array_name = current_frame->constant_pool[wide_index].class_info._name;
 
-  Array multiarray;
-  multianewarray_aux(&multiarray, counts, dimensions, 0);
+  Array* multiarray = malloc(sizeof(*multiarray));
+  multianewarray_aux(multiarray, counts, dimensions, 0);
 
-  JavaType array_ref = {.cat_tag = CAT1, .reference_value = &multiarray};
+  JavaType array_ref = {.cat_tag = CAT1, .reference_value = multiarray};
   pushValue(&current_frame->operand_stack, array_ref);
 
   free(counts);
