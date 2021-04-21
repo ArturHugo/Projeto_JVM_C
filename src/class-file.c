@@ -204,6 +204,25 @@ Class* loadClass(char* class_name) {
 
     // Load super class
     loadClass(super_class_name);
+
+    // a razão pelo 1.5 é porque é perto do inverso do fator de carga para resize do map (0.7)
+    class->_method_map = _newMap(class->methods_count * 1.5);
+    class->_field_map  = _newMap(class->fields_count * 1.5);
+
+    // popula o map de methods
+    for(u2 index = 0; index < class->methods_count; index++) {
+      MethodInfo* method      = class->methods + index;
+      char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
+      // TODO: if final, initialize it
+      mapAdd(class->_method_map, method_name, method);
+    }
+
+    // popula o map de fields
+    for(u2 index = 0; index < class->fields_count; index++) {
+      FieldInfo* field      = class->fields + index;
+      char*      field_name = (char*) getUtf8String(class->constant_pool, field->name_index);
+      mapAdd(class->_field_map, field_name, field);
+    }
   }
 
   return class;
@@ -278,25 +297,6 @@ void resolveReferences(ClassFile* class_file) {
 void initializeClass(Class* class) {
   if(class->_status == initialized)
     return;
-
-  // a razão pelo 1.5 é porque é perto do inverso do fator de carga para resize do map (0.7)
-  class->_method_map = _newMap(class->methods_count * 1.5);
-  class->_field_map  = _newMap(class->fields_count * 1.5);
-
-  // popula o map de methods
-  for(u2 index = 0; index < class->methods_count; index++) {
-    MethodInfo* method      = class->methods + index;
-    char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
-    // TODO: if final, initialize it
-    mapAdd(class->_method_map, method_name, method);
-  }
-
-  // popula o map de fields
-  for(u2 index = 0; index < class->fields_count; index++) {
-    FieldInfo* field      = class->fields + index;
-    char*      field_name = (char*) getUtf8String(class->constant_pool, field->name_index);
-    mapAdd(class->_field_map, field_name, field);
-  }
 
   // Inicializa super classes recursivamente
   if(class->super_class) {

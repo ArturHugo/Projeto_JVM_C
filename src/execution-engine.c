@@ -286,7 +286,6 @@ void run(char* starting_class_name) {
 
   // execution engine
   ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
-  initializeClass(starting_class);
 
   // criando frame
   Frame* starting_frame;
@@ -294,15 +293,7 @@ void run(char* starting_class_name) {
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);
-
-  /*
-  1) iniciar stack de frames com um frame contendo o método main da classe inicial
-
-  2) handler das instruções invoke empilham um frame
-
-  3) no while, o frame "no controle" eh o do topo da pilha
-
-  */
+  initializeClass(starting_class);
 
   while(peekNode(frame_stack)) {
     Frame* current_frame           = (Frame*) peekNode(frame_stack);
