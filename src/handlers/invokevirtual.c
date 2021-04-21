@@ -28,7 +28,7 @@ void invokevirtual(const u1* instruction) {
     method_descriptor = (char*) (current_cp_info->interface_methodref_info._descriptor);
   }
 
-  if(!strcmp(class_name, "java/io/PrintStream;")) {
+  if(!strcmp(class_name, "java/io/PrintStream")) {
     if(!strcmp(method_name, "print") || !strcmp(method_name, "println")) {
       // TODO checa descritor e imprime
       JavaType value_to_print;
