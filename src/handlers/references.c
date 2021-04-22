@@ -80,7 +80,7 @@ void invokespecial(const u1* instruction) {
   u2 n_args = getArgumentCount((u1*) methodref_info._descriptor) + 1; /** + 1 para o objectref?? */
   JavaType* method_parameters = malloc(sizeof(*method_parameters) * n_args);
 
-  for(u2 i = 0; i < n_args; i++) {
+  for(u2 i = 1; i <= n_args; i++) {
     popValue(&current_frame->operand_stack, method_parameters + (n_args - i));
   }
 
@@ -94,7 +94,7 @@ void invokespecial(const u1* instruction) {
       i++;
   }
 
-  current_frame->local_pc += n_args;
+  current_frame->local_pc += 3;
 }
 
 void new(const u1* instruction) {
