@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-// Node struct for stack
+/** Node struct for stack*/
 typedef struct Node {
   void*        data;
   struct Node* next;
@@ -17,8 +17,7 @@ typedef Node* Stack;
 // and its size (using sizeof()) in sz.
 void pushNode(Node** node, void* data);
 
-// pass reference to stack in nd. declare a variable of the expected
-// type, and pass its reference in "data" and size in "sz".
+// pops stack passed in node and returns the data address stored in it.
 void* popNode(Node** node);
 
 void* peekNode(Stack stack);
