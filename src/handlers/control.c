@@ -8,7 +8,7 @@
 /*
  * Branch always
  *
- * opcode:	0xc8
+ * opcode:	0xa7
  * format: 	[goto, branchbyte1, branchbyte2 ]
  * stack: 	(...) -> (...)
  * description:	takes pc value from current frame
