@@ -16,5 +16,6 @@
 
 extern void (*const instructions_handlers[256])(const u1*);
 void run(char* start_class_name);
+void throwException(const char* exception_name);
 
 #endif  // __EXECUTION_ENGINE_H

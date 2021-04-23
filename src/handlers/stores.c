@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "execution-engine.h"
 #include "frame.h"
 #include "global.h"
 #include "handlers/stores.h"
@@ -97,24 +98,29 @@ void astore_n(const u1* instruction) {
  * stack: 	(..., arrayref, index, value) -> (...)
  * description:	put value into array at index
  */
-void tastore(const u1* instruction) {
+void tastore() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);
   JavaType* array_ref     = popNode(&current_frame->operand_stack);
 
   if(array_ref == NULL) {
-    printf("NullPointerException at %x", current_frame->local_pc);
-    exit(1);
+    pushNode(&current_frame->operand_stack, array_ref);
+    pushNode(&current_frame->operand_stack, index);
+    pushNode(&current_frame->operand_stack, value);
+    return throwException("java/lang/NullPointerException");
   }
 
-  // TODO: fix this warning
-  if(*instruction == 0x53) {
-    println("Warning: aastore does not make runtime type checks yet.");
+  Array* array = array_ref->reference_value;
+
+  if(index->int_value < 0 || index->int_value > array->length) {
+    pushNode(&current_frame->operand_stack, array_ref);
+    pushNode(&current_frame->operand_stack, index);
+    pushNode(&current_frame->operand_stack, value);
+    return throwException("java/lang/ArrayIndexOutOfBoundsException");
   }
 
-  // TODO: check if its out of bounds (store in first index its length?? 🤔)
-  ((Array*) array_ref->reference_value)->elements[index->int_value] = *value;
+  array->elements[index->int_value] = *value;
 
   current_frame->local_pc += 1;
   free(index);

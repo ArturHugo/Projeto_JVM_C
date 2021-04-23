@@ -9,6 +9,6 @@ void lstore_n(const u1* instruction);
 void fstore_n(const u1* instruction);
 void dstore_n(const u1* instruction);
 void astore_n(const u1* instruction);
-void tastore(const u1* instruction);
+void tastore();
 
 #endif  // __STORES_H
