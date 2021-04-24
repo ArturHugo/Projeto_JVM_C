@@ -206,7 +206,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xb6 */ invokevirtual,
     /* 0xb7 */ invokespecial,
     /* 0xb8 */ invokestatic,
-    /* 0xb9 */ NULL,
+    /* 0xb9 */ invokeinterface,
     /* 0xba */ NULL,
     /* 0xbb */ new,
     /* 0xbc */ newarray,
