@@ -283,7 +283,7 @@ void run(char* starting_class_name) {
   frame_stack = NULL;
 
   // execution engine
-  ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
+  ClassFile* starting_class = loadClass(starting_class_name);
 
   // criando frame
   Frame* starting_frame;

@@ -45,10 +45,6 @@ void invokestatic(const u1* instruction) {
     exit(1);
   }
 
-  if(new_class->_status != initialized) {
-    resolveReferences(new_class);
-  }
-
   initializeClass(new_class);
 
   Frame* new_frame = newFrame(new_class, new_method_name, new_method_descriptor);
@@ -136,10 +132,6 @@ void new(const u1* instruction) {
   if(new_class == NULL) {
     printf("\npc = %d: new failed\n", current_frame->local_pc);
     exit(1);
-  }
-
-  if(new_class->_status != initialized) {
-    resolveReferences(new_class);
   }
 
   initializeClass(new_class);

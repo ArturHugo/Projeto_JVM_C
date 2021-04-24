@@ -52,8 +52,9 @@ int main(int numargs, char* arg[]) {
 
     char* class_name = trimSuffix(arg[2], ".class");
 
-    Class* class = loadClass(class_name);
-    resolveReferences(class);
+    if(class_name == NULL) {
+      panic("Erro ao ler o argumento");
+    }
 
     run(class_name);
     free(class_name);
