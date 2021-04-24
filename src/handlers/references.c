@@ -2,6 +2,8 @@
 #include "class-file.h"
 #include "constant-pool.h"
 #include "frame.h"
+#include "global.h"
+#include "methods.h"
 #include "stack.h"
 
 #include <stdlib.h>

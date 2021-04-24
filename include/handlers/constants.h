@@ -2,8 +2,6 @@
 #define __CONSTANTS_H
 
 #include "common.h"
-#include "frame.h"
-#include "global.h"
 
 /**
  * @file handlers/constants.h

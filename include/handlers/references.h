@@ -2,10 +2,6 @@
 #define __REFERENCES_H
 
 #include "common.h"
-#include "frame.h"
-#include "global.h"
-#include "methods.h"
-#include "stack.h"
 
 /**
  * @file handlers/references.h

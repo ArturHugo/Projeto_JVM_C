@@ -9,7 +9,11 @@ Frame* newFrame(ClassFile* current_class, char* method_name) {
   MethodInfo* method = mapGet(current_class->_method_map, method_name);
 
   if(method == NULL) {
-    panic("Method not found while trying to create frame: %s", method_name);
+    // If current class is Object
+    if(current_class->super_class == 0) {
+      panic("Method not found while trying to create frame: %s", method_name);
+    }
+    return newFrame(current_class->_super_class, method_name);
   }
 
   Frame* new_frame         = malloc(sizeof(*new_frame));
