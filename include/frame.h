@@ -12,6 +12,7 @@ typedef struct Frame {
   JavaType*         local_variables;
   ConstantPoolInfo* constant_pool;
   MethodInfo*       current_method;
+  char*             class_name;
 } Frame;
 
 Frame* newFrame(ClassFile* current_class, char* method_name, char* method_descriptor);
