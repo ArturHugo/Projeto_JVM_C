@@ -5,6 +5,11 @@
 
 #include "file.h"
 
+/**
+ * @file constant-pool.h
+ * @brief Structures and functions concerning the constant pool.
+ */
+
 // ConstantPoolInfo tag values
 #define CONSTANT_CLASS               7
 #define CONSTANT_FIELDREF            9
@@ -163,12 +168,83 @@ typedef struct ConstantPoolInfo {
   };
 } ConstantPoolInfo;
 
+/**
+ * @fn ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd)
+ * @brief Reads constant pool from a class file and stores it into memory.
+ *
+ * @param cp_count - number of elements in the constant pool +1.
+ * @param fd - reference to a File structure that has the class file content
+ * loaded into it.
+ *
+ * @return constant_pool - reference to constant pool represented by pointer to ConstantPoolInfo.
+ */
 ConstantPoolInfo* readConstantPool(u2 cp_count, File* fd);
 
+/**
+ * @fn void printConstantPool(u2 cp_count, ConstantPoolInfo* constant_pool)
+ * @brief Prints all the values in the constant pool.
+ *
+ * @param cp_count - number of elements in the constant pool +1.
+ * @param constant_pool - reference to a constant pool.
+ */
 void printConstantPool(u2 cp_count, ConstantPoolInfo* constant_pool);
+
+/**
+ * @fn void printConstantValue(ConstantPoolInfo* constant_pool, u2 index)
+ * @brief Prints a constant value from the constant pool at the given index.
+ *
+ * @param constant_pool - reference to a constant pool.
+ * @param index - must be a valid index to the constant pool (not 0).
+ */
 void printConstantValue(ConstantPoolInfo* constant_pool, u2 index);
 
-u1*  getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
+/**
+ * @fn u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index)
+ * @brief Finds UTF8 string associated with ClassInfo's name_index or StringInfo's
+ * string_index.
+ *
+ * @param constant_pool - reference to a constant pool.
+ * @param index - must be a valid index to the constant pool (not 0).
+ *
+ * @return utf8_string - pointer to first byte of UTF8 string.
+ */
+u1* getUtf8String(ConstantPoolInfo* constant_pool, uint16_t index);
+
+/**
+ * @fn u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_t index)
+ * @brief Finds all UTF8 strings associated with a constant pool value
+ *
+ * @param num_of_strings - used to return by reference the number of strings returned by the
+ * function.
+ * @param constant_pool - reference to a constant pool.
+ * @param index - must be a valid index to the constant pool (not 0).
+ *
+ * @return utf8_strings - list of pointers UTF8 strings associated with a constant pool value.
+ *
+ * Formats of utf8_strings:
+ * - ClassInfo:
+ *   * utf8_strings[0] = class name string.
+ * - FieldrefInfo/MethodrefInfo/InterfaceMethodrefInfo:
+ *   * utf8_strings[0] = name string of the field/method's class/interface.
+ *   * utf8_strings[1] = name string of the field/method.
+ *   * utf8_strings[2] = name string of the field/emthod's descriptor.
+ * - StringInfo:
+ *   * utf8_strings[0] = string's value.
+ * - NameAndTypeInfo:
+ *   * utf8_strings[0] = name string of the field/method.
+ *   * utf8_strings[1] = name string of the field/emthod's descriptor.
+ * - Utf8Info:
+ *   * utf8_strings = NULL.
+ */
 u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_t index);
-u2   getArgumentCount(u1* descriptor);
+
+/**
+ * @fn u2 getArgumentCount(u1* descriptor)
+ * @brief analyses a method descriptor and return it's number of arguments.
+ *
+ * @param descriptor - pointer to method descriptor's string.
+ *
+ * @return n_args - number of arguments of method by analysing it's descriptor.
+ */
+u2 getArgumentCount(u1* descriptor);
 #endif  // __CONSTANT_POOL_H
