@@ -1,0 +1,163 @@
+\hypertarget{extended_8h}{}\doxysection{include/handlers/extended.h File Reference}
+\label{extended_8h}\index{include/handlers/extended.h@{include/handlers/extended.h}}
+
+
+Handlers functions for extended instructions (opcodes from 0xc4 to 0xc9).  
+
+
+{\ttfamily \#include \char`\"{}common.\+h\char`\"{}}\newline
+Include dependency graph for extended.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=273pt]{extended_8h__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{extended_8h_ad486fb7614bbdd0bc6b64f9031c9d0fd}{wide}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction modifier wide. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{extended_8h_a0068f431758f81f0f7cc179d7c5891e3}{multianewarray}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction multianewarray. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{extended_8h_ab86fb72024e8b868ab42fe6bf9b07488}{ifnull}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction ifnull. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{extended_8h_aa4999ffc42c7f09346870cad24c343be}{ifnonnull}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction ifnonnull. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{extended_8h_aff8d30c6f16e4ac2ee5359f6ced905e9}{goto\+\_\+w}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction goto\+\_\+w. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{extended_8h_ad1953f3e09d21381aeb4498e2dd9f6b5}{jsr\+\_\+w}} (const u1 $\ast$instruction)
+\begin{DoxyCompactList}\small\item\em Handles instruction jsr\+\_\+w. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handlers functions for extended instructions (opcodes from 0xc4 to 0xc9). 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{extended_8h_aff8d30c6f16e4ac2ee5359f6ced905e9}\label{extended_8h_aff8d30c6f16e4ac2ee5359f6ced905e9}} 
+\index{extended.h@{extended.h}!goto\_w@{goto\_w}}
+\index{goto\_w@{goto\_w}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{goto\_w()}{goto\_w()}}
+{\footnotesize\ttfamily void goto\+\_\+w (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction goto\+\_\+w. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+: \mbox{[}goto\+\_\+w, branchbyte1, branchbyte2, branchbyte3, branchbyte4\mbox{]}
+\item Stack state\+: no change
+\item Description\+: branches by and offset of ((branchbyte1 $<$$<$ 24) $\vert$ (branchbyte2 $<$$<$ 16) $\vert$ (branchbyte3 $<$$<$ 8) $\vert$ branchbyte4). 
+\end{DoxyItemize}\mbox{\Hypertarget{extended_8h_aa4999ffc42c7f09346870cad24c343be}\label{extended_8h_aa4999ffc42c7f09346870cad24c343be}} 
+\index{extended.h@{extended.h}!ifnonnull@{ifnonnull}}
+\index{ifnonnull@{ifnonnull}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{ifnonnull()}{ifnonnull()}}
+{\footnotesize\ttfamily void ifnonnull (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction ifnonnull. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+: \mbox{[}ifnonnull, branchbyte1, branchbyte2\mbox{]}
+\item Stack state\+: (..., value) -\/$>$ (...)
+\item Description\+: pops reference \mbox{\hyperlink{structJavaType}{Java\+Type}} value from the stack. If the reference is not null branches by an offset of ((branchbyte1 $<$$<$ 8) $\vert$ branchbyte2). 
+\end{DoxyItemize}\mbox{\Hypertarget{extended_8h_ab86fb72024e8b868ab42fe6bf9b07488}\label{extended_8h_ab86fb72024e8b868ab42fe6bf9b07488}} 
+\index{extended.h@{extended.h}!ifnull@{ifnull}}
+\index{ifnull@{ifnull}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{ifnull()}{ifnull()}}
+{\footnotesize\ttfamily void ifnull (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction ifnull. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+: \mbox{[}ifnull, branchbyte1, branchbyte2\mbox{]}
+\item Stack state\+: (..., value) -\/$>$ (...)
+\item Description\+: pops reference \mbox{\hyperlink{structJavaType}{Java\+Type}} value from the stack. If the reference is null branches by an offset of ((branchbyte1 $<$$<$ 8) $\vert$ branchbyte2). 
+\end{DoxyItemize}\mbox{\Hypertarget{extended_8h_ad1953f3e09d21381aeb4498e2dd9f6b5}\label{extended_8h_ad1953f3e09d21381aeb4498e2dd9f6b5}} 
+\index{extended.h@{extended.h}!jsr\_w@{jsr\_w}}
+\index{jsr\_w@{jsr\_w}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{jsr\_w()}{jsr\_w()}}
+{\footnotesize\ttfamily void jsr\+\_\+w (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction jsr\+\_\+w. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+: \mbox{[}jsr\+\_\+w, branchbyte1, branchbyte2, branchbyte3, branchbyte4\mbox{]}
+\item Stack state\+: (...) -\/$>$ (..., address)
+\item Description\+: pushes a return address \mbox{\hyperlink{structJavaType}{Java\+Type}} value into the operand stack. The return address value is the address of the next opcode following this instruction. Branches by an offset of ((branchbyte1 $<$$<$ 24) $\vert$ (branchbyte2 $<$$<$ 16) $\vert$ (branchbyte3 $<$$<$ 8) $\vert$ branchbyte4). 
+\end{DoxyItemize}\mbox{\Hypertarget{extended_8h_a0068f431758f81f0f7cc179d7c5891e3}\label{extended_8h_a0068f431758f81f0f7cc179d7c5891e3}} 
+\index{extended.h@{extended.h}!multianewarray@{multianewarray}}
+\index{multianewarray@{multianewarray}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{multianewarray()}{multianewarray()}}
+{\footnotesize\ttfamily void multianewarray (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction multianewarray. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+: \mbox{[}multianewarray, indexbyte1, indexbyte2, dimensions\mbox{]}
+\item Stack state\+: (..., count1, \mbox{[}count2, ...\mbox{]}) -\/$>$ (..., arrayref)
+\item Description\+: pops a number o counts from operand stack equals to dimensions. Each count indicates the number o elements in a given dimension of the new multiarray to be allocated (e.\+g. count1 is the number of elements in the first dimension of the array). This instructions allocates space in the memory for the new multiarray and pushes its \mbox{\hyperlink{structJavaType}{Java\+Type}} arrayref into the operand stack. 
+\end{DoxyItemize}\mbox{\Hypertarget{extended_8h_ad486fb7614bbdd0bc6b64f9031c9d0fd}\label{extended_8h_ad486fb7614bbdd0bc6b64f9031c9d0fd}} 
+\index{extended.h@{extended.h}!wide@{wide}}
+\index{wide@{wide}!extended.h@{extended.h}}
+\doxysubsubsection{\texorpdfstring{wide()}{wide()}}
+{\footnotesize\ttfamily void wide (\begin{DoxyParamCaption}\item[{const u1 $\ast$}]{instruction }\end{DoxyParamCaption})}
+
+
+
+Handles instruction modifier wide. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em instruction} & -\/ pointer to the instruction\textquotesingle{}s opcode in the \mbox{\hyperlink{structCodeInfo}{Code\+Info}} attribute code bytes.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyItemize}
+\item Format of instruction\+:
+\begin{DoxyItemize}
+\item Format 1\+: \mbox{[}wide, $<$opcode$>$, indexbyte1, indexbyte2\mbox{]}, (for opcodes iload, fload, aload, lload, dload, istore, fstore, astore, lstore, dstore, or ret)
+\item Format 2\+: \mbox{[}wide, iinc, indexbyte1, indexbyte2, constbyte1, constbyte2\mbox{]}
+\end{DoxyItemize}
+\item Stack state\+: same as modified instruction
+\item Description\+: modifies the behavior of instructions handled by functions tload, tstore, ret and iinc. The modified instructions does the same as the original instructions, but using a 16 bit index formed by ((indexbyte1 $<$$<$ 8) $\vert$ indexbyte2) and a 16 bit constant formed by ((constbyte1 $<$$<$ 8) $\vert$ constbyte2). 
+\end{DoxyItemize}

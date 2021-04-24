@@ -23,70 +23,107 @@
 
 // CONSTAT_item_info
 typedef struct {
-  u2  name_index;
+  /// Reference to a Utf8Info in the ClassFile's constant pool.
+  u2 name_index;
+
+  /// Points to the resolved reference to the class' name.
   u1* _name;
 } ClassInfo;
 
 typedef struct {
+  /// Reference to a ClassInfo in the ClassFile's constant pool.
   u2 class_index;
+  /// Reference to a NameAndTypeInfo in the ClassFile's constant pool.
   u2 name_and_type_index;
 
-  u1* _class;      /** o nome da classe que esse field se encontra */
-  u1* _name;       /** o nome do field */
-  u1* _descriptor; /** o descritor do field */
+  /// Points to the resolved reference to the name of the field's class.
+  u1* _class;
+  /// Points to the resolved reference to the name of the field.
+  u1* _name;
+  /// Points to the resolved reference to the field's descriptor string.
+  u1* _descriptor;
 } FieldrefInfo;
 
 typedef struct {
+  /// Reference to a ClassInfo in the ClassFile's constant pool.
   u2 class_index;
+  /// Reference to a NameAndTypeInfo in the ClassFile's constant pool.
   u2 name_and_type_index;
 
-  u1* _class;      /** o nome da classe que esse método se encontra */
-  u1* _name;       /** o nome do método */
-  u1* _descriptor; /** o descritor do método */
+  /// Points to the resolved reference to the name of the method's class.
+  u1* _class;
+  /// Points to the resolved reference to the name of the method.
+  u1* _name;
+  /// Points to the resolved reference to the method's descriptor string.
+  u1* _descriptor;
 } MethodrefInfo;
 
 typedef struct {
+  /// Reference to a ClassInfo in the ClassFile's constant pool.
   u2 class_index;
+  /// Reference to a NameAndTypeInfo in the ClassFile's constant pool.
   u2 name_and_type_index;
 
-  u1* _interface;  /** o nome da classe que essa interface se encontra */
-  u1* _name;       /** o nome da interface */
-  u1* _descriptor; /** o descritor da interface */
+  /// Points to the resolved reference to the name of the method's interface.
+  u1* _interface;
+  /// Points to the resolved reference to the name of the method.
+  u1* _name;
+  /// Points to the resolved reference to the method's descriptor string.
+  u1* _descriptor;
 } InterfaceMethodrefInfo;
 
 typedef struct {
-  u2  string_index;
+  /// Reference to a StringInfo in the ClassFile's constant pool.
+  u2 string_index;
+
+  /// Points to the resolved reference to string's value.
   u1* _value;
 } StringInfo;
 
 typedef struct {
+  /// Bytes of the integer value.
   u4 bytes;
 } IntegerInfo;
 
 typedef struct {
-  u4    bytes;
+  /// Bytes of the float value encoded in IEEE 754.
+  u4 bytes;
+
+  /// Bytes value converted to float for ease of use.
   float _value;
 } FloatInfo;
 
 typedef struct {
-  u4   high_bytes;
-  u4   low_bytes;
-  long _value;
+  /// 4 most significant bytes of the float value.
+  u4 high_bytes;
+  /// 4 least significant bytes of the float value.
+  u4 low_bytes;
+
+  /// Bytes values converted to a single float value for ease of use.
+  uint64_t _value;
 } LongInfo;
 
 typedef struct {
-  u4     high_bytes;
-  u4     low_bytes;
+  /// 4 most significant bytes of the double value.
+  u4 high_bytes;
+  /// 4 least significant bytes of the double value.
+  u4 low_bytes;
+
+  /// Bytes values converted to a single double value for ease of use.
   double _value;
 } DoubleInfo;
 
 typedef struct {
+  /// Reference to a Utf8Info in the ClassFile's constant pool.
   u2 name_index;
+  /// Reference to a Utf8Info in the ClassFile's constant pool.
   u2 descriptor_index;
 } NameAndTypeInfo;
 
 typedef struct {
-  u2  length;
+  /// Length of the UTF8 string.
+  u2 length;
+  /// Pointer to bytes of the UTF8 string.
   u1* bytes;
 } Utf8Info;
 
@@ -96,6 +133,7 @@ typedef struct {
 } MethodHandleInfo;
 
 typedef struct {
+  /// Reference to a Utf8Info in the ClassFile's constant pool.
   u2 descriptor_index;
 } MethodTypeInfo;
 
@@ -105,7 +143,7 @@ typedef struct {
 } InvokeDynamicInfo;
 
 // Constant structure
-typedef struct Constant {
+typedef struct ConstantPoolInfo {
   u1 tag;
   union {
     ClassInfo              class_info;
