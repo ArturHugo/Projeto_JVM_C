@@ -212,15 +212,22 @@ Class* loadClass(char* class_name) {
     // popula o map de methods
     for(u2 index = 0; index < class->methods_count; index++) {
       MethodInfo* method      = class->methods + index;
+
       char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
-      // TODO: if final, initialize it
-      mapAdd(class->_method_map, method_name, method);
+      char* descriptor_name = (char*) getUtf8String(class->constant_pool, method->descriptor_index);
+
+      char* name_and_type = calloc(strlen(method_name) + strlen(descriptor_name) + 1, sizeof(char*));
+      strcat(name_and_type, method_name);
+      strcat(name_and_type, descriptor_name);
+
+      mapAdd(class->_method_map, name_and_type, method);
     }
 
     // popula o map de fields
     for(u2 index = 0; index < class->fields_count; index++) {
       FieldInfo* field      = class->fields + index;
       char*      field_name = (char*) getUtf8String(class->constant_pool, field->name_index);
+      // TODO: if final, initialize it
       mapAdd(class->_field_map, field_name, field);
     }
   }
@@ -308,7 +315,7 @@ void initializeClass(Class* class) {
 
   /* executa clinit, se exisit */
   if(has_clinit) {
-    Frame* frame = newFrame(class, "<clinit>");
+    Frame* frame = newFrame(class, "<clinit>", "()V");
     pushNode(&frame_stack, frame);
   }
 

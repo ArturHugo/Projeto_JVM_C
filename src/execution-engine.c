@@ -289,7 +289,7 @@ void run(char* starting_class_name) {
 
   // criando frame
   Frame* starting_frame;
-  starting_frame = newFrame(starting_class, "main");
+  starting_frame = newFrame(starting_class, "main", "([Ljava/lang/String;)V");
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);

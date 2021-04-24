@@ -97,7 +97,7 @@ void invokevirtual(const u1* instruction) {
 
     initializeClass(new_class);
 
-    Frame* new_frame = newFrame(new_class, method_name);
+    Frame* new_frame = newFrame(new_class, method_name, method_descriptor);
 
     // loading opperands from current stack to new local variables
     u2       n_args               = getArgumentCount((u1*) method_descriptor);
