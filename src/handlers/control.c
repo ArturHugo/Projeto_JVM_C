@@ -5,16 +5,6 @@
 #include "global.h"
 #include "handlers/comparison.h"
 
-/*
- * Branch always
- *
- * opcode:	0xa7
- * format: 	[goto, branchbyte1, branchbyte2 ]
- * stack: 	(...) -> (...)
- * description:	takes pc value from current frame
- * and update using branch offset.
- */
-
 void go_to() {
   Frame*   current_frame = peekNode(frame_stack);
   uint8_t* bytecode      = current_frame->current_method->attributes->code_info.code;
@@ -26,15 +16,6 @@ void go_to() {
   current_frame->local_pc = current_frame->local_pc + branchOffset;
 }
 
-/*
- * Jump subroutine
- *
- * opcode:	0xa8
- * format: 	[jsr, branchbyte1, branchbyte2]
- * stack: 	(...) -> (..., address)
- * description:	takes pc value from current frame
- * and pushes into the operand stack..
- */
 void jsr() {
   Frame*   current_frame = peekNode(frame_stack);
   uint8_t* bytecode      = current_frame->current_method->attributes->code_info.code;
@@ -49,15 +30,6 @@ void jsr() {
   current_frame->local_pc = current_frame->local_pc + branchOffset;
 }
 
-/*
- * Return from subroutine
- *
- * opcode:	0xa9
- * format: 	[ret, index]
- * stack: 	(...) -> (...)
- * description:	takes pc value from current frame
- * and pushes into the operand stack..
- */
 void ret() {
   Frame*   current_frame = peekNode(frame_stack);
   uint8_t* bytecode      = current_frame->current_method->attributes->code_info.code;
@@ -68,15 +40,6 @@ void ret() {
   current_frame->local_pc = current_frame->local_pc + value.return_address_value;
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void ireturn() {
   JavaType value;
   Frame*   current_frame = peekNode(frame_stack);
@@ -88,15 +51,6 @@ void ireturn() {
   pushValue(&previous_frame->operand_stack, value);
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void lreturn() {
   JavaType value;
   Frame*   current_frame = peekNode(frame_stack);
@@ -108,15 +62,6 @@ void lreturn() {
   pushValue(&previous_frame->operand_stack, value);
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void freturn() {
   JavaType value;
   Frame*   current_frame = peekNode(frame_stack);
@@ -128,15 +73,6 @@ void freturn() {
   pushValue(&previous_frame->operand_stack, value);
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void dreturn() {
   JavaType value;
   Frame*   current_frame = peekNode(frame_stack);
@@ -148,15 +84,6 @@ void dreturn() {
   pushValue(&previous_frame->operand_stack, value);
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void areturn() {
   JavaType value;
   Frame*   current_frame = peekNode(frame_stack);
@@ -168,31 +95,10 @@ void areturn() {
   pushValue(&previous_frame->operand_stack, value);
 }
 
-/*
- * Return void from method
- *
- * opcode:	0xb1
- * format: 	[return]
- * stack: 	(...) -> (empty)
- * description:	takes previous frame from frame stack
- * and pushes into the operand stack..
- */
 void return_op() {
   Frame* old_frame = popNode(&frame_stack);
   free(old_frame);
 }
-
-/*
- * Access jump table by key match and jump
- *
- * opcode:	0xab
- * format: 	[lookupswitch, bytepad, defaultbyte1, defaultbyte2,
-                        defaultbyte3, defaultbyte4, npairs1, npairs2, npairs3, npairs4,
-                        match-offset pairs]
- * stack: 	(..., key) -> (...)
- * description:	takes pc value from current frame
- * and update using default or offset value..
- */
 
 void lookupswitch() {
   JavaType key;
@@ -240,18 +146,6 @@ void lookupswitch() {
   }
   current_frame->local_pc = address + default_value;
 }
-
-/*
- * Access jump table by index and jump
- *
- * opcode:	0xaa
- * format: 	[tableswitch, bytepad, defaultbyte1, defaultbyte2,
-                        defaultbyte3, defaultbyte4, lowbyte1, lowbyte2, lowbyte3,
-                        lowbyte4, highbyte1, highbyte2, highbyte3, highbyte4, jump offsets]
- * stack: 	(..., index) -> (...)
- * description:	takes pc value from current frame
- * and update using default or offset value..
- */
 
 void tableswitch() {
   JavaType key;

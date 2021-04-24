@@ -249,6 +249,7 @@ void if_icmpeq() {
     current_frame->local_pc = current_frame->local_pc + 2 + 1;
   }
 }
+
 void if_icmpne() {
   Frame*   current_frame = peekNode(frame_stack);
   uint8_t* bytecode      = current_frame->current_method->attributes->code_info.code;
@@ -359,6 +360,7 @@ void if_acmpeq() {
     current_frame->local_pc = current_frame->local_pc + 2 + 1;
   }
 }
+
 void if_acmpne() {
   Frame*   current_frame = peekNode(frame_stack);
   uint8_t* bytecode      = current_frame->current_method->attributes->code_info.code;
