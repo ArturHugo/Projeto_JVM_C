@@ -1,6 +1,7 @@
 #include "handlers/references.h"
 #include "class-file.h"
 #include "constant-pool.h"
+#include "exceptions.h"
 #include "frame.h"
 #include "global.h"
 #include "methods.h"
@@ -42,10 +43,6 @@ void invokestatic(const u1* instruction) {
   if(new_class == NULL) {
     printf("\npc = %d: invokestatic failed\n", current_frame->local_pc);
     exit(1);
-  }
-
-  if(new_class->_status != initialized) {
-    resolveReferences(new_class);
   }
 
   initializeClass(new_class);
@@ -135,10 +132,6 @@ void new(const u1* instruction) {
   if(new_class == NULL) {
     printf("\npc = %d: new failed\n", current_frame->local_pc);
     exit(1);
-  }
-
-  if(new_class->_status != initialized) {
-    resolveReferences(new_class);
   }
 
   initializeClass(new_class);
@@ -323,4 +316,34 @@ void arraylength() {
   pushValue(&current_frame->operand_stack, length);
 
   current_frame->local_pc++;
+}
+
+void athrow() {
+  Frame*    current_frame = peekNode(frame_stack);
+  JavaType* objectref     = peekNode(current_frame->operand_stack);
+
+  if(objectref == NULL) {
+    return throwException("java/lang/ArrayIndexOutOfBoundsException");
+  }
+
+  Object* object           = objectref->reference_value;
+  u2      this_class_index = object->class->this_class;
+  char*   class_name = (char*) current_frame->constant_pool[this_class_index].class_info._name;
+
+  while(current_frame == NULL) {
+    Exception* exception = findException(class_name);
+
+    // if it was found, drop operand_stack, move to handler_pc and push object back
+    if(exception != NULL) {
+      while(current_frame->operand_stack)
+        popNode(&current_frame->operand_stack);
+
+      pushNode(&current_frame->operand_stack, objectref);
+
+      current_frame->local_pc = exception->handler_pc;
+    } else {
+      Frame* old_frame = popNode(&frame_stack);
+      free(old_frame);
+    }
+  }
 }

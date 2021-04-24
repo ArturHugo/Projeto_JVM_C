@@ -90,5 +90,6 @@ void anewarray();
  */
 
 void arraylength();
+void athrow();
 
 #endif  // __REFERENCES_H

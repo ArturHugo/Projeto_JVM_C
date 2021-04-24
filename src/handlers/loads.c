@@ -1,3 +1,4 @@
+#include "exceptions.h"
 #include "handlers/loads.h"
 #include "frame.h"
 #include "global.h"
@@ -93,15 +94,17 @@ void taload() {
   JavaType* array_ref     = popNode(&current_frame->operand_stack);
 
   if(array_ref == NULL) {
-    printf("NullPointerException at %x", current_frame->local_pc);
-    exit(1);
+    pushNode(&current_frame->operand_stack, array_ref);
+    pushNode(&current_frame->operand_stack, index);
+    return throwException("java/lang/NullPointerException");
   }
 
   Array* array = (Array*) array_ref->reference_value;
 
-  if(index->int_value >= array->length) {
-    printf("ArrayIndexOutOfBoundsException at %x", current_frame->local_pc);
-    exit(1);
+  if(index->int_value < 0 || index->int_value >= array->length) {
+    pushNode(&current_frame->operand_stack, array_ref);
+    pushNode(&current_frame->operand_stack, index);
+    return throwException("java/lang/ArrayIndexOutOfBoundsException");
   }
 
   pushValue(&current_frame->operand_stack, array->elements[index->int_value]);

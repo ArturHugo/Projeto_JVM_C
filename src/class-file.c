@@ -1,4 +1,5 @@
 #include "class-file.h"
+#include "common.h"
 #include "fields.h"
 #include "frame.h"
 #include "global.h"
@@ -151,6 +152,10 @@ char* getSourceFile(ClassFile* class_file) {
 
 char* trimSuffix(char* file_path, char* suffix) {
   int   size = strlen(file_path) - strlen(suffix);
+
+  if(size <= 0) 
+    return NULL;
+
   char* name = calloc(size + 1, sizeof(char));
   memcpy(name, file_path, size);
   return name;
@@ -177,6 +182,11 @@ Class* loadClass(char* class_name) {
     strcat(file_path, ".class");
 
     FILE* file = fopen(file_path, "rb");
+
+    if(file == NULL) {
+      panic("Erro ao tentar abrir o arquivo: %s", file_path);
+    }
+
     File* fd   = convertFile(file);
     fclose(file);
 
@@ -232,6 +242,7 @@ Class* loadClass(char* class_name) {
     }
   }
 
+  resolveReferences(class);
   return class;
 }
 
