@@ -12,5 +12,7 @@ void freturn();
 void dreturn();
 void areturn();
 void return_op();
+void lookupswitch();
+void tableswitch();
 
 #endif  // __CONTROL_H
