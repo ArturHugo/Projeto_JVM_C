@@ -108,11 +108,6 @@ void tastore(const u1* instruction) {
     exit(1);
   }
 
-  // TODO: fix this warning
-  if(*instruction == 0x53) {
-    println("Warning: aastore does not make runtime type checks yet.");
-  }
-
   // TODO: check if its out of bounds (store in first index its length?? 🤔)
   ((Array*) array_ref->reference_value)->elements[index->int_value] = *value;
 
