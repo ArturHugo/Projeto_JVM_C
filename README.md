@@ -3,11 +3,55 @@
 
 # Contribuidores
 
-- Artur Filgueiras Scheiba Zorron - 180013696
-- Artur Hugo Cunha Pereira - 180030400
-- Brenno Pereira Cordeiro - 190127465
-- Felipe Oliveira Magno Neves - 180016396
-- Guilherme Oliveira Loiola - 170050335
+- Artur Filgueiras Scheiba Zorron - 180013696  
+  Nota média da avaliação pelo grupo: 10  
+  Contribuição:
+  * Read Methods
+  * Print Methods
+  * Math Instructions (de 0x60 a 0x84)
+
+- Artur Hugo Cunha Pereira - 180030400  
+  Nota média da avaliação pelo grupo: 10  
+  Contribuição:
+  * Estruturas da constant pool
+  * Leitura e impressão da constant pool
+  * Instruções de loads (opcodes de 0x15 a 0x35)
+  * Instruções extended (opcodes de 0xc4 a 0xc9)
+  * Instrução invokevirtual
+  * Resolução de referências na constant pool
+  * Impressão de mnemônicos no leitor-exbidor
+
+- Brenno Pereira Cordeiro - 190127465  
+  Nota média da avaliação pelo grupo: 10
+  * Estruturas de atributos
+  * Leitura e impressão de atributos
+  * Estrutura de map
+  * Instruções de stores (opcodes de 0x36 a 0x56)
+  * Instruções de conversions (opcodes de 0x85 a 0x93)
+  * Instruções getstatic, putstatic, getfield e putfield
+  * Instruções invokespecial e invokeinterface
+  * Inicialização de classe
+
+- Felipe Oliveira Magno Neves - 180016296   
+  Nota média da avaliação pelo grupo: 10  
+  Contribuição:
+  * Estrutura de Stack
+  * Leitura e exibição de instruções no leitor e exibidor
+  * Instruções de constants (opcodes de 0x00 a 0x14)
+  * Instruções de stack (opcodes de 0x57 a 0x5f)
+  * Algumas instruções de references (invokestatic e new até arraylength opcodes 0xb8, 0xbb, 0xbc, 0xbd, 0xbe)
+  
+- Guilherme Oliveira Loiola - 170050335  
+  Nota média da avaliação pelo grupo: 10
+  Contribuição:
+  * Read Fields
+  * Print Fields
+  * Comparisons Instructions (de 0x94 a 0xa6)
+  * Control Instructions (de 0xa7 a 0xb1)
+
+- Contribuições coletivas:
+  * Estrutura da method area
+  * Código da execution engine
 
 # Interpretador
 
@@ -29,7 +73,7 @@
 
 9. [x] shorts
 
-10. [x] strings
+10. [-] strings
 
 11. [x] desvios com cat 1 
 
@@ -49,7 +93,7 @@
 
 19. [x] switches
 
-20. [x] fields
+20. [-] fields
 
 21. [x] interfaces
 
@@ -91,11 +135,15 @@ Leitor e exibidor de arquivos no formato `.class` do Java.
 ## Compilação
 
 ```
-gcc -Wall -Wextra -g -std=c99 -Iinclude src/*.c -o jvm
+gcc -Wall -Wextra -g -std=c99 -Iinclude src/*.c src/handlers/*.c -o jvm
 ```
 
 ## Uso
-
+Para o leitor-exibidor:
 ```
-./jvm <Arquivo.class>
+./jvm -l <Arquivo.class>
+```
+Para o imterpretador:
+```
+./jvm -i <Arquivo.class>
 ```
