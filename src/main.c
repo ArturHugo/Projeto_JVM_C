@@ -9,6 +9,7 @@
 #include "frame.h"
 #include "global.h"
 #include "instructions.h"
+#include "map.h"
 #include "method-area.h"
 #include "stack.h"
 
@@ -48,10 +49,12 @@ int main(int numargs, char* arg[]) {
   } else if(!strcmp(arg[1], "-i")) {
     method_area.loaded_classes = newMap();
     loadObjectClass();
-    loadClass(arg[2]);
 
     char* class_name = trimSuffix(arg[2], ".class");
-    resolveReferences(class_name);
+
+    Class* class = loadClass(class_name);
+    resolveReferences(class);
+
     run(class_name);
     free(class_name);
   }

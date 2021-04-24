@@ -7,14 +7,14 @@
 
 //_insctruction appended to reserved names
 
-void pop_instruction(const u1* instruction);
-void pop2(const u1* instruction);
-void dup_instruction(const u1* instruction);
-void dup_x1(const u1* instruction);
-void dup_x2(const u1* instruction);
-void dup2_instruction(const u1* instruction);
-void dup2_x1(const u1* instruction);
-void dup2_x2(const u1* instruction);
-void swap(const u1* instruction);
+void pop_instruction();
+void pop2();
+void dup_instruction();
+void dup_x1();
+void dup_x2();
+void dup2_instruction();
+void dup2_x1();
+void dup2_x2();
+void swap();
 
 #endif  // __STACK_H

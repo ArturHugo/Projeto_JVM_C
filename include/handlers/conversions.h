@@ -3,8 +3,12 @@
 
 #include "common.h"
 
-void l2f();                      /* i2f */
-void l2d();                      /* i2f */
+void i2l();
+void i2f();
+void i2d();
+void l2i();
+void l2f();
+void l2d();
 void f2l(const u1* instruction); /* f2i */
 void f2d();
 void d2l(const u1* instruction); /* d2i */

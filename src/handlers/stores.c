@@ -43,7 +43,7 @@ void istore_n(const u1* instruction) {
  */
 void lstore_n(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
-  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3f) * 2);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x3f));
   current_frame->local_pc += 1;
 }
 
@@ -71,7 +71,7 @@ void fstore_n(const u1* instruction) {
  */
 void dstore_n(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
-  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x47) * 2);
+  popValue(&current_frame->operand_stack, current_frame->local_variables + (*instruction - 0x47));
   current_frame->local_pc += 1;
 }
 
@@ -101,9 +101,9 @@ void tastore(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = popNode(&current_frame->operand_stack);
   JavaType* index         = popNode(&current_frame->operand_stack);
-  JavaType* array         = popNode(&current_frame->operand_stack);
+  JavaType* array_ref     = popNode(&current_frame->operand_stack);
 
-  if(array == NULL) {
+  if(array_ref == NULL) {
     printf("NullPointerException at %x", current_frame->local_pc);
     exit(1);
   }
@@ -114,7 +114,7 @@ void tastore(const u1* instruction) {
   }
 
   // TODO: check if its out of bounds (store in first index its length?? 🤔)
-  ((JavaType*) array->reference_value)[index->int_value] = *value;
+  ((Array*) array_ref->reference_value)->elements[index->int_value] = *value;
 
   current_frame->local_pc += 1;
   free(index);

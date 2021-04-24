@@ -24,12 +24,20 @@
 #define _N_OPPERAND_BYTES 1
 #define _VARIABLE_N_BYTES 10
 
+/**
+ * Instruction flags
+ */
 #define _OP_FLAG               2
 #define _OP_FLAG_NORMAL        0
 #define _OP_FLAG_CONSTANT_POOL 1
 #define _OP_FLAG_SPECIAL_CASE  2
 #define _OP_FLAG_BRANCH        3
 
+/**
+ * Table that indicates the number of arguments of an instruction, as well as a few flags containing
+ * relevant information for reading said instructions. if an instruction is not on the table, it has
+ * no arguments.
+ */
 static u1 instruction_info_table[55][3] = {
     {16, 1, 2},   {17, 2, 2},  {18, 1, 1},  {19, 2, 1},  {20, 2, 1},  {21, 1, 0},   {22, 1, 0},
     {23, 1, 0},   {24, 1, 0},  {25, 1, 0},  {54, 1, 0},  {55, 1, 0},  {56, 1, 0},   {57, 1, 0},
@@ -40,6 +48,9 @@ static u1 instruction_info_table[55][3] = {
     {185, 4, 1},  {186, 4, 1}, {187, 2, 1}, {188, 1, 2}, {189, 2, 1}, {192, 2, 1},  {193, 2, 1},
     {196, 10, 2}, {197, 3, 1}, {198, 2, 3}, {199, 2, 3}, {200, 4, 3}, {201, 4, 3}};
 
+/**
+ * Array containing instruction mnemonics. The arrat index is the instruction's op code.
+ */
 static char* instruction_mnemonic_table[206] = {"nop",
                                                 "aconst_null",
                                                 "iconst_m1",
@@ -273,6 +284,15 @@ u4 read32bFrom8b(u1* array) {
 
 // obs.: opperand_bytes are being copied by reference. pass pointer
 // to Instruction* variable in "output";
+
+/**
+ * Reads a bytecode and return initialized array of instructions, struct which contains all
+ * necessary information for bytecode viewer.
+ *
+ * @param code Java bytecode to be analyzed.
+ * @param n_instruction Number of instructions contained in the bytecode.
+ * @return Populated array of instruction struct.
+ */
 Instruction* readInstructions(u1* code, u4 n_instruction) {
   Instruction* instructions = calloc(n_instruction, sizeof(Instruction));
   u4           current_byte = 0;
@@ -486,6 +506,13 @@ void printInstructionsNormal(u1 n_opperand_bytes, u1* opperand_bytes) {
   printf("%d", opperand);
 }
 
+/**
+ * Organizes and prints relevant information contained in Instruction array.
+ *
+ * @param instructions Instruction (struct) type array containing instructions to be printed.
+ * @param n_instrs length of instruction array.
+ * @param cp Current class's constant pool.
+ */
 void printInstructions(Instruction* instructions, u4 n_instrs, ConstantPoolInfo* cp) {
   printf("\nInstructions read:\n\n");
   for(u4 i = 0; i < n_instrs; i++) {
@@ -580,6 +607,13 @@ u1 instructionOpFlag(u1 bytecode) {
   return 0;
 }
 
+/**
+ * Calculates the number of operand bytes that accompany a tableswitch instruction.
+ *
+ * @param code Code with the tableswitch bytecode on index 0 and arguments on the folowing indexes.
+ * @param offset PC value at the instruction bytecode byte.
+ * @return Number of operand bytes that accompany the given tableswitch.
+ */
 u4 calcTableswitchOps(u1* code, u4 offset) {
   u4 n_ops = 0;
   while(offset % 4 != 3) {  // adding padding bytes
@@ -605,6 +639,13 @@ u4 calcTableswitchOps(u1* code, u4 offset) {
   return n_ops;
 }
 
+/**
+ * Calculates the number of operand bytes that accompany a lookupswitch instruction.
+ *
+ * @param code Code with the lookupswitch bytecode on index 0 and arguments on the folowing indexes.
+ * @param offset PC value at the instruction bytecode byte.
+ * @return Number of operand bytes that accompany the given lookupswitch.
+ */
 u4 calcLookupswitchOps(u1* code, u4 offset) {
   u4 n_ops = 0;
   while(offset % 4 != 3) {  // adding padding bytes
@@ -624,6 +665,13 @@ u4 calcLookupswitchOps(u1* code, u4 offset) {
   return n_ops;
 }
 
+/**
+ * Calculates the number of operand bytes that accompany a wide instruction.
+ *
+ * @param code Code with the wide bytecode on index 0 and arguments on the folowing indexes.
+ * @param offset PC value at the instruction bytecode byte.
+ * @return Number of operand bytes that accompany the given wide instruction.
+ */
 u1 calcWideOps(u1* code) {
   // wide followed by iinc
   if(*(code + 1) == 132) {
@@ -634,6 +682,13 @@ u1 calcWideOps(u1* code) {
   return 3;
 }
 
+/**
+ * Function that counts the number of instructions in a given bytecode.
+ *
+ * @param code Java bytecode to be analyzed.
+ * @param n_bytes Number of bytes in the bytecode.
+ * @return Number of instructions contained in the bytecode.
+ */
 u4 nInstructions(u1* code, u4 n_bytes) {
   u4 output = 0;
   u4 i      = 0;

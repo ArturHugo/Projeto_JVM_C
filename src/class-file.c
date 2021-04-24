@@ -1,5 +1,9 @@
 #include "class-file.h"
+#include "fields.h"
+#include "frame.h"
 #include "global.h"
+#include "map.h"
+#include "methods.h"
 #include "object.h"
 
 #include <string.h>
@@ -159,54 +163,74 @@ void loadObjectClass() {
 
   ClassFile* class_file = readClassFile(fd);
   mapAdd(method_area.loaded_classes, "java/lang/Object", class_file);
-
+  class_file->_status = initialized;
   free(fd);
 }
 
-void loadClass(char* file_path) {
-  char* class_file_name = trimSuffix(file_path, ".class");
+Class* loadClass(char* class_name) {
+  Class* class = mapGet(method_area.loaded_classes, class_name);
 
-  if(!mapGet(method_area.loaded_classes, class_file_name)) {
+  if(!class) {
+    int   class_name_length = strlen(class_name);
+    char* file_path         = calloc(class_name_length + 7, sizeof(*file_path));
+    strncpy(file_path, class_name, class_name_length);
+    strcat(file_path, ".class");
+
     FILE* file = fopen(file_path, "rb");
     File* fd   = convertFile(file);
     fclose(file);
 
-    ClassFile* class_file = readClassFile(fd);
+    class = readClassFile(fd);
 
-    char* source_file_path = getSourceFile(class_file);
+    char* source_file_path = getSourceFile(class);
     char* source_file_name = trimSuffix(source_file_path, ".java");
 
-    if(strcmp(source_file_name, class_file_name)) {
-      printf("Em %s\n", class_file_name);
+    if(strcmp(source_file_name, class_name)) {
+      printf("Em %s\n", class_name);
       printf("Erro: nome do source file e do class file sao diferentes!\n");
       exit(1);
     }
+
     // If current class is not loaded
     // Add to method_area
-    mapAdd(method_area.loaded_classes, class_file_name, class_file);
+    mapAdd(method_area.loaded_classes, class_name, class);
 
     // If current class is not Object
-    char* super_class_name =
-        (char*) getUtf8String(class_file->constant_pool, class_file->super_class);
-
-    // Load super class
-    char* super_class_name_copy =
-        calloc(strlen(super_class_name) + strlen(".class") + 1, sizeof(char));
-    strcpy(super_class_name_copy, super_class_name);
-    strcat(super_class_name_copy, ".class");
-    loadClass(super_class_name_copy);
-    free(super_class_name_copy);
+    char* super_class_name = (char*) getUtf8String(class->constant_pool, class->super_class);
 
     free(fd->buffer);
     free(fd);
     free(source_file_name);
+
+    // Load super class
+    loadClass(super_class_name);
+
+    // a razão pelo 1.5 é porque é perto do inverso do fator de carga para resize do map (0.7)
+    class->_method_map = _newMap(class->methods_count * 1.5);
+    class->_field_map  = _newMap(class->fields_count * 1.5);
+
+    // popula o map de methods
+    for(u2 index = 0; index < class->methods_count; index++) {
+      MethodInfo* method      = class->methods + index;
+      char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
+      // TODO: if final, initialize it
+      mapAdd(class->_method_map, method_name, method);
+    }
+
+    // popula o map de fields
+    for(u2 index = 0; index < class->fields_count; index++) {
+      FieldInfo* field      = class->fields + index;
+      char*      field_name = (char*) getUtf8String(class->constant_pool, field->name_index);
+      mapAdd(class->_field_map, field_name, field);
+    }
   }
+
+  return class;
 }
 
 /// Função para resolver referências da constant pool
-void resolveReferences(char* class_name) {
-  ClassFile*        class_file = mapGet(method_area.loaded_classes, class_name);
-  ConstantPoolInfo* cp         = class_file->constant_pool;
+void resolveReferences(ClassFile* class_file) {
+  ConstantPoolInfo* cp = class_file->constant_pool;
 
   for(int i = 1; i < class_file->constant_pool_count; i++) {
     switch(cp[i].tag) {
@@ -266,10 +290,27 @@ void resolveReferences(char* class_name) {
     class_file->_super_class =
         mapGet(method_area.loaded_classes, (char*) cp[class_file->super_class].class_info._name);
 
-    ConstantPoolInfo* super_cp = class_file->_super_class->constant_pool;
-
-    u2 super_class_name_index =
-        super_cp[class_file->_super_class->this_class].class_info.name_index;
-    resolveReferences((char*) super_cp[super_class_name_index].utf8_info.bytes);
+    resolveReferences(class_file->_super_class);
   }
+}
+
+void initializeClass(Class* class) {
+  if(class->_status == initialized)
+    return;
+
+  // Inicializa super classes recursivamente
+  if(class->super_class) {
+    initializeClass(class->_super_class);
+  }
+
+  /** FIXME da pra otimizar essa call */
+  void* has_clinit = mapGet(class->_method_map, "<clinit>");
+
+  /* executa clinit, se exisit */
+  if(has_clinit) {
+    Frame* frame = newFrame(class, "<clinit>");
+    pushNode(&frame_stack, frame);
+  }
+
+  class->_status = initialized;
 }
