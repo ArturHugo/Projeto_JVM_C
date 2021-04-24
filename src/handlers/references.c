@@ -96,9 +96,10 @@ void invokespecial(const u1* instruction) {
     popValue(&current_frame->operand_stack, method_parameters + (n_args - i));
   }
 
-  Class *method_class = loadClass((char*) methodref_info._class);
+  Class* method_class = loadClass((char*) methodref_info._class);
 
-  Frame* new_frame = newFrame(method_class, (char*) methodref_info._name, (char*) methodref_info._descriptor);
+  Frame* new_frame =
+      newFrame(method_class, (char*) methodref_info._name, (char*) methodref_info._descriptor);
 
   for(u2 i = 0; i < n_args; i++) {
     new_frame->local_variables[i] = method_parameters[i];

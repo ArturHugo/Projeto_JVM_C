@@ -30,7 +30,6 @@ void invokevirtual(const u1* instruction) {
 
   if(!strcmp(class_name, "java/io/PrintStream")) {
     if(!strcmp(method_name, "print") || !strcmp(method_name, "println")) {
-      // TODO checa descritor e imprime
       JavaType value_to_print;
       popValue(&current_frame->operand_stack, &value_to_print);
       switch(method_descriptor[1]) {
@@ -83,16 +82,11 @@ void invokevirtual(const u1* instruction) {
     // TODO talvez fazer depois
     exit(10);
   } else {
-    // TODO does this even work?
     ClassFile* new_class = loadClass(class_name);
 
     if(new_class == NULL) {
       printf("\npc = %d: invokestatic failed\n", current_frame->local_pc);
       exit(1);
-    }
-
-    if(new_class->_status != initialized) {
-      resolveReferences(new_class);
     }
 
     initializeClass(new_class);

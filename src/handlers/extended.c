@@ -49,7 +49,6 @@ void wide(const u1* instruction) {
  * an array with count1 elements of type reference that are references to arrays
  * with count2 elements and so on.
  */
-// FIXME ainda não ta funcionando
 void multianewarray(const u1* instruction) {
   const u1* operands      = instruction + 1;
   Frame*    current_frame = peekNode(frame_stack);

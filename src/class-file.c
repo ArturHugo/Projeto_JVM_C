@@ -151,9 +151,9 @@ char* getSourceFile(ClassFile* class_file) {
 }
 
 char* trimSuffix(char* file_path, char* suffix) {
-  int   size = strlen(file_path) - strlen(suffix);
+  int size = strlen(file_path) - strlen(suffix);
 
-  if(size <= 0) 
+  if(size <= 0)
     return NULL;
 
   char* name = calloc(size + 1, sizeof(char));
@@ -187,7 +187,7 @@ Class* loadClass(char* class_name) {
       panic("Erro ao tentar abrir o arquivo: %s", file_path);
     }
 
-    File* fd   = convertFile(file);
+    File* fd = convertFile(file);
     fclose(file);
 
     class = readClassFile(fd);
@@ -221,12 +221,13 @@ Class* loadClass(char* class_name) {
 
     // popula o map de methods
     for(u2 index = 0; index < class->methods_count; index++) {
-      MethodInfo* method      = class->methods + index;
+      MethodInfo* method = class->methods + index;
 
-      char*       method_name = (char*) getUtf8String(class->constant_pool, method->name_index);
+      char* method_name     = (char*) getUtf8String(class->constant_pool, method->name_index);
       char* descriptor_name = (char*) getUtf8String(class->constant_pool, method->descriptor_index);
 
-      char* name_and_type = calloc(strlen(method_name) + strlen(descriptor_name) + 1, sizeof(char*));
+      char* name_and_type =
+          calloc(strlen(method_name) + strlen(descriptor_name) + 1, sizeof(char*));
       strcat(name_and_type, method_name);
       strcat(name_and_type, descriptor_name);
 
@@ -322,7 +323,7 @@ void initializeClass(Class* class) {
   }
 
   /** FIXME da pra otimizar essa call */
-  void* has_clinit = mapGet(class->_method_map, "<clinit>");
+  void* has_clinit = mapGet(class->_method_map, "<clinit>()V");
 
   /* executa clinit, se exisit */
   if(has_clinit) {
