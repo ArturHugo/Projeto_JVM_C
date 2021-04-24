@@ -191,8 +191,8 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xa7 */ go_to,
     /* 0xa8 */ jsr,
     /* 0xa9 */ ret,
-    /* 0xaa */ NULL,
-    /* 0xab */ NULL,
+    /* 0xaa */ tableswitch,
+    /* 0xab */ lookupswitch,
     /* 0xac */ ireturn,
     /* 0xad */ lreturn,
     /* 0xae */ freturn,
@@ -287,7 +287,7 @@ void run(char* starting_class_name) {
 
   // criando frame
   Frame* starting_frame;
-  starting_frame = newFrame(starting_class, "main");
+  starting_frame = newFrame(starting_class, "main", "([Ljava/lang/String;)V");
 
   // empilhando primeiro frame
   pushNode(&frame_stack, starting_frame);
@@ -301,4 +301,3 @@ void run(char* starting_class_name) {
     instruction(current_instruction);
   }
 }
-

@@ -1,15 +1,27 @@
 #include "frame.h"
-
 #include "class-file.h"
 #include "common.h"
 #include "map.h"
 #include "method-area.h"
 
-Frame* newFrame(ClassFile* current_class, char* method_name) {
-  MethodInfo* method = mapGet(current_class->_method_map, method_name);
+#include <stdio.h>
+#include <string.h>
+
+Frame* newFrame(ClassFile* current_class, char* method_name, char* method_descriptor) {
+  char* name_and_type = calloc(strlen(method_name) + strlen(method_descriptor) + 1, sizeof(char*));
+  strcat(name_and_type, method_name);
+  strcat(name_and_type, method_descriptor);
+
+  MethodInfo* method = mapGet(current_class->_method_map, name_and_type);
+
+  free(name_and_type);
 
   if(method == NULL) {
-    panic("Method not found while trying to create frame: %s", method_name);
+    // If current class is Object
+    if(current_class->super_class == 0) {
+      panic("Method not found while trying to create frame: %s", method_name);
+    }
+    return newFrame(current_class->_super_class, method_name, method_descriptor);
   }
 
   Frame* new_frame         = malloc(sizeof(*new_frame));
@@ -19,9 +31,6 @@ Frame* newFrame(ClassFile* current_class, char* method_name) {
   new_frame->operand_stack  = NULL;
   new_frame->local_pc       = 0;
 
-  // TODO pode não ser attribute[0] que contém code info
-  // TODO malloc de variáveis locais sendo feita em u4, mas mudamos as variaveis locais para
-  // javatype
   new_frame->local_variables =
       malloc((new_frame->current_method->attributes->code_info.max_locals) * sizeof(JavaType));
 

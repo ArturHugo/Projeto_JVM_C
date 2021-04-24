@@ -221,7 +221,7 @@ void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
       printf("<%f>", constant_pool[index].double_info._value);
       break;
     case CONSTANT_LONG:
-      printf("<%ld>", constant_pool[index].long_info._value);
+      printf("<%lld>", constant_pool[index].long_info._value);
       break;
     case CONSTANT_FLOAT:
       printf("<%f>", constant_pool[index].float_info._value);
