@@ -43,7 +43,7 @@ void invokevirtual(const u1* instruction) {
           break;
 
         case 'J':
-          printf("%ld", value_to_print.long_value);
+          printf("%lld", value_to_print.long_value);
           break;
 
         case 'F':
