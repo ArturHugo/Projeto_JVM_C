@@ -22,6 +22,7 @@
 void invokestatic(const u1* instruction);
 
 void invokespecial(const u1* instruction);
+void invokeinterface(const u1* instruction);
 
 /**
  * @fn void new(const u1* instruction)
