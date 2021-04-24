@@ -1,4 +1,5 @@
 #include "execution-engine.h"
+#include "attributes.h"
 #include "class-file.h"
 #include "frame.h"
 #include "global.h"
@@ -17,10 +18,7 @@
 #include "handlers/stack.h"
 #include "handlers/stores.h"
 
-void noop() {
-  Frame* current_frame = peekNode(frame_stack);
-  current_frame->local_pc++;
-}
+#include <string.h>
 
 void (*const instructions_handlers[256])(const u1*) = {
     /* 0x00 */ nop,
@@ -214,7 +212,7 @@ void (*const instructions_handlers[256])(const u1*) = {
     /* 0xbc */ newarray,
     /* 0xbd */ anewarray,
     /* 0xbe */ arraylength,
-    /* 0xbf */ NULL,
+    /* 0xbf */ athrow,
     /* 0xc0 */ NULL,
     /* 0xc1 */ NULL,
     /* 0xc2 */ NULL,
@@ -285,7 +283,7 @@ void run(char* starting_class_name) {
   frame_stack = NULL;
 
   // execution engine
-  ClassFile* starting_class = mapGet(method_area.loaded_classes, starting_class_name);
+  ClassFile* starting_class = loadClass(starting_class_name);
 
   // criando frame
   Frame* starting_frame;

@@ -377,7 +377,7 @@ void printInstructionsSpecialWide(u1* opperand_bytes, ConstantPoolInfo* cp) {
     u2 const_byte = (u2)((opperand_bytes[3] << 8) | opperand_bytes[4]);
     printf("%d ", const_byte);
   } else {
-    printMethodPath(cp, cp_index);  // TODO nao tem path pro iinc
+    printMethodPath(cp, cp_index);
   }
 }
 
