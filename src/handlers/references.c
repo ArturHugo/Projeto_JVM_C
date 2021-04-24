@@ -79,7 +79,7 @@ void invokestatic(const u1* instruction) {
  * description: TODO
  * constaints:
  *  [ ]
- * observation: only implementation of 1. (JVM 8 spec, p482) is implemented
+ * observation: only implementation of 1 & 2. (JVM 8 spec, p482) is implemented
  */
 void invokespecial(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
@@ -99,9 +99,9 @@ void invokespecial(const u1* instruction) {
     popValue(&current_frame->operand_stack, method_parameters + (n_args - i));
   }
 
-  Object* objectref = method_parameters[0].reference_value;
+  Class *method_class = loadClass((char*) methodref_info._class);
 
-  Frame* new_frame = newFrame(objectref->class, (char*) methodref_info._name, (char*) methodref_info._descriptor);
+  Frame* new_frame = newFrame(method_class, (char*) methodref_info._name, (char*) methodref_info._descriptor);
 
   for(u2 i = 0; i < n_args; i++) {
     new_frame->local_variables[i] = method_parameters[i];
