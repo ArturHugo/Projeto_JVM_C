@@ -34,7 +34,7 @@ void fadd() {
   pushValue(&current_frame->operand_stack, value1);
   current_frame->local_pc++;
 }
-
+ 
 void dadd() {
   JavaType value1, value2;
   Frame*   current_frame = peekNode(frame_stack);
