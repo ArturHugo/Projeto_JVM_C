@@ -5,6 +5,7 @@
 #include "stack.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * format:  [invokestatic, indexbyte1, indexbyte2]
@@ -47,7 +48,7 @@ void invokestatic(const u1* instruction) {
 
   initializeClass(new_class);
 
-  Frame* new_frame = newFrame(new_class, new_method_name);
+  Frame* new_frame = newFrame(new_class, new_method_name, new_method_descriptor);
 
   // loading opperands from current stack to new local variables
   u2       n_args               = getArgumentCount((u1*) new_method_descriptor);
@@ -84,6 +85,11 @@ void invokespecial(const u1* instruction) {
 
   MethodrefInfo methodref_info = current_frame->constant_pool[index].methodref_info;
 
+  if(!strcmp((char*) methodref_info._class, "java/lang/Object")) {
+    current_frame->local_pc += 3;
+    return;
+  }
+
   u2 n_args = getArgumentCount((u1*) methodref_info._descriptor) + 1; /** + 1 para o objectref?? */
   JavaType* method_parameters = malloc(sizeof(*method_parameters) * n_args);
 
@@ -93,13 +99,15 @@ void invokespecial(const u1* instruction) {
 
   Object* objectref = method_parameters[0].reference_value;
 
-  Frame* new_frame = newFrame(objectref->class, (char*) methodref_info._name);
+  Frame* new_frame = newFrame(objectref->class, (char*) methodref_info._name, (char*) methodref_info._descriptor);
 
   for(u2 i = 0; i < n_args; i++) {
     new_frame->local_variables[i] = method_parameters[i];
     if(method_parameters[i].cat_tag == CAT2)
       i++;
   }
+
+  pushNode(&frame_stack, new_frame);
 
   current_frame->local_pc += 3;
 }
