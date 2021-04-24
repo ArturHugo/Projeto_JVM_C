@@ -4,8 +4,8 @@
 #include "map.h"
 #include "method-area.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 Frame* newFrame(ClassFile* current_class, char* method_name, char* method_descriptor) {
   char* name_and_type = calloc(strlen(method_name) + strlen(method_descriptor) + 1, sizeof(char*));
@@ -21,7 +21,7 @@ Frame* newFrame(ClassFile* current_class, char* method_name, char* method_descri
     if(current_class->super_class == 0) {
       panic("Method not found while trying to create frame: %s", method_name);
     }
-    return newFrame(current_class->_super_class, method_name);
+    return newFrame(current_class->_super_class, method_name, method_descriptor);
   }
 
   Frame* new_frame         = malloc(sizeof(*new_frame));

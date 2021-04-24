@@ -1,3 +1,6 @@
+# Diagrama Lógico
+![Comunicação entre os módulos](documents/images/jvm_projeto_logico.png)
+
 # Leitor e Exibitor
 
 Leitor e exibidor de arquivos no formato `.class` do Java.
