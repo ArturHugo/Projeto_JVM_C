@@ -202,7 +202,7 @@ u1** getUtf8Strings(u1* num_of_strings, ConstantPoolInfo* constant_pool, uint16_
   return utf8_strings;
 }
 
-// TODO pq esa função existe?
+// TODO corrigir printConstantPool para usar essa função
 void printConstantValue(ConstantPoolInfo* constant_pool, u2 index) {
   switch(constant_pool[index].tag) {
     case CONSTANT_STRING: {

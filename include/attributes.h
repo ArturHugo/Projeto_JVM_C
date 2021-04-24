@@ -81,7 +81,7 @@ typedef struct {
     u2 name_index;
     u2 descriptor_index;
     u2 index;
-  } * local_variable_table;  // FIXME? noem ficou meio estranho2
+  } * local_variable_table;
 } LocalVariableTableInfo;
 
 // AttributeInfo struct
