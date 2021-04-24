@@ -15,5 +15,6 @@ void new(const u1* instruction);
 void newarray(const u1* instruction);
 void anewarray();
 void arraylength();
+void athrow();
 
 #endif  // __REFERENCES_H

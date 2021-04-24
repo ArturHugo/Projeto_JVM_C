@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "execution-engine.h"
+#include "exceptions.h"
 #include "frame.h"
 #include "global.h"
 #include "handlers/stores.h"
