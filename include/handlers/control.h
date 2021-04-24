@@ -5,7 +5,7 @@
 #include "common.h"
 
 void go_to();
-void goto_w()
+void goto_w();
 void jsr();
 void ret();
 void ireturn();
