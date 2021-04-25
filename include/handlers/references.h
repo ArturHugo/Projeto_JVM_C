@@ -21,7 +21,33 @@
 
 void invokestatic(const u1* instruction);
 
+/**
+ * @brief Invoke instance method; special handling for superclass, private, and
+ * instance initialization method invocations
+ *
+ * - opcode:	0xb7
+ * - format: 	[invokespecial, indexbyte1, indexbyte2]
+ * - stack: 	(..., objectref, [arg1, [arg2 ...]]) -> (...)
+ * - description: get a methodref info using indexbyte1 and indexbyte2 to
+ *   construct a index in the current frame constant pool. Load the class
+ *   referenced by the method, then create a new frame using the retrieved
+ *   methodref. Pop nargs + 1 using the method's descriptor and put them in the
+ *   new frame local variable array. Push the new frame.
+ */
 void invokespecial(const u1* instruction);
+
+/**
+ * @brief Invoke interface method
+ *
+ * - opcode:	0xb9
+ * - format: 	[invokeinterface, indexbyte1, indexbyte2, count, 0]
+ * - stack: 	(..., objectref, [arg1, [arg2 ...]]) -> (...)
+ * - description: get a interfaceref info using indexbyte1 and indexbyte2 to
+ *   construct a index in the current frame constant pool. Pop nargs + 1 using
+ *   then interface descriptor, then use the popped objectref to construct a
+ *   new frame. Put the popped values on the new frame local variable array
+ *   then push the new frame.
+ */
 void invokeinterface(const u1* instruction);
 
 /**
@@ -89,7 +115,6 @@ void anewarray();
  * @param instruction uint8_t array containing instruction op_code on index 0 and argunments from
  * index 1 on, if any.
  */
-
 void arraylength();
 void athrow();
 

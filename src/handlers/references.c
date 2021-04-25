@@ -66,18 +66,6 @@ void invokestatic(const u1* instruction) {
   current_frame->local_pc += 3;
 }
 
-/**
- * Invoke instance method; special handling for superclass, private,
- * and instance initialization method invocations
- *
- * opcode:	0xb7
- * format: 	[invokestatic, indexbyte1, indexbyte2]
- * stack: 	(..., objectref, [arg1, [arg2 ...]]) -> (...)
- * description: TODO
- * constaints:
- *  [ ]
- * observation: only implementation of 1 & 2. (JVM 8 spec, p482) is implemented
- */
 void invokespecial(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
