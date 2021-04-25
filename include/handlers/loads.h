@@ -10,7 +10,7 @@
 
 /**
  * @fn void tload(const u1* instruction)
- * @brief Handles instructions iload, lload, fload, tload, dload and aload.
+ * @brief Handles instructions iload, lload, fload, dload and aload.
  *
  * @param instruction - pointer to the instruction's opcode in the CodeInfo attribute
  * code bytes.
