@@ -6,14 +6,6 @@
 #include "global.h"
 #include "handlers/conversions.h"
 
-/**
- * Convert int to long
- *
- * opcode:	0x85
- * format: 	[i2l]
- * stack: 	(..., value: integer) -> (..., value: long)
- * description:	convert to int to long
- */
 void i2l() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -24,14 +16,6 @@ void i2l() {
   current_frame->local_pc++;
 }
 
-/**
- * Convert int to float
- *
- * opcode:	0x86
- * format: 	[i2f]
- * stack: 	(..., value: integer) -> (..., value: float)
- * description:	convert to int to float
- */
 void i2f() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -41,14 +25,6 @@ void i2f() {
   current_frame->local_pc++;
 }
 
-/**
- * Convert int to double
- *
- * opcode:	0x87
- * format: 	[i2d]
- * stack: 	(..., value: integer) -> (..., value: double)
- * description:	convert to int to double
- */
 void i2d() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -59,14 +35,6 @@ void i2d() {
   current_frame->local_pc++;
 }
 
-/**
- * Convert long to int
- *
- * opcode:	0x88
- * format: 	[l2i]
- * stack: 	(..., value: long) -> (..., value: int)
- * description:	convert to long to int
- */
 void l2i() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -77,14 +45,6 @@ void l2i() {
   current_frame->local_pc++;
 }
 
-/**
- * Convert long to float
- *
- * opcode:	0x89
- * format: 	[l2f]
- * stack: 	(..., value: long) -> (..., value: float)
- * description:	convert to IEEE 754 using round to nearest
- */
 void l2f() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -95,14 +55,6 @@ void l2f() {
   current_frame->local_pc++;
 }
 
-/**
- * Convert long to double
- *
- * opcode:	0x8a
- * format: 	[l2d]
- * stack: 	(..., value: long) -> (..., value: double)
- * description:	convert to IEEE 754 using round to nearest
- */
 void l2d() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -112,23 +64,15 @@ void l2d() {
   current_frame->local_pc++;
 }
 
-/*
- * Convert float to int
- *
- * opcode:	0x8b, 0x8c
- * format: 	[f2i/f2l]
- * stack: 	(..., value: float) -> (..., value: int)
- * description:	convert to IEEE 754 using round to nearest
- */
 void f2l(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
 
   int is_long = *instruction - 0x8b;
 
-  /* ieee embassando o role 🙄🙄 */
+  /* Casos de borda para IEEE 754 */
   if((value->int_value & IEEE_MASK_F) == IEEE_MASK_F) {
-    if(value->int_value & NAN_MASK_F) {
+    if(value->int_value & NAN_MASK_F) { /* NAN */
       value->int_value = 0;
     } else if(value->long_value == INF_F) /* inf */
       value->long_value = is_long ? INT64_MAX : INT32_MAX;
@@ -143,14 +87,6 @@ void f2l(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-/*
- * Convert float to double
- *
- * opcode:	0x8d
- * format: 	[f2s]
- * stack: 	(..., value: float) -> (..., value: double)
- * description:	convert to double precision
- */
 void f2d() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -160,14 +96,6 @@ void f2d() {
   current_frame->local_pc++;
 }
 
-/*
- * Convert double to float
- *
- * opcode:	0x90
- * format: 	[d2f]
- * stack: 	(..., value: double) -> (..., value: float)
- * description:	convert to double precision
- */
 void d2f() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -177,23 +105,15 @@ void d2f() {
   current_frame->local_pc++;
 }
 
-/*
- * Convert double to int
- *
- * opcode:	0x8e, 0x8f
- * format: 	[f2i/f2l]
- * stack: 	(..., value: double) -> (..., value: int)
- * description:	convert to IEEE 754 using round to nearest
- */
 void d2l(const u1* instruction) {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
 
   int is_long = *instruction - 0x8e;
 
-  /* ieee embassando o role 🙄🙄 */
+  /* Casos de borda para IEEE 754 */
   if((value->long_value & IEEE_MASK_D) == IEEE_MASK_D) {
-    if(value->long_value & NAN_MASK_D) {
+    if(value->long_value & NAN_MASK_D) { /* NaN */
       value->long_value = 0;
     } else if(value->long_value == INF_D) /* inf */
       value->long_value = is_long ? INT64_MAX : INT32_MAX;
@@ -208,14 +128,6 @@ void d2l(const u1* instruction) {
   current_frame->local_pc++;
 }
 
-/*
- * Convert int to byte
- *
- * opcode:	0x91
- * format: 	[i2b]
- * stack: 	(..., value: int) -> (..., value: int)
- * description:	truncate int to a byte, then sign-extend
- */
 void i2b() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -225,14 +137,6 @@ void i2b() {
   current_frame->local_pc++;
 }
 
-/*
- * Convert int to char (uint16_t)
- *
- * opcode:	0x92
- * format: 	[i2c]
- * stack: 	(..., value: int) -> (..., value: int)
- * description:	truncate int to a byte, then 0-extend
- */
 void i2c() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
@@ -242,14 +146,6 @@ void i2c() {
   current_frame->local_pc++;
 }
 
-/*
- * Convert int to byte
- *
- * opcode:	0x93
- * format: 	[i2s]
- * stack: 	(..., value: int) -> (..., value: int)
- * description:	truncate int to a short, then sign-extend
- */
 void i2s() {
   Frame*    current_frame = peekNode(frame_stack);
   JavaType* value         = peekNode(current_frame->operand_stack);
