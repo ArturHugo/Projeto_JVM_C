@@ -33,6 +33,7 @@ void invokestatic(const u1* instruction);
  *   referenced by the method, then create a new frame using the retrieved
  *   methodref. Pop nargs + 1 using the method's descriptor and put them in the
  *   new frame local variable array. Push the new frame.
+ * - reference: [invokespecial](https://docs.oracle.com/javase/specs/jvms/se8/jvms8.pdf#%5B%7B%22num%22%3A2285%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C72%2C468%2Cnull%5D)
  */
 void invokespecial(const u1* instruction);
 
@@ -47,6 +48,7 @@ void invokespecial(const u1* instruction);
  *   then interface descriptor, then use the popped objectref to construct a
  *   new frame. Put the popped values on the new frame local variable array
  *   then push the new frame.
+ * - reference: [invokeinterface](https://docs.oracle.com/javase/specs/jvms/se8/jvms8.pdf#%5B%7B%22num%22%3A3184%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C72%2C590%2Cnull%5D)
  */
 void invokeinterface(const u1* instruction);
 

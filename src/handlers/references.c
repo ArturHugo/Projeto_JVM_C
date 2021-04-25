@@ -77,7 +77,7 @@ void invokespecial(const u1* instruction) {
     return;
   }
 
-  u2 n_args = getArgumentCount((u1*) methodref_info._descriptor) + 1; /** + 1 para o objectref?? */
+  u2        n_args            = getArgumentCount((u1*) methodref_info._descriptor) + 1;
   JavaType* method_parameters = malloc(sizeof(*method_parameters) * n_args);
 
   for(u2 i = 1; i <= n_args; i++) {
@@ -104,9 +104,10 @@ void invokeinterface(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
 
-  InterfaceMethodrefInfo interfaceref_info = current_frame->constant_pool[index].interface_methodref_info;
+  InterfaceMethodrefInfo interfaceref_info =
+      current_frame->constant_pool[index].interface_methodref_info;
 
-  u2 n_args = getArgumentCount((u1*) interfaceref_info._descriptor) + 1;
+  u2        n_args            = getArgumentCount((u1*) interfaceref_info._descriptor) + 1;
   JavaType* method_parameters = malloc(sizeof(*method_parameters) * n_args);
 
   for(u2 i = 1; i <= n_args; i++) {
@@ -115,8 +116,9 @@ void invokeinterface(const u1* instruction) {
 
   Object* objectref = method_parameters[0].reference_value;
 
-  Frame* new_frame =
-      newFrame(objectref->class, (char*) interfaceref_info._name, (char*) interfaceref_info._descriptor);
+  Frame* new_frame = newFrame(objectref->class,
+                              (char*) interfaceref_info._name,
+                              (char*) interfaceref_info._descriptor);
 
   for(u2 i = 0; i < n_args; i++) {
     new_frame->local_variables[i] = method_parameters[i];
