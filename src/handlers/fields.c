@@ -13,22 +13,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * get static field from class
- *
- * opcode:	0xb2
- * format: 	[getstatic, indexbyte1, indexbyte2]
- * stack: 	(...) -> (..., value)
- * description:	get the value from a field on a class, may initialize class if not already
- * constaints:
- *  [x] class must be loaded (load if not)
- *  [ ] field must be static (IncompattibleClassChangeError)
- */
 void getstatic(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
 
   FieldrefInfo field_info = current_frame->constant_pool[index].fieldref_info;
+
+  /* System.out.print(ln) tenta pegar o field out de System
+   * nós temos o próprio handler para print (ver invokevirtual)
+   * então pulamos esse caso */
   if(strcmp((char*) field_info._class, "java/lang/System")) {
     Class* field_class = loadClass((char*) field_info._class);
 
@@ -40,29 +33,17 @@ void getstatic(const u1* instruction) {
     if(field == NULL) {
       panic("NoSuchFieldError: %s", field_info._name);
     }
+
     pushValue(&current_frame->operand_stack, field->value);
     // TODO: checar se é estático
   } else {
-    // Push dummy value if java/lang/System
-    JavaType dummy_value;
+    JavaType dummy_value = {.cat_tag = 0, .int_value = 0};
     pushValue(&current_frame->operand_stack, dummy_value);
   }
+
   current_frame->local_pc += 3;
 }
 
-/**
- * set static field in class
- *
- * opcode:	0xb3
- * format: 	[putstatic, indexbyte1, indexbyte2]
- * stack: 	(..., value) -> (...)
- * description:
- * constaints:
- *  [x] class must be loaded (load if not)
- *  [ ] field must be static (IncompattibleClassChangeError)
- *  [ ] value must be type compatible with field descriptor (???)
- *  [ ] field must not be final if current method is not <clinit> (IllegalAccessError)
- */
 void putstatic(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
@@ -88,17 +69,6 @@ void putstatic(const u1* instruction) {
   current_frame->local_pc += 3;
 }
 
-/**
- * get field from object
- *
- * opcode:	0xb4
- * format: 	[getfield, indexbyte1, indexbyte2]
- * stack: 	(..., objectref) -> (..., value)
- * description: get field from object e push into the operand_stack
- * constaints:
- *  [x] object must not be null
- *  [ ] field must not be static (IncompattibleClassChangeError)
- */
 void getfield(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
@@ -122,19 +92,6 @@ void getfield(const u1* instruction) {
   current_frame->local_pc += 3;
 }
 
-/**
- * put value into field in objectref
- *
- * opcode:	0xb4
- * format: 	[putfield, indexbyte1, indexbyte2]
- * stack: 	(..., objectref, value) -> (...)
- * description: set field from object to value
- * constaints:
- *  [x] object must not be null (NullPointerException)
- *  [ ] value must be type compatible with field descriptor (???)
- *  [ ] field must not be static (IncompattibleClassChangeError)
- *  [ ] field must not be final outside <init> (IllegalAccessError)
- */
 void putfield(const u1* instruction) {
   Frame* current_frame = peekNode(frame_stack);
   u2     index         = (instruction[1] << 8 | instruction[2]);
